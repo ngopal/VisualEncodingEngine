@@ -8,15 +8,19 @@ app.get('/', function (req, res) {
 
 app.get('/sfunction', function (req, res) {
     exec('Rscript r/silly.r this is a test', function(error, stdout, stderr) {
-        //res.send(stdout);
-        if (error) { console.log(error); }
-        else if (stderr) { console.log(stderr); }
+        if (error) {
+            console.log(error);
+            res.send(error);
+        }
+        else if (stderr) {
+            console.log(stderr);
+            res.send(stderr);
+        }
         else if (stdout) {
-            console.log("STDOUT");
+            console.log("RAN SUCCESSFULLY");
             res.sendfile("savedoutput/test.json");
         }
     });
-    //res.send('success!');
 });
 
 app.listen(3000, function () {

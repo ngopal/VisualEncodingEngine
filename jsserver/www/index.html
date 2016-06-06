@@ -1,20 +1,41 @@
 <!DOCTYPE html>
-<html>
 <head>
     <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <meta charset="utf-8">
     <title>Visual Encoding App</title>
     <script src="http://d3js.org/d3.v3.min.js"></script>
 </head>
-<body>
+<input id="numEncodings">
+<input id="numTasks">
+<button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
+<button id="randvalues" onclick="randomRanks()">generate random ranks</button>
+<button id="sendranktable" onclick="sendToR()">send table</button>
 </body>
 <script type="application/javascript">
     var body = d3.select('body');
 
-    var tasks = makeTasks(5);
-    var encodings = makeEncodings(5);
+    var numberOfEncodings = 5;
+    var numberOfTasks = 5;
+    var tasks;
+    var encodings;
 
-    var tabl = makeTable(encodings.length,tasks.length);
+    function updateTableDimensions() {
+        numberOfEncodings = parseInt($("#numEncodings").val());
+        numberOfTasks = parseInt($("#numTasks").val());
+        console.log(numberOfEncodings);
+        console.log(numberOfTasks);
+        createTable(numberOfEncodings,numberOfTasks);
+    }
+
+    function createTable(numberOfEncodings,numberOfTasks) {
+        $('#rankTable').remove();
+        tasks = makeTasks(numberOfTasks);
+        encodings = makeEncodings(numberOfEncodings);
+        console.log(encodings);
+        console.log(tasks);
+        var tabl = makeTable(encodings.length,tasks.length);
+    }
+
 
     function makeTable(nr,nc) {
         var table = body.append("table")
@@ -35,13 +56,84 @@
                                 return encodings[r-1];
                             }
                             return "("+r+","+c+")";
-                        });
+                        })
+                        .attr("id", function() {
+                            if(r === 0) {
+                                return tasks[c-1];
+                            }
+                            if(c === 0) {
+                                return encodings[r-1];
+                            }
+                            return "cell_row"+r+"_col"+c;
+                        })
+                        .attr("class", function() {
+                            if(r === 0) {
+                                return tasks[c-1];
+                            }
+                            if(c === 0) {
+                                return encodings[r-1];
+                            }
+                            return "rankedcell row"+r+" col"+c;
+                        });;
                 tdData.push(td);
             });
             trData.push(tr);
         });
         return(trData);
     }
+
+    function randomRanks() {
+        for (var i = 1; i < numberOfTasks+1; i++) {
+            console.log(numberOfEncodings);
+            var ranks = generateArrayofValues(numberOfEncodings);
+            console.log(ranks);
+            d3.selectAll(".col"+i)
+                    .data(ranks)
+                    .text(function(d) {
+                        return d;
+                    });
+        }
+
+
+        function generateArrayofValues(nrows) {
+            var arr = [];
+            d3.range(1,nrows+1).forEach(function(k) {
+                arr.push(getRandomIntInclusive(1,nrows));
+            });
+            return shuffle(arr);
+        }
+
+        function getRandomIntInclusive(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+
+            return array;
+        }
+
+    }
+
+    function sendToR() {
+        var jsontable = rankTableToJSON();
+        console.log(jsontable);
+    }
+
+
 
     function rankTableToJSON() {
         return $('table#rankTable tr').get().map(function(row) {
