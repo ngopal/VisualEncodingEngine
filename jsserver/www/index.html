@@ -131,6 +131,23 @@
     function sendToR() {
         var jsontable = rankTableToJSON();
         console.log(jsontable);
+
+
+        $.ajax({
+            type: 'POST',
+            url: 'lp',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(jsontable),
+            success: function (data) {
+                console.log(data);
+            }
+        });
+
+//        $.post("lp", jsontable, function(data, status){
+//            console.log("Data: " + data + "\nStatus: " + status);
+//            console.log(data);
+//        });
     }
 
 

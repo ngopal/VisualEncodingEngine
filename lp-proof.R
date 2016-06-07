@@ -227,7 +227,8 @@ ddata[,3] <- floor(runif(length(ddata[1,]), min=1, max=5))
 ddata[,4] <- floor(runif(length(ddata[1,]), min=1, max=5))
 ddata[,5] <- floor(runif(length(ddata[1,]), min=1, max=5))
 
-#tddata <- data.frame(ddata)
+tddata <- data.frame(ddata)
+#ddata <- fromJSON('~/Code//VisualEncodingEngine/jsserver//savedinput/1465250417970.json');
 tddata <- as.matrix(ddata)
 colnames(tddata) <- testtable[[1]][2:length(testtable[[1]])]
 rownames(tddata) <- sapply(testtable, function(x) x[[1]])[2:length(testtable)]
@@ -240,7 +241,7 @@ tmdata <- matrix(lpres$solution[1:as.numeric(dim(tddata)[1]*dim(tddata)[2])],
 colnames(tmdata) <- testtable[[1]][2:length(testtable[[1]])]
 rownames(tmdata) <- sapply(testtable, function(x) x[[1]])[2:length(testtable)]
 
-toJSON(tmdata)
+toJSON(as.data.frame(tmdata))
 
 
 
