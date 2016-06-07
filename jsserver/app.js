@@ -52,8 +52,15 @@ app.post('/lp', function (req, res) {
                 }
                 else if (stdout) {
                     console.log("RAN SUCCESSFULLY");
-                    //res.sendfile(jfileout);
-                    res.jsonp(JSON.stringify(jfileout));
+
+                    jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
+                        if(jrerr) { console.log(jrerr); }
+                        else {
+                            res.setHeader('Content-Type', 'application/json');
+                            res.jsonp(jsoncontents);
+                        }
+                    });
+
                 }
             });
 

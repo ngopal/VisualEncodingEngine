@@ -3,7 +3,6 @@ args = commandArgs(trailingOnly=TRUE);
 
 library(RJSONIO)
 library(Rsymphony)
-library(reshape)
 library(plyr)
 
 
@@ -86,12 +85,12 @@ rownames(rankedJsonMatrix) <- encodingNames
 length(rankedJsonMatrix)
 
 lpres <- linprog(rankedJsonMatrix)
-tmdata <- matrix(lpres$solution[1:as.numeric(rankedJsonMatrix)])
+tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
 
-colnames(tmdata) <- testtable[[1]][2:length(testtable[[1]])]
-rownames(tmdata) <- sapply(testtable, function(x) x[[1]])[2:length(testtable)]
+colnames(tmdata) <- colnames(rankedJsonMatrix)
+rownames(tmdata) <- rownames(rankedJsonMatrix)
 
 
-write.table(toJSON(as.data.frame(tmdata)), jsonOutfile);
+write(toJSON(as.data.frame(tmdata)), jsonOutfile);
 print("0");
 
