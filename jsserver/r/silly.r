@@ -65,6 +65,8 @@ linprog <- function(inputMatrix) {
 
 testtable <- fromJSON(args[1]);
 print(testtable)
+numEnc <- length(testtable)
+numTask <- length(testtable[[1]])
 jsonOutfile <- args[2];
 
 #Tasks
@@ -72,25 +74,60 @@ jsonOutfile <- args[2];
 #Encodings
 # sapply(testtable, function(x) x[[1]])[2:length(testtable)]
 
-rankedJsonMatrix = t(matrix(unlist(testtable), nrow=4, ncol=6))
-taskNames <- rankedJsonMatrix[1,]
-taskNames <- taskNames[2:length(taskNames)]
-encodingNames <- rankedJsonMatrix[,1]
-encodingNames <- encodingNames[2:length(encodingNames)]
-rankedJsonMatrix = matrix(as.numeric(rankedJsonMatrix[2:6,2:4]), nrow=5, ncol=3)
+if (numEnc < numTask) {
+     print("Need to handle this case")
 
-colnames(rankedJsonMatrix) <- taskNames
-rownames(rankedJsonMatrix) <- encodingNames
+     rankedJsonMatrix = matrix(unlist(testtable), nrow=numTask, ncol=numEnc)
+     print(rankedJsonMatrix)
+     encodingNames <- rankedJsonMatrix[1,]
+     encodingNames <- encodingNames[2:length(encodingNames)]
+     taskNames <- rankedJsonMatrix[,1]
+     taskNames <- taskNames[2:length(taskNames)]
+     rankedJsonMatrix = matrix(as.numeric(rankedJsonMatrix[2:numTask,2:numEnc]), nrow=numTask-1, ncol=numEnc-1)
 
-length(rankedJsonMatrix)
+     colnames(rankedJsonMatrix) <- encodingNames
+     rownames(rankedJsonMatrix) <- taskNames
 
-lpres <- linprog(rankedJsonMatrix)
-tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
+     print(rankedJsonMatrix)
+     length(rankedJsonMatrix)
 
-colnames(tmdata) <- colnames(rankedJsonMatrix)
-rownames(tmdata) <- rownames(rankedJsonMatrix)
+     lpres <- linprog(rankedJsonMatrix)
+     tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
+
+     colnames(tmdata) <- colnames(rankedJsonMatrix)
+     rownames(tmdata) <- rownames(rankedJsonMatrix)
+
+     tmdata <- t(tmdata)
+     print(tmdata)
 
 
-write(toJSON(as.data.frame(tmdata)), jsonOutfile);
-print("0");
+     write(toJSON(as.data.frame(tmdata)), jsonOutfile);
+     print("0");
 
+
+} else {
+
+    #rankedJsonMatrix = t(matrix(unlist(testtable), nrow=4, ncol=6))
+    rankedJsonMatrix = t(matrix(unlist(testtable), nrow=numTask, ncol=numEnc))
+    taskNames <- rankedJsonMatrix[1,]
+    taskNames <- taskNames[2:length(taskNames)]
+    encodingNames <- rankedJsonMatrix[,1]
+    encodingNames <- encodingNames[2:length(encodingNames)]
+    rankedJsonMatrix = matrix(as.numeric(rankedJsonMatrix[2:numEnc,2:numTask]), nrow=numEnc-1, ncol=numTask-1)
+
+    colnames(rankedJsonMatrix) <- taskNames
+    rownames(rankedJsonMatrix) <- encodingNames
+
+    length(rankedJsonMatrix)
+
+    lpres <- linprog(rankedJsonMatrix)
+    tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
+
+    colnames(tmdata) <- colnames(rankedJsonMatrix)
+    rownames(tmdata) <- rownames(rankedJsonMatrix)
+
+
+    write(toJSON(as.data.frame(tmdata)), jsonOutfile);
+    print("0");
+
+}
