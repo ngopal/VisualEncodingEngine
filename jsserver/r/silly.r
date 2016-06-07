@@ -74,7 +74,7 @@ jsonOutfile <- args[2];
 #Encodings
 # sapply(testtable, function(x) x[[1]])[2:length(testtable)]
 
-if (numEnc < numTask) {
+if (numEnc <= numTask) {
      print("Need to handle this case")
 
      rankedJsonMatrix = matrix(unlist(testtable), nrow=numTask, ncol=numEnc)
@@ -92,7 +92,7 @@ if (numEnc < numTask) {
      length(rankedJsonMatrix)
 
      lpres <- linprog(rankedJsonMatrix)
-     tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
+     tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=numTask-1, ncol=numEnc-1)
 
      colnames(tmdata) <- colnames(rankedJsonMatrix)
      rownames(tmdata) <- rownames(rankedJsonMatrix)
@@ -121,7 +121,7 @@ if (numEnc < numTask) {
     length(rankedJsonMatrix)
 
     lpres <- linprog(rankedJsonMatrix)
-    tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=5, ncol=3)
+    tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=numEnc-1, ncol=numTask-1)
 
     colnames(tmdata) <- colnames(rankedJsonMatrix)
     rownames(tmdata) <- rownames(rankedJsonMatrix)
