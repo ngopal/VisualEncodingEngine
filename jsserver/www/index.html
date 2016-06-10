@@ -18,6 +18,7 @@
     var numberOfTasks = 5;
     var tasks;
     var encodings;
+    var Robj;
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
@@ -133,7 +134,7 @@
         console.log(jsontable);
 
 
-        $.ajax({
+        return $.ajax({
             type: 'POST',
             url: 'lp',
             contentType: "application/json; charset=utf-8",
@@ -141,6 +142,9 @@
             data: JSON.stringify(jsontable),
             success: function (data) {
                 console.log(data);
+                Robj = data;
+                highlightAssignedCells()
+                return data;
             }
         });
 
@@ -170,6 +174,17 @@
         return d3.range(1,amount+1).map(function(a) {
             return "enc"+a;
         });
+    }
+
+    function highlightAssignedCells() {
+        var assignments = Robj;
+        var numcols = Object.keys(Robj).length;
+        for (var i = 0; i < numcols; i++) {
+            var row = assignments[Object.keys(Robj)[i]].indexOf(1);
+            var cellAssignment = d3.selectAll('.col'+(i+1))
+                                   .filter('.row'+(row+1))
+                                   .attr('bgcolor', "#F3F315");
+        }
     }
 
 </script>
