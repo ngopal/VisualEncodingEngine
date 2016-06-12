@@ -214,7 +214,7 @@ testtable[[1]][2:length(testtable[[1]])]
 sapply(testtable, function(x) x[[1]])[2:length(testtable)]
 
 ddata <- c()
-for (i in 2:6) {
+for (i in 2:length(testtable)) {
   ddata <- rbind(ddata, sapply(testtable, function(x) x[i])[2:length(testtable)])
 }
 
@@ -242,6 +242,31 @@ colnames(tmdata) <- testtable[[1]][2:length(testtable[[1]])]
 rownames(tmdata) <- sapply(testtable, function(x) x[[1]])[2:length(testtable)]
 
 toJSON(as.data.frame(tmdata))
+
+
+
+
+#### Understand iGraph structure for my own format ####
+library(igraph)
+g <- make_graph(c(1, 2, 2, 3, 3, 4, 5, 6), directed = FALSE)
+
+vcount
+ecount
+# these would be attributes
+temp <- get.edgelist(g)
+temp <- cbind(temp, floor(runif(dim(temp)[1], min=1, max=dim(temp)[1])))
+colnames(temp) <- c("from", "to", "weight")
+
+
+function toGAP(item) {
+  # edge attributes
+  temp <- get.edgelist(g)
+  temp <- cbind(temp, floor(runif(dim(temp)[1], min=1, max=dim(temp)[1])))
+  colnames(temp) <- c("from", "to", "weight")
+}
+
+
+
 
 
 

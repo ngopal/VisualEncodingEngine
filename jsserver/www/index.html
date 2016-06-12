@@ -5,11 +5,25 @@
     <title>Visual Encoding App</title>
     <script src="http://d3js.org/d3.v3.min.js"></script>
 </head>
-<input id="numEncodings">
-<input id="numTasks">
-<button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
-<button id="randvalues" onclick="randomRanks()">generate random ranks</button>
-<button id="sendranktable" onclick="sendToR()">send table</button>
+<div id="rankTableSection">
+    <input id="numEncodings">
+    <input id="numTasks">
+    <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
+    <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
+    <button id="sendranktable" onclick="sendToR()">send table</button>
+</div>
+<div id="uploadGraphSection">
+    <div id="dvImportSegments" class="fileupload ">
+        <fieldset>
+            <legend>Upload your Vertex CSV File</legend>
+            <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+        </fieldset>
+        <fieldset>
+            <legend>Upload your Edge CSV File</legend>
+            <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+        </fieldset>
+    </div>
+</div>
 </body>
 <script type="application/javascript">
     var body = d3.select('body');
@@ -147,11 +161,6 @@
                 return data;
             }
         });
-
-//        $.post("lp", jsontable, function(data, status){
-//            console.log("Data: " + data + "\nStatus: " + status);
-//            console.log(data);
-//        });
     }
 
 
@@ -177,6 +186,7 @@
     }
 
     function highlightAssignedCells() {
+        d3.selectAll('.rankedcell').attr('bgcolor', null);
         var assignments = Robj;
         var numcols = Object.keys(Robj).length;
         for (var i = 0; i < numcols; i++) {
@@ -186,6 +196,23 @@
                                    .attr('bgcolor', "#F3F315");
         }
     }
+
+//    var graph = {
+//        'nodes' : {
+//            {'properties' : {
+//                'x-position' : 40,
+//                'y-position' : 40;
+//                }
+//            },
+//            {
+//             'attributes' : {
+//                'id' : 0,
+//                'name' : 'BRCA2'
+//                }
+//            }
+//        },
+//        'edges' : {}
+//    }
 
 </script>
 </html>
