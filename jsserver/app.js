@@ -7,9 +7,9 @@ var jsonfile = require('jsonfile');
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use('/cytoscape.js', express.static(__dirname + '/node_modules/cytoscape/src/index.js'));
-app.use('/require.js', express.static(__dirname + '/node_modules/requirejs/require.js'));
-app.use('/main.js', express.static(__dirname + '/main.js'));
+app.use('/cytoscape.js', express.static(__dirname + '/cytoscape.js/dist/cytoscape.min.js'));
+//app.use('/require.js', express.static(__dirname + '/node_modules/requirejs/require.js'));
+//app.use('/main.js', express.static(__dirname + '/main.js'));
 
 app.get('/', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
