@@ -18,6 +18,7 @@
             position: absolute;
             top: 0px;
             left: 0px;
+            display: none;
         }
     </style>
 </head>
@@ -27,6 +28,7 @@
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
     <button id="sendranktable" onclick="sendToR()">send table</button>
+    <button id="visualizeNetwork" onclick="plotNetwork()">visualize</button>
 </div>
 <div id="uploadGraphSection">
     <div id="dvImportSegments" class="fileupload">
@@ -36,8 +38,23 @@
         </fieldset>
     </div>
 </div>
+<div id="cy">
+</div>
 </body>
 <script type="application/javascript">
+
+    Array.prototype.getUnique = function(){
+        var u = {}, a = [];
+        for(var i = 0, l = this.length; i < l; ++i){
+            if(u.hasOwnProperty(this[i])) {
+                continue;
+            }
+            a.push(this[i]);
+            u[this[i]] = 1;
+        }
+        return a;
+    }
+
     var body = d3.select('body');
 
     var numberOfEncodings = 5;
@@ -45,6 +62,7 @@
     var tasks;
     var encodings;
     var Robj;
+    var encs = ['background-color', 'width', 'line-color', 'line-style'];
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
@@ -52,6 +70,9 @@
         console.log(numberOfEncodings);
         console.log(numberOfTasks);
         createTable(numberOfEncodings,numberOfTasks);
+        for (var i = 0; i < encs.length; i++) {
+            d3.select('.enc'+(i+1)).text(encs[i]);
+        }
     }
 
     function createTable(numberOfEncodings,numberOfTasks) {
@@ -169,7 +190,7 @@
             success: function (data) {
                 console.log(data);
                 Robj = data;
-                highlightAssignedCells()
+                highlightAssignedCells();
                 return data;
             }
         });
@@ -209,27 +230,109 @@
         }
     }
 
-//    var graph = {
-//        'nodes' : {
-//            {'properties' : {
-//                'x-position' : 40,
-//                'y-position' : 40;
-//                }
-//            },
-//            {
-//             'attributes' : {
-//                'id' : 0,
-//                'name' : 'BRCA2'
-//                }
-//            }
-//        },
-//        'edges' : {}
-//    }
+    function plotNetwork() {
+//        var cy = cytoscape({
+//            container: document.getElementById('cy'),
+//            elements: [
+//                { data: { id: 'a' } },
+//                { data: { id: 'b' } },
+//                {
+//                    data: {
+//                        id: 'ab',
+//                        source: 'a',
+//                        target: 'b'
+//                    }
+//                }]
+//        });
+
+        var cyCanvas = d3.selectAll('#cy')
+                .style('display', 'inline');
+        var cy = cytoscape(makeRandomNetwork());
+        var options = {
+            name: 'random',
+
+            fit: true, // whether to fit to viewport
+            padding: 30, // fit padding
+            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+            animate: false, // whether to transition the node positions
+            animationDuration: 500, // duration of animation in ms if enabled
+            animationEasing: undefined, // easing of animation if enabled
+            ready: undefined, // callback on layoutready
+            stop: undefined // callback on layoutstop
+        };
+
+        cy.layout( options );
+    }
+
+    function generateStyle() {
+        var style = [
+            {
+                selector: 'node',
+                style: {
+                    'background-color': 'red',
+                    'shape': null, //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
+                    'width': null,
+                    'height': null
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    'width': 5,
+                    'line-color':'blue',
+                    'line-style': 'dotted'   //solid, dotted, or dashed
+                }
+            }
+        ];
+        return style;
+    }
+
+    function makeRandomNetwork() {
+        var nodes = d3.range(0,100).map(function(d) {
+            return { data: {
+                id: d.toString()
+            } };
+        });
+        var edges = d3.range(101,150).map(function(d) {
+            return { data: {
+                id: d.toString(),
+                source: Math.floor(Math.random()*100).toString(),
+                target: Math.floor(Math.random()*100).toString()
+            } };
+        });
+        var data = [];
+        for (var i = 0; i < nodes.length; i++) {
+            data.push(nodes[i]);
+        }
+        for (var i = 0; i < edges.length; i++) {
+            data.push(edges[i]);
+        }
+        console.log(data);
+        return {
+            container : document.getElementById('cy'),
+            elements: data,
+            style: generateStyle()
+        };
+    }
+
+
+    function whichHighlight() {
+        var items = [];
+        d3.selectAll('.rankedcell').each(function(k){
+            var it = d3.select(this);
+            var high = it.attr('bgcolor');
+            var reg = /row\d/g;
+            console.log(high);
+            if (high !== null) {
+                var row = it.attr('class').match(reg);
+                items.push(row[0]);
+            }
+        });
+        return items.getUnique();
+    }
+
 
 
 
 </script>
-<div id="cy">
-
-</div>
 </html>
