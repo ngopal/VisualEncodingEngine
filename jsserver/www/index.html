@@ -63,6 +63,11 @@
     var encodings;
     var Robj;
     var encs = ['background-color', 'width', 'line-color', 'line-style'];
+    var enclookup = {'row1': {'type':'node','attribute':'background-color'},
+                    'row2': {'type':'edge','attribute':'width'},
+                    'row3': {'type':'edge','attribute':'line-color'},
+                    'row4': {'type':'edge','attribute':'line-style'}
+    };
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
@@ -131,6 +136,7 @@
     }
 
     function randomRanks() {
+        d3.selectAll('.rankedcell').attr('bgcolor', null);
         for (var i = 1; i < numberOfTasks+1; i++) {
             console.log(numberOfEncodings);
             var ranks = generateArrayofValues(numberOfEncodings);
@@ -231,37 +237,40 @@
     }
 
     function plotNetwork() {
-//        var cy = cytoscape({
-//            container: document.getElementById('cy'),
-//            elements: [
-//                { data: { id: 'a' } },
-//                { data: { id: 'b' } },
-//                {
-//                    data: {
-//                        id: 'ab',
-//                        source: 'a',
-//                        target: 'b'
-//                    }
-//                }]
-//        });
-
         var cyCanvas = d3.selectAll('#cy')
                 .style('display', 'inline');
-        var cy = cytoscape(makeRandomNetwork());
-        var options = {
-            name: 'random',
 
-            fit: true, // whether to fit to viewport
-            padding: 30, // fit padding
-            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-            animate: false, // whether to transition the node positions
-            animationDuration: 500, // duration of animation in ms if enabled
-            animationEasing: undefined, // easing of animation if enabled
-            ready: undefined, // callback on layoutready
-            stop: undefined // callback on layoutstop
-        };
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [
+                { data: { id: 'a' } },
+                { data: { id: 'b' } },
+                {
+                    data: {
+                        id: 'ab',
+                        source: 'a',
+                        target: 'b'
+                    }
+                }],
+            style: generateStyle()
+        });
 
-        cy.layout( options );
+
+//        var cy = cytoscape(makeRandomNetwork());
+//        var options = {
+//            name: 'random',
+//
+//            fit: true, // whether to fit to viewport
+//            padding: 30, // fit padding
+//            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+//            animate: false, // whether to transition the node positions
+//            animationDuration: 500, // duration of animation in ms if enabled
+//            animationEasing: undefined, // easing of animation if enabled
+//            ready: undefined, // callback on layoutready
+//            stop: undefined // callback on layoutstop
+//        };
+//
+//        cy.layout( options );
     }
 
     function generateStyle() {
@@ -270,7 +279,7 @@
                 selector: 'node',
                 style: {
                     'background-color': 'red',
-                    'shape': null, //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
+                    'shape': 'hexagon', //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
                     'width': null,
                     'height': null
                 }
@@ -279,11 +288,50 @@
                 selector: 'edge',
                 style: {
                     'width': 5,
-                    'line-color':'blue',
+                    'line-color': 'blue',
                     'line-style': 'dotted'   //solid, dotted, or dashed
                 }
             }
         ];
+        return style;
+    }
+
+    function editStyle(instyle,rows) {
+        // rows are ['row1', 'row2', 'row4']
+        var style = instyle;
+        var attrs = {'nodes':[], 'edges':[]};
+        rows.forEach(function(r) {
+            //ensure row has encoding in software
+            if (Object.keys(enclookup).indexOf(r) !== -1) {
+                var type = enclookup[r].type;
+                var attr = enclookup[r].attribute;
+                console.log(type);
+                if (type === "node") {
+                    attrs.nodes.push(attr);
+                }
+                else {
+                    attrs.edges.push(attr);
+                }
+            }
+        });
+        console.log(attrs);
+
+        var node_attrs = Object.keys(style[0].style);
+        var edge_attrs = Object.keys(style[1].style);
+
+        // set style attribute to null unless highlighted
+        for (var i = 0; i < node_attrs.length; i++) {
+            if (attrs.nodes.indexOf(node_attrs[i]) === -1) {
+                style[0].style[node_attrs[i]] = null;
+            }
+        }
+
+        for (var i = 0; i < edge_attrs.length; i++) {
+            if (attrs.edges.indexOf(edge_attrs[i]) === -1) {
+                style[1].style[edge_attrs[i]] = null;
+            }
+        }
+
         return style;
     }
 
