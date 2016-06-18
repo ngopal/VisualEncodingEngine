@@ -252,7 +252,8 @@
                         target: 'b'
                     }
                 }],
-            style: generateStyle()
+//            style: generateStyle()
+            style: editStyle(generateStyle(),whichHighlight())
         });
 
 
@@ -359,7 +360,8 @@
         return {
             container : document.getElementById('cy'),
             elements: data,
-            style: generateStyle()
+//            style: generateStyle()
+            style: editStyle(generateStyle(),whichHighlight())
         };
     }
 
@@ -379,6 +381,8 @@
         return items.getUnique();
     }
 
+
+    //editStyle(generateStyle(),whichHighlight())
 
 
 
