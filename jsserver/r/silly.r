@@ -43,11 +43,20 @@ linprog <- function(inputMatrix) {
   dir <- c(dir, c(rep('<=', num.tasks), rep('>=', num.tasks)))
   rhs <- c(rhs, rep(0, num.tasks*2))
 
+  # add custom num constraint
+    mat <- rbind(mat, 1)
+    mat[dim(mat)[1],dim(mat)[2]-1] <- 0
+    mat[dim(mat)[1],dim(mat)[2]] <- 0
+
+    dir <- c(dir, "<=")
+    rhs <- c(rhs, userNumEncodings)
+
   # now this is a mixed-integer problem; some Boolean constraints, some continuous
   num.bool.consts <- num.encodings * num.tasks
   num.cont.consts <- 2
 
   types <- c(rep('B', num.bool.consts), rep('C', num.cont.consts))
+  types <- c(types, 'C') #adding another 'C' for userNumEncoding number
   max <- TRUE # maximizing utility
 
   # finally, create the longer object function matrix
@@ -58,6 +67,7 @@ linprog <- function(inputMatrix) {
 
 
   # ToDo: edit matrix so that there are not more than N (given by user) encodings used in assignment.
+  # Could do this by having a row of ones, and making sure the RHS is less than or equal to N.
 
 }
 
@@ -70,6 +80,7 @@ testtable <- fromJSON(args[1]);
 print(testtable)
 numEnc <- length(testtable)
 numTask <- length(testtable[[1]])
+userNumEncodings <- 6;
 jsonOutfile <- args[2];
 
 #Tasks

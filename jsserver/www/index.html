@@ -238,6 +238,24 @@
         });
     }
 
+    function uploadUserNetwork() {
+     // this function needs work before it will run
+        var file = $.get('#txtFileUpload');
+
+
+        return $.ajax({
+            type: 'POST',
+            url: 'convert',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(file),
+            success: function (data) {
+                console.log(data);
+                return data;
+            }
+        });
+    }
+
 
 
     function rankTableToJSON() {

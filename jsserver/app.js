@@ -72,6 +72,45 @@ app.post('/lp', function (req, res) {
         }
     });
 
+
+    app.post('/convert', function (req, res) {
+        var rdata = req.body;
+        var jfile = 'savedinput/'+Date.now()+'.json';
+        var jfileout = 'savedoutput/'+Date.now()+'.json';
+        jsonfile.writeFile(jfile, rdata, function (err, success) {
+            if(err) {
+                console.log(err);
+            }
+            else {
+
+
+                exec('Rscript r/readAndConvert.r '+jfile+' '+jfileout, function(error, stdout, stderr) {
+                    if (error) {
+                        console.log(error);
+                        res.send(error);
+                    }
+                    else if (stderr) {
+                        console.log(stderr);
+                        res.send(stderr);
+                    }
+                    else if (stdout) {
+                        console.log("RAN SUCCESSFULLY");
+
+                        jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
+                            if(jrerr) { console.log(jrerr); }
+                            else {
+                                res.setHeader('Content-Type', 'application/json');
+                                res.jsonp(jsoncontents);
+                            }
+                        });
+
+                    }
+                });
+
+
+            }
+        });
+
     //res.jsonp('[1,2,3,4]');
 });
 
