@@ -36,16 +36,16 @@ app.get('/sfunction', function (req, res) {
 
 app.post('/lp', function (req, res) {
     var rdata = req.body;
-    var jfile = 'savedinput/'+Date.now()+'.json';
-    var jfileout = 'savedoutput/'+Date.now()+'.json';
+    var jfile = 'savedinput/' + Date.now() + '.json';
+    var jfileout = 'savedoutput/' + Date.now() + '.json';
     jsonfile.writeFile(jfile, rdata, function (err, success) {
-        if(err) {
+        if (err) {
             console.log(err);
         }
         else {
 
 
-            exec('Rscript r/silly.r '+jfile+' '+jfileout, function(error, stdout, stderr) {
+            exec('Rscript r/silly.r ' + jfile + ' ' + jfileout, function (error, stdout, stderr) {
                 if (error) {
                     console.log(error);
                     res.send(error);
@@ -57,8 +57,10 @@ app.post('/lp', function (req, res) {
                 else if (stdout) {
                     console.log("RAN SUCCESSFULLY");
 
-                    jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
-                        if(jrerr) { console.log(jrerr); }
+                    jsonfile.readFile(jfileout, function (jrerr, jsoncontents) {
+                        if (jrerr) {
+                            console.log(jrerr);
+                        }
                         else {
                             res.setHeader('Content-Type', 'application/json');
                             res.jsonp(jsoncontents);
@@ -71,48 +73,47 @@ app.post('/lp', function (req, res) {
 
         }
     });
-
-
-    app.post('/convert', function (req, res) {
-        var rdata = req.body;
-        var jfile = 'savedinput/'+Date.now()+'.json';
-        var jfileout = 'savedoutput/'+Date.now()+'.json';
-        jsonfile.writeFile(jfile, rdata, function (err, success) {
-            if(err) {
-                console.log(err);
-            }
-            else {
-
-
-                exec('Rscript r/readAndConvert.r '+jfile+' '+jfileout, function(error, stdout, stderr) {
-                    if (error) {
-                        console.log(error);
-                        res.send(error);
-                    }
-                    else if (stderr) {
-                        console.log(stderr);
-                        res.send(stderr);
-                    }
-                    else if (stdout) {
-                        console.log("RAN SUCCESSFULLY");
-
-                        jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
-                            if(jrerr) { console.log(jrerr); }
-                            else {
-                                res.setHeader('Content-Type', 'application/json');
-                                res.jsonp(jsoncontents);
-                            }
-                        });
-
-                    }
-                });
-
-
-            }
-        });
-
-    //res.jsonp('[1,2,3,4]');
 });
+
+
+//app.post('/convert', function (req, res) {
+//    var rdata = req.body;
+//    var jfile = 'savedinput/'+Date.now()+'.json';
+//    var jfileout = 'savedoutput/'+Date.now()+'.json';
+//    jsonfile.writeFile(jfile, rdata, function (err, success) {
+//        if(err) {
+//            console.log(err);
+//        }
+//        else {
+//
+//
+//            exec('Rscript r/readAndConvert.r '+jfile+' '+jfileout, function(error, stdout, stderr) {
+//                if (error) {
+//                    console.log(error);
+//                    res.send(error);
+//                }
+//                else if (stderr) {
+//                    console.log(stderr);
+//                    res.send(stderr);
+//                }
+//                else if (stdout) {
+//                    console.log("RAN SUCCESSFULLY");
+//
+//                    jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
+//                        if(jrerr) { console.log(jrerr); }
+//                        else {
+//                            res.setHeader('Content-Type', 'application/json');
+//                            res.jsonp(jsoncontents);
+//                        }
+//                    });
+//
+//                }
+//            });
+//
+//
+//        }
+//    });
+//});
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
