@@ -34,7 +34,7 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38172922">
+            <state vertical-scroll-proportion="6.1908646">
               <caret line="276" column="50" selection-start-line="276" selection-start-column="50" selection-end-line="276" selection-end-column="50" />
               <folding />
             </state>
@@ -55,7 +55,7 @@
         <entry file="file://$PROJECT_DIR$/r/readAndConvert.r">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+              <caret line="32" column="28" selection-start-line="32" selection-start-column="28" selection-end-line="32" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -74,11 +74,11 @@
         <option value="$PROJECT_DIR$/require.js" />
         <option value="$PROJECT_DIR$/node_modules/cytoscape/src/index.js" />
         <option value="$PROJECT_DIR$/main.js" />
-        <option value="$PROJECT_DIR$/r/readAndConvert.r" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/r/silly2.r" />
         <option value="$PROJECT_DIR$/r/silly.r" />
         <option value="$PROJECT_DIR$/www/index.html" />
+        <option value="$PROJECT_DIR$/r/readAndConvert.r" />
       </list>
     </option>
   </component>
@@ -338,14 +338,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/r/readAndConvert.r">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/r/silly.r">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -354,9 +346,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/r/readAndConvert.r">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="28" selection-start-line="32" selection-start-column="28" selection-end-line="32" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38172922">
+        <state vertical-scroll-proportion="6.1908646">
           <caret line="276" column="50" selection-start-line="276" selection-start-column="50" selection-end-line="276" selection-end-column="50" />
           <folding />
         </state>

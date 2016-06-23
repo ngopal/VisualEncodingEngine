@@ -7,7 +7,7 @@ library(RJSONIO)
 # args[1] = file name
 # args[2] = file format
 
-function toCytoJSON(g) {
+toCytoJSON <- function(g) {
   s = c()
   s = append(s,"[")
   for (i in 1:length(V(g))) {
@@ -28,4 +28,6 @@ function toCytoJSON(g) {
 
 graphdata <- read.graph(args[1], format=args[2]);
 
-toCytoJSON(graphdata))
+print(graphdata);
+
+print(toCytoJSON(graphdata))
