@@ -61,10 +61,15 @@
 
     var numberOfEncodings = 5;
     var numberOfTasks = 5;
-    var tasks;
+    var tasks = [];
     var encodings;
     var Robj;
+    var taskWithDims = [];
+
+    var dims = ['dim1', 'dim2', 'dim3'];
     var encs = ['node color', 'node border', 'edge width', 'edge color', 'edge pattern', 'edge arrow'];
+
+
     var enclookup = {'row1': {'type':'node','attribute':'background-color'},
                     'row2': {'type':'node','attribute':'border-width'},
                     'row3': {'type':'edge','attribute':'width'},
@@ -107,8 +112,14 @@
 
     function createTable(numberOfEncodings,numberOfTasks) {
         $('#rankTable').remove();
-        tasks = makeTasks(numberOfTasks);
+        tasks = [];
+//        tasks = makeTasks(numberOfTasks);
         encodings = makeEncodings(numberOfEncodings);
+        for (var d = 0; d < dims.length; d++) {
+            for (var e = 0; e < makeTasks(numberOfTasks).length; e++) {
+                tasks.push(dims[d]+' '+makeTasks(numberOfTasks)[e]);
+            }
+        }
         console.log(encodings);
         console.log(tasks);
         var tabl = makeTable(encodings.length,tasks.length);
@@ -162,7 +173,7 @@
 
     function randomRanks() {
         d3.selectAll('.rankedcell').attr('bgcolor', null);
-        for (var i = 1; i < numberOfTasks+1; i++) {
+        for (var i = 1; i < tasks.length+1; i++) {
             console.log(numberOfEncodings);
             var ranks = generateArrayofValues(numberOfEncodings);
             console.log(ranks);
@@ -252,13 +263,20 @@
     function highlightAssignedCells() {
         d3.selectAll('.rankedcell').attr('bgcolor', null);
         var assignments = Robj;
-        console.log(assignments);
         var numcols = Object.keys(Robj).length;
+        console.log(numcols);
         for (var i = 0; i < numcols; i++) {
-            var row = assignments[Object.keys(Robj)[i]].indexOf(1);
-            var cellAssignment = d3.selectAll('.col'+(i+1))
-                                   .filter('.row'+(row+1))
-                                   .attr('bgcolor', "#F3F315");
+//            var row = assignments[Object.keys(Robj)[i]].indexOf(1);
+            var row = assignments[Object.keys(Robj)[i]].map(function(d, i) {
+                if (d === 1) {
+                    return i;
+                }
+            }).filter(function(d) { return d !== undefined});
+            for (var k = 0; k < row.length; k++) {
+                var cellAssignment = d3.selectAll('.col'+(i+1))
+                        .filter('.row'+(row[k]+1))
+                        .attr('bgcolor', "#F3F315");
+            }
         }
     }
 

@@ -56,6 +56,9 @@ linprog <- function(inputMatrix) {
   soln <- Rsymphony_solve_LP(inputMatrix, mat, dir, rhs, types=types, max=max)
   return(soln)
 
+
+  # ToDo: edit matrix so that there are not more than N (given by user) encodings used in assignment.
+
 }
 
 
