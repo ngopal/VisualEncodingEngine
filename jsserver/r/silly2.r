@@ -60,9 +60,6 @@ linprog <- function(inputMatrix) {
 
 
 
-
-
-
 testtable <- fromJSON(args[1]);
 print(testtable)
 numEnc <- length(testtable)
@@ -73,6 +70,8 @@ jsonOutfile <- args[2];
 # testtable[[1]][2:length(testtable[[1]])]
 #Encodings
 # sapply(testtable, function(x) x[[1]])[2:length(testtable)]
+
+# I want my matrix to have more rows than columns to properly enforce constraints.
 
 if (numEnc <= numTask) {
     # transpose matrix
@@ -103,7 +102,7 @@ if (numEnc <= numTask) {
     tmdata <- t(tmdata)
 
     print(tmdata)
-    write(toJSON(as.data.frame(tmdata)), jsonOutfile);
+    #write(toJSON(as.data.frame(tmdata)), jsonOutfile);
 
     print("ran transpose")
 
@@ -134,6 +133,6 @@ if (numEnc <= numTask) {
 
     print(as.data.frame(tmdata))
 
-    write(toJSON(as.data.frame(tmdata)), jsonOutfile);
+    #write(toJSON(as.data.frame(tmdata)), jsonOutfile);
     print("ran as is")
 }

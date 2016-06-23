@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <head>
-    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <!--<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>-->
     <meta charset="utf-8">
     <title>Visual Encoding App</title>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
     <!--<script src="http://localhost:3000/bundle.js"></script>-->
     <!--<script data-main="main.js" src="require.js"></script>-->
     <script src="cytoscape.js"></script>
+    <script src="d3.js"></script>
+    <script src="jquery.js"></script>
     <!--<script src="http://localhost:3000/bundle.js"></script>-->
     <!--<script src="node_modules/cytoscape/src/index.js"></script>-->
     <!--<script src="node_modules/jquery/src/jquery.js"></script>-->
@@ -16,7 +18,7 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            top: 0px;
+            top: 50px;
             left: 0px;
             display: none;
         }
@@ -62,16 +64,39 @@
     var tasks;
     var encodings;
     var Robj;
-    var encs = ['background-color', 'width', 'line-color', 'line-style'];
+    var encs = ['node color', 'node border', 'edge width', 'edge color', 'edge pattern', 'edge arrow'];
     var enclookup = {'row1': {'type':'node','attribute':'background-color'},
-                    'row2': {'type':'edge','attribute':'width'},
-                    'row3': {'type':'edge','attribute':'line-color'},
-                    'row4': {'type':'edge','attribute':'line-style'}
+                    'row2': {'type':'node','attribute':'border-width'},
+                    'row3': {'type':'edge','attribute':'width'},
+                    'row4': {'type':'edge','attribute':'line-color'},
+                    'row5': {'type':'edge','attribute':'line-style'},
+                    'row6': {'type':'edge','attribute':'target-arrow-shape'}
     };
+    // Nodes
+    // background-blacken
+    // background-opacity
+    // border-width
+    // border-style
+    // border-color
+    // border-opacity
+    //
+    // Edges
+    // curve-style
+    // segment-distances (for edges made of several straight lines)
+    // <pos>-arrow-color
+    // <pos>-arrow-shape
+    // <pos>-arrow-fill
+    //
+    // Labels
+    // label
+    // source-label
+    // target-label (and also font styling among other things)
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
         numberOfTasks = parseInt($("#numTasks").val());
+//        numberOfEncodings = parseInt(d3.select('#numEncodings')[0][0].value);
+//        numberOfTasks = parseInt(d3.select('#numTasks')[0][0].value);
         console.log(numberOfEncodings);
         console.log(numberOfTasks);
         createTable(numberOfEncodings,numberOfTasks);
@@ -227,6 +252,7 @@
     function highlightAssignedCells() {
         d3.selectAll('.rankedcell').attr('bgcolor', null);
         var assignments = Robj;
+        console.log(assignments);
         var numcols = Object.keys(Robj).length;
         for (var i = 0; i < numcols; i++) {
             var row = assignments[Object.keys(Robj)[i]].indexOf(1);
@@ -282,7 +308,8 @@
                     'background-color': 'red',
                     'shape': 'hexagon', //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
                     'width': null,
-                    'height': null
+                    'height': null,
+                    'border-width' : 4
                 }
             },
             {
@@ -290,7 +317,8 @@
                 style: {
                     'width': 5,
                     'line-color': 'blue',
-                    'line-style': 'dotted'   //solid, dotted, or dashed
+                    'line-style': 'dotted',   //solid, dotted, or dashed
+                    'target-arrow-shape' : 'triangle'
                 }
             }
         ];
