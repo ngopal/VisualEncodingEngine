@@ -99,10 +99,48 @@
     // target-label (and also font styling among other things)
 
     var manifest = {
-        dimension1 : {type: 'numeric', usage: 'categorical', classname: 'p-val' },
-        dimension2 : {type: 'numeric', usage: 'numeric', classname:'expression'},
-        dimension3 : {type: 'categorical', usage: 'categorical', classname:'group'}
-        };
+        'dim1 task1' : {type: 'numeric', usage: 'numeric', name: 'p-val' },
+        'dim2 task1' : {type: 'numeric', usage: 'categorical', name: 'co-expression' },
+        'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'group' },
+        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'group' },
+        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }, //SHOULD BE ILLEGAL
+        'dim3 task2' : {type: 'numeric', usage: 'categorical', name: 'group' }
+    };
+
+    var allowedEncodings = {
+        'node color'   : ['categorical', 'numeric'], //if cat, then bins? if numeric, then function?
+//        'node border'  : ['categorical', 'numeric'],
+        'node border'  : ['numeric'],
+        'edge width'   : ['categorical', 'numeric'],
+        'edge color'   : ['categorical', 'numeric'],
+        'edge pattern' : ['categorical'],
+        'edge arrow'   : ['categorical']
+    };
+
+    function highlightImproperEncodings() {
+        //allowedEncodings['edge pattern'].indexOf(manifest["dim1 task 1"].usage) === -1 then improper
+        //d3.selectAll('.rankedcell').attr('bgcolor', null);
+        var encodingsWithNamesReplaced = [];
+        for (var i = 1; i < encodings.length+1; i++) {
+            encodingsWithNamesReplaced.push( d3.selectAll('.enc'+i).text() );
+        }
+
+        for (var t = 0; t < tasks.length; t++) {
+            for (var e = 0; e < encodingsWithNamesReplaced.length; e++) {
+                if ( Object.keys(allowedEncodings).indexOf(encodingsWithNamesReplaced[e]) !== -1 ) {
+                    //console.log([  tasks[t], encodingsWithNamesReplaced[e], allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage)  ])
+                    if ( allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage) === -1 ) {
+                        //highlight in red
+                        console.log([t, tasks[t], e, encodingsWithNamesReplaced[e]]);
+                        d3.selectAll('.col'+(t+1))
+                                .filter('.row'+(e+1))
+                                .attr('bgcolor', 'red')
+                                .text('0');
+                    }
+                }
+            }
+        }
+    }
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
@@ -226,6 +264,7 @@
     }
 
     function sendToR() {
+        highlightImproperEncodings();
         var jsontable = rankTableToJSON();
         console.log(jsontable);
 
@@ -286,7 +325,7 @@
     }
 
     function highlightAssignedCells() {
-        d3.selectAll('.rankedcell').attr('bgcolor', null);
+//        d3.selectAll('.rankedcell').attr('bgcolor', null);
         var assignments = Robj;
         var numcols = Object.keys(Robj).length;
         console.log(numcols);
