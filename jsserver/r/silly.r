@@ -80,7 +80,7 @@ testtable <- fromJSON(args[1]);
 print(testtable)
 numEnc <- length(testtable)
 numTask <- length(testtable[[1]])
-userNumEncodings <- 6;
+#userNumEncodings <- args[3];
 jsonOutfile <- args[2];
 
 #Tasks
@@ -107,6 +107,7 @@ if (numEnc <= numTask) {
 
     print(rankedJsonMatrix)
 
+    userNumEncodings <- dim(as.data.frame(testtable))[1]-1;
     lpres <- linprog(t(rankedJsonMatrix))
     tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=numTask-1, ncol=numEnc-1)
 
@@ -140,6 +141,7 @@ if (numEnc <= numTask) {
 
     print(rankedJsonMatrix)
 
+    userNumEncodings <- dim(as.data.frame(testtable))[1]-1;
     lpres <- linprog(rankedJsonMatrix)
     tmdata <- matrix(lpres$solution[1:length(rankedJsonMatrix)], nrow=numEnc-1, ncol=numTask-1)
 
@@ -151,3 +153,5 @@ if (numEnc <= numTask) {
     write(toJSON(as.data.frame(tmdata)), jsonOutfile);
     print("ran as is")
 }
+
+

@@ -61,6 +61,7 @@
 
     var numberOfEncodings = 5;
     var numberOfTasks = 5;
+    var cy;
     var tasks = [];
     var encodings;
     var Robj;
@@ -96,6 +97,12 @@
     // label
     // source-label
     // target-label (and also font styling among other things)
+
+    var manifest = {
+        dimension1 : {type: 'numeric', usage: 'categorical', classname: 'p-val' },
+        dimension2 : {type: 'numeric', usage: 'numeric', classname:'expression'},
+        dimension3 : {type: 'categorical', usage: 'categorical', classname:'group'}
+        };
 
     function updateTableDimensions() {
         numberOfEncodings = parseInt($("#numEncodings").val());
@@ -302,16 +309,43 @@
         var cyCanvas = d3.selectAll('#cy')
                 .style('display', 'inline');
 
-        var cy = cytoscape({
+        cy = cytoscape({
             container: document.getElementById('cy'),
             elements: [
-                { data: { id: 'a' } },
-                { data: { id: 'b' } },
+                { data: { id: 'a', value: 40, usage: 'numeric', class: 'p-val' } },
+                { data: { id: 'b', value: 25, usage: 'numeric', class: 'p-val' } },
+                { data: { id: 'c', value: 15, usage: 'numeric', class: 'coexpression' } },
+                { data: { id: 'd', value: 15, usage: 'numeric', class: 'coexpression' } },
+                { data: { id: 'e', value: "group1", usage: 'categorical', class: 'pathway' } },
+                { data: { id: 'f', value: "group2", usage: 'categorical', class: 'pathway' } },
                 {
                     data: {
                         id: 'ab',
                         source: 'a',
-                        target: 'b'
+                        target: 'b',
+                        class: 'type',
+                        value: 'relationship1',
+                        usage: 'categorical'
+                    }
+                },
+                {
+                    data: {
+                        id: 'bc',
+                        source: 'b',
+                        target: 'c',
+                        class: 'type',
+                        value: 30,
+                        usage: 'numeric'
+                    }
+                },
+                {
+                    data: {
+                        id: 'af',
+                        source: 'a',
+                        target: 'f',
+                        class: 'type',
+                        value: 10,
+                        usage: 'numeric'
                     }
                 }],
 //            style: generateStyle()
