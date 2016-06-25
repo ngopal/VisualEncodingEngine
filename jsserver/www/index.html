@@ -16,9 +16,9 @@
     <style>
         #cy {
             width: 100%;
-            height: 100%;
+            height: 50%;
             position: absolute;
-            top: 50px;
+            top: 300px;
             left: 0px;
             display: none;
         }
@@ -104,7 +104,7 @@
         'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'group' },
         'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'group' },
         'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }, //SHOULD BE ILLEGAL
-        'dim3 task2' : {type: 'numeric', usage: 'categorical', name: 'group' }
+        'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }
     };
 
     var allowedEncodings = {
@@ -264,6 +264,7 @@
     }
 
     function sendToR() {
+        d3.selectAll('.rankedcell').attr('bgcolor', null);
         highlightImproperEncodings();
         var jsontable = rankTableToJSON();
         console.log(jsontable);
