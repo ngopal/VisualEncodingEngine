@@ -100,12 +100,53 @@
 
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: 'numeric', name: 'p-val' },
-        'dim2 task1' : {type: 'numeric', usage: 'categorical', name: 'co-expression' },
-        'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'group' },
-        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'group' },
-        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }, //SHOULD BE ILLEGAL
+        'dim2 task1' : {type: 'numeric', usage: 'categorical', name: 'coexpression' },
+        'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'pathway' },
+        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'pathway' },
+        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'pathway' }, //SHOULD BE ILLEGAL
         'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }
     };
+
+    function internalData() {
+        // for every item in manifest, look at name and usage
+        // for every node, compare name to class and usage to usage
+        // for
+        var temp = [];
+        cy.nodes().forEach(function( ele ){
+            if ( ele.data().class === "pathway") {
+                if ( ele.data().usage === "categorical" ) { //compare this datatype to that in manifest
+                    console.log( ["categorical", ele.data().value] );
+                    temp.push( ele.data().value );
+                }
+                else {
+                    console.log( ["numeric", ele.data().value] )
+                }
+            }
+        });
+
+        //only if categorical
+        var color = d3.scale.ordinal()
+                .domain([temp])
+                .range(['red','green']);
+
+        //only if numeric
+        var color = d3.scale.linear()
+                .domain([0,15,40])
+                .range(['red','green']);
+
+        var linestyle = d3.scale.ordinal()
+                .domain(["group1", "group2", "group3"])
+                .range(["solid", "dotted", "dashed"]);
+
+        var nodeshape = d3.scale.ordinal()
+                .domain()
+                .range(["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]);
+
+        //at the moment, I am basically only coding up node color. After this, I can adapt this pattern for other encodings
+        //if there are more discrete items than assignments, then I should mention that I'm only using the first N.
+        //alternatively, I can include a constraint in the algorithm to maximize "spread" in the linear program.
+    }
+
 
     var allowedEncodings = {
         'node color'   : ['categorical', 'numeric'], //if cat, then bins? if numeric, then function?
@@ -358,6 +399,7 @@
                 { data: { id: 'd', value: 15, usage: 'numeric', class: 'coexpression' } },
                 { data: { id: 'e', value: "group1", usage: 'categorical', class: 'pathway' } },
                 { data: { id: 'f', value: "group2", usage: 'categorical', class: 'pathway' } },
+                { data: { id: 'g', value: "group2", usage: 'numeric', class: 'pathway' } },
                 {
                     data: {
                         id: 'ab',
