@@ -41,31 +41,19 @@ function nodecolor_cat(domain,range) {
         .range(range);
 }
 
-function nodeshape_cat(domain) {
-    var shapes = ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"];
+function nodeshape_cat(domain,range) {
+    //var shapes = ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"];
     return d3.scale.ordinal()
         .domain(domain)
-        .range(shapes.slice(0,domain.length));
+        //.range(shapes.slice(0,domain.length));
+        .range(range);
 }
 
 function edgepattern_cat(domain,range) {
     return d3.scale.ordinal()
         .domain(domain)
-        .range(range)
-        //.range(["solid", "dotted", "dashed"]);
+        .range(range);
 }
-
-//var nodecolor_seq = d3.scale.linear()
-//    .domain([0,15,40])
-//    .range(['red','green']);
-
-//var nodecolor_div = d3.scale.linear()
-//    .domain([0,15,40])
-//    .range(['red','green']);
-
-//var nodecolor_cat = d3.scale.ordinal()
-//    .domain(['a', 'b'])
-//    .range(['red','green']);
 
 function nodeborder_quant(domain,range) {
     return d3.scale.ordinal()
@@ -117,14 +105,6 @@ function edgearrow_cat(domain,range) {
         .domain(domain)
         .range(range);
 };
-
-//var linestyle = d3.scale.ordinal()
-//    .domain(["group1", "group2", "group3"])
-//    .range(["solid", "dotted", "dashed"]);
-
-//var nodeshape = d3.scale.ordinal()
-//    .domain([0,1,2,3,4,5,6,7,8,9,10])
-//    .range(["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]);
 
 
 function unitTest() {

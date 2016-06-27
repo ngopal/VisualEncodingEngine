@@ -119,96 +119,56 @@
         'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'pathway' },
         'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'pathway' },
         'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'pathway' }, //SHOULD BE ILLEGAL
-        'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'group' }
+        'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'p-val' }
     };
 
     function internalData() {
-        // for every item in manifest, look at name and usage
-        // for every node, compare name to class and usage to usage
-        // for
-        var temp = [];
-        cy.nodes().forEach(function( ele ){
-            if ( ele.data().class === "pathway") {
-                if ( ele.data().usage === "categorical" ) { //compare this datatype to that in manifest
-                    console.log( ["categorical", ele.data().value] );
-                    temp.push( ele.data().value );
-                }
-                else {
-                    console.log( ["numeric", ele.data().value] )
-                }
-            }
-        });
 
-        //only if categorical
-        var color = d3.scale.ordinal()
-                .domain([temp])
-                .range(['red','green']);
-
-        //only if numeric
-        var color = d3.scale.linear()
-                .domain([0,15,40])
-                .range(['red','green']);
-
-        var linestyle = d3.scale.ordinal()
-                .domain(["group1", "group2", "group3"])
-                .range(["solid", "dotted", "dashed"]);
-
-        var nodeshape = d3.scale.ordinal()
-                .domain()
-                .range(["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]);
-
-        //at the moment, I am basically only coding up node color. After this, I can adapt this pattern for other encodings
-        //if there are more discrete items than assignments, then I should mention that I'm only using the first N.
-        //alternatively, I can include a constraint in the algorithm to maximize "spread" in the linear program.
-
-        //instead of using a stylesheet generator, I could just update values via css as done below
-        cy.nodes('[dimension="p-val"]').forEach(function( ele ) {
-            console.log(ele.data());
-        }).css('shape', function(ele) {
-            return nodeshape_cat([25,40])(ele.data().value);
-        }).css('background-color', function(ele) {
-            return nodecolor_cat([25,40],['orange','blue'])(ele.data().value);
-        });
-
-        cy.nodes('[dimension="p-val"]').map(function( ele ) { return ele.data().value }); // use this to not hard code values
-
-        var encattrs=[];
+        // highlighted items
+        var highlightedCells=[];
         d3.selectAll('[bgcolor="#F3F315"]').each(function(d) {
-            var hienc = d3.select(this).attr('class').match(/row\d+/g)[0].replace('row','enc');
-            encattrs.push( d3.selectAll('.'+hienc).text() );
+            var hienc = d3.select(this).attr('class');
+            var row = hienc.match(/row\d+/g)[0];
+            var col = hienc.match(/col\d+/g)[0];
+            highlightedCells.push( {encoding: row, dim: col} );
         });
 
-        var thing = encattrs.map(function(e) { return {func: encodingRenderFunctions[e], style: encodingStyleFunctions[e].name}; });
-
-        // items = [ 'node color (cat)' : {style:'background-color', func: nodecolor_cat(domain,range)} ]
-
-        // Step 1. Identify encodings of highlighted values
-        // Step 2. For those highlighted values, instantiate the style functions
-        // for k in items, ..css(items[k].style, function( ele ) { return items[k].func} )
-        cy.nodes('[dimension="p-val"]').css(thing[0].style, function(){
-            return thing[0].func([0,40],colorbrewer.Reds[5]);
-        });
-
+        //keep thing in same order as encoding rows so I can do array lookup
         var thing = [
-            {func: edgepattern_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]},
-            {func: edgecolor_cat, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: nodecolor_seq, style:'background-color', type:'node', range: colorbrewer.Set2},
+            {func: nodecolor_div, style:'background-color', type:'node', range: colorbrewer.Set2},
             {func: nodecolor_cat, style:'background-color', type:'node', range: colorbrewer.Set2},
             {func: nodeshape_cat, style:'shape', type:'node', range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]},
-            {func: nodeborder_cat, style:'border-width', type:'node', range: [1,5,10]}
+            {func: nodeborder_quant, style:'border-width', type:'node', range: [1,5,10]},
+            {func: nodeborder_bin, style:'border-width', type:'node', range: [1,5,10]},
+            {func: nodeborder_cat, style:'border-width', type:'node', range: [1,5,10]},
+            {func: edgewidth_quant, style:'width', type:'edge', range: [1,5,10]},
+            {func: edgewidth_bin, style:'width', type:'edge', range: [1,5,10]},
+            {func: edgecolor_seq, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: edgecolor_div, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: edgecolor_cat, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: edgepattern_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]},
+            {func: edgearrow_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]}
         ];
 
         var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
                           edgecolor_cat, edgecolor_div, edgecolor_seq];
 
-        var nodecondition = "[dimension='p-val'],[dimension='coexpression']";
-        var edgecondition = '';
+        // for each highlight, get the column (dimension) and row (encoding)
+//        var dim_task = cy.nodes().map(function(k) { return(k.data().dimension) }).getUnique();
 
-        // the following below will need to feed in data and encodings!
-        thing.forEach(function( ele ) {
+        highlightedCells.forEach(function(rc) {
+            var columnNumber = rc.dim.replace('col','');
+            var rowNumber = rc.encoding.replace('row','');
+            var arrayOfDimTask = Object.keys(manifest).map(function(k) { return manifest[k]; });
+            var condition = "[dimension=\'"+arrayOfDimTask[columnNumber-1].name+"\']";
+            var ele = thing[rowNumber-1];
+            console.log([condition, ele]);
+
             if ( ele.type === "node") {
-                var domain = cy.nodes(nodecondition).map(function( val ) { return val.data().value });
-                // in the above line, I can setup logic to choose between which data to map to domain
-                cy.nodes(nodecondition).css(ele.style, function(n) {
+                var domain = cy.nodes(condition).map(function( val ) { return val.data().value }).getUnique();
+                console.log(['node', ele.func, condition, domain]);
+                cy.nodes(condition).css(ele.style, function(n) {
                     if (colorfuncs.indexOf(ele.func) !== -1) {
                         return ele.func(
                                 domain,
@@ -222,8 +182,9 @@
                 });
             }
             else {
-                var domain = cy.edges(edgecondition).map(function( val ) { return val.data().value });
-                cy.edges(edgecondition).css(ele.style, function(n) {
+                var domain = cy.edges(condition).map(function( val ) { return val.data().value }).getUnique();
+                console.log(['edge', ele.func, condition, domain]);
+                cy.edges(condition).css(ele.style, function(n) {
                     if (colorfuncs.indexOf(ele.func) !== -1) {
                         return ele.func(
                                 domain,
@@ -236,7 +197,84 @@
                     }
                 });
             }
+
         });
+
+//        dim_task.forEach(function(dt) {
+//
+//            var dcond = "[dimension=\'"+dt+"\']";
+//            var nodecondition;
+//            var edgecondition;
+//            if (dtype === "node") {
+//                nodecondition = dcond;
+//            }
+//            else {
+//                edgecondition = dcond;
+//            }
+//
+//            thing.forEach(function( ele ) {
+//                if ( ele.type === "node") {
+//                    var domain = cy.nodes(nodecondition).map(function( val ) { return val.data().value });
+//                    // in the above line, I can setup logic to choose between which data to map to domain
+//                    cy.nodes(nodecondition).css(ele.style, function(n) {
+//                        if (colorfuncs.indexOf(ele.func) !== -1) {
+//                            return ele.func(
+//                                    domain,
+//                                    ele.range[domain.length | 3])(n.data().value);
+//                        }
+//                        else {
+//                            return ele.func(
+//                                    domain,
+//                                    ele.range.slice(0,domain.length))(n.data().value);
+//                        }
+//                    });
+//                }
+//                else {
+//                    var domain = cy.edges(edgecondition).map(function( val ) { return val.data().value });
+//                    cy.edges(edgecondition).css(ele.style, function(n) {
+//                        if (colorfuncs.indexOf(ele.func) !== -1) {
+//                            return ele.func(
+//                                    domain,
+//                                    ele.range[domain.length | 3])(n.data().value);
+//                        }
+//                        else {
+//                            return ele.func(
+//                                    domain,
+//                                    ele.range.slice(0,domain.length))(n.data().value);
+//                        }
+//                    });
+//                }
+//            });
+//        });
+//
+//        var encattrs=[];
+//        d3.selectAll('[bgcolor="#F3F315"]').each(function(d) {
+//            var hienc = d3.select(this).attr('class').match(/row\d+/g)[0].replace('row','enc');
+//            encattrs.push( d3.selectAll('.'+hienc).text() );
+//        });
+//
+//        var thing = encattrs.map(function(e) { return {func: encodingRenderFunctions[e], style: encodingStyleFunctions[e].name}; });
+
+        // items = [ 'node color (cat)' : {style:'background-color', func: nodecolor_cat(domain,range)} ]
+
+        // Step 1. Identify encodings of highlighted values
+        // Step 2. For those highlighted values, instantiate the style functions
+        // for k in items, ..css(items[k].style, function( ele ) { return items[k].func} )
+//        cy.nodes('[dimension="p-val"]').css(thing[0].style, function(){
+//            return thing[0].func([0,40],colorbrewer.Reds[5]);
+//        });
+
+
+
+//        var nodecondition = "[dimension='p-val'],[dimension='coexpression']";
+//        var edgecondition = '';
+
+        // perhaps I can just go through all column names and not have to feed in parameters?
+
+
+
+        // the following below will need to feed in data and encodings!
+
         // Step 3. Feed in domain values for functions
 
     }
