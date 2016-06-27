@@ -34,8 +34,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8776509">
-              <caret line="208" column="11" selection-start-line="191" selection-start-column="8" selection-end-line="208" selection-end-column="11" />
+            <state vertical-scroll-proportion="0.6084829">
+              <caret line="213" column="35" selection-start-line="213" selection-start-column="35" selection-end-line="213" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -45,7 +45,7 @@
         <entry file="file://$PROJECT_DIR$/fcns.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+              <caret line="53" column="21" selection-start-line="53" selection-start-column="21" selection-end-line="53" selection-end-column="21" />
               <folding>
                 <element signature="n#!!doc;n#nodecolor_seq#0" expanded="false" />
               </folding>
@@ -96,8 +96,8 @@
         <option value="$PROJECT_DIR$/r/silly2.r" />
         <option value="$PROJECT_DIR$/r/readAndConvert.r" />
         <option value="$PROJECT_DIR$/r/silly.r" />
-        <option value="$PROJECT_DIR$/fcns.js" />
         <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/fcns.js" />
         <option value="$PROJECT_DIR$/www/index.html" />
       </list>
     </option>
@@ -377,7 +377,7 @@
     <entry file="file://$PROJECT_DIR$/fcns.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+          <caret line="53" column="21" selection-start-line="53" selection-start-column="21" selection-end-line="53" selection-end-column="21" />
           <folding>
             <element signature="n#!!doc;n#nodecolor_seq#0" expanded="false" />
           </folding>
@@ -386,8 +386,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8776509">
-          <caret line="208" column="11" selection-start-line="191" selection-start-column="8" selection-end-line="208" selection-end-column="11" />
+        <state vertical-scroll-proportion="0.6084829">
+          <caret line="213" column="35" selection-start-line="213" selection-start-column="35" selection-end-line="213" selection-end-column="35" />
           <folding />
         </state>
       </provider>

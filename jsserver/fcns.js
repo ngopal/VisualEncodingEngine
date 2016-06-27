@@ -48,10 +48,11 @@ function nodeshape_cat(domain) {
         .range(shapes.slice(0,domain.length));
 }
 
-function edgepattern_cat(domain) {
+function edgepattern_cat(domain,range) {
     return d3.scale.ordinal()
         .domain(domain)
-        .range(["solid", "dotted", "dashed"]);
+        .range(range)
+        //.range(["solid", "dotted", "dashed"]);
 }
 
 //var nodecolor_seq = d3.scale.linear()
