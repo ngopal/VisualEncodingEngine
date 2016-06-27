@@ -32,7 +32,8 @@
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
     <button id="sendranktable" onclick="sendToR()">send table</button>
-    <button id="visualizeNetwork" onclick="plotNetwork()">visualize</button>
+    <button id="visualizeNetwork" onclick="plotNetwork()">visualize default</button>
+    <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
 </div>
 <div id="uploadGraphSection">
     <div id="dvImportSegments" class="fileupload">
@@ -117,8 +118,8 @@
         'dim1 task1' : {type: 'numeric', usage: 'numeric', name: 'p-val' },
         'dim2 task1' : {type: 'numeric', usage: 'categorical', name: 'coexpression' },
         'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'pathway' },
-        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'pathway' },
-        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'pathway' }, //SHOULD BE ILLEGAL
+        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'p-val' },
+        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'coexpression' }, //SHOULD BE ILLEGAL
         'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'p-val' }
     };
 
@@ -135,8 +136,8 @@
 
         //keep thing in same order as encoding rows so I can do array lookup
         var thing = [
-            {func: nodecolor_seq, style:'background-color', type:'node', range: colorbrewer.Set2},
-            {func: nodecolor_div, style:'background-color', type:'node', range: colorbrewer.Set2},
+            {func: nodecolor_seq, style:'background-color', type:'node', range: colorbrewer.Reds},
+            {func: nodecolor_div, style:'background-color', type:'node', range: colorbrewer.RdBu},
             {func: nodecolor_cat, style:'background-color', type:'node', range: colorbrewer.Set2},
             {func: nodeshape_cat, style:'shape', type:'node', range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]},
             {func: nodeborder_quant, style:'border-width', type:'node', range: [1,5,10]},
@@ -144,8 +145,8 @@
             {func: nodeborder_cat, style:'border-width', type:'node', range: [1,5,10]},
             {func: edgewidth_quant, style:'width', type:'edge', range: [1,5,10]},
             {func: edgewidth_bin, style:'width', type:'edge', range: [1,5,10]},
-            {func: edgecolor_seq, style:'line-color', type:'edge', range: colorbrewer.Set3},
-            {func: edgecolor_div, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: edgecolor_seq, style:'line-color', type:'edge', range: colorbrewer.Blues},
+            {func: edgecolor_div, style:'line-color', type:'edge', range: colorbrewer.BuGn},
             {func: edgecolor_cat, style:'line-color', type:'edge', range: colorbrewer.Set3},
             {func: edgepattern_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]},
             {func: edgearrow_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]}
@@ -167,9 +168,10 @@
 
             if ( ele.type === "node") {
                 var domain = cy.nodes(condition).map(function( val ) { return val.data().value }).getUnique();
-                console.log(['node', ele.func, condition, domain]);
+                console.log(['node', columnNumber, rowNumber, ele.func, condition, domain]);
                 cy.nodes(condition).css(ele.style, function(n) {
                     if (colorfuncs.indexOf(ele.func) !== -1) {
+                        console.log([domain, ele.range[domain.length | 3], n.data().value]);
                         return ele.func(
                                 domain,
                                 ele.range[domain.length | 3])(n.data().value);
@@ -583,7 +585,7 @@
                 { data: { id: 'd', value: 15, usage: 'numeric', dimension: 'coexpression' } },
                 { data: { id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway' } },
                 { data: { id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway' } },
-                { data: { id: 'g', value: "group2", usage: 'numeric', dimension: 'pathway' } },
+                { data: { id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway' } },
                 {
                     data: {
                         id: 'ab',
