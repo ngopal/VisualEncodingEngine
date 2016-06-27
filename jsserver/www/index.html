@@ -191,28 +191,49 @@
 
         var thing = [
             {func: edgepattern_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]},
-            {func: nodecolor_cat, style:'background-color', type:'node', range: colorbrewer.Set2}
+            {func: edgecolor_cat, style:'line-color', type:'edge', range: colorbrewer.Set3},
+            {func: nodecolor_cat, style:'background-color', type:'node', range: colorbrewer.Set2},
+            {func: nodeshape_cat, style:'shape', type:'node', range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]},
+            {func: nodeborder_cat, style:'border-width', type:'node', range: [1,5,10]}
         ];
+
+        var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
+                          edgecolor_cat, edgecolor_div, edgecolor_seq];
 
         var nodecondition = "[dimension='p-val'],[dimension='coexpression']";
         var edgecondition = '';
 
+        // the following below will need to feed in data and encodings!
         thing.forEach(function( ele ) {
             if ( ele.type === "node") {
+                var domain = cy.nodes(nodecondition).map(function( val ) { return val.data().value });
+                // in the above line, I can setup logic to choose between which data to map to domain
                 cy.nodes(nodecondition).css(ele.style, function(n) {
-                    var domain = cy.nodes(nodecondition).map(function( val ) { return val.data().value });
-                    return ele.func(
-                            domain,
-                            ele.range[domain.length | 3])(n.data().value);
-//                            colorbrewer.Set2[4])(n.data().value);
+                    if (colorfuncs.indexOf(ele.func) !== -1) {
+                        return ele.func(
+                                domain,
+                                ele.range[domain.length | 3])(n.data().value);
+                    }
+                    else {
+                        return ele.func(
+                                domain,
+                                ele.range.slice(0,domain.length))(n.data().value);
+                    }
                 });
             }
             else {
+                var domain = cy.edges(edgecondition).map(function( val ) { return val.data().value });
                 cy.edges(edgecondition).css(ele.style, function(n) {
-                    var domain = cy.edges(edgecondition).map(function( val ) { return val.data().value });
-                    return ele.func(
-                            domain,
-                            ele.range.slice(0,domain.length))(n.data().value);
+                    if (colorfuncs.indexOf(ele.func) !== -1) {
+                        return ele.func(
+                                domain,
+                                ele.range[domain.length | 3])(n.data().value);
+                    }
+                    else {
+                        return ele.func(
+                                domain,
+                                ele.range.slice(0,domain.length))(n.data().value);
+                    }
                 });
             }
         });
