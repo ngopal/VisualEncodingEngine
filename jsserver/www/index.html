@@ -114,62 +114,74 @@
     // source-label
     // target-label (and also font styling among other things)
 
+    // I need to clarify usage between manifest and cytoscape data, and also clarify how type and usage are different
+    // and used. In a nutshell, it doesn't look like the highlightimproperencodings function is working the way I
+    // want, and I think it's due to the way I've defined and used some of these terms
     var manifest = {
-        'dim1 task1' : {type: 'numeric', usage: 'numeric', name: 'p-val' },
-        'dim2 task1' : {type: 'numeric', usage: 'categorical', name: 'coexpression' },
-        'dim3 task1' : {type: 'categorical', usage: 'categorical', name: 'pathway' },
-        'dim1 task2' : {type: 'numeric', usage: 'categorical', name: 'p-val' },
-        'dim2 task2' : {type: 'categorical', usage: 'numeric', name: 'coexpression' }, //SHOULD BE ILLEGAL
-        'dim3 task2' : {type: 'categorical', usage: 'numeric', name: 'p-val' }
+        'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val' },
+        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val' },
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression' },
+        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression' }, //SHOULD BE ILLEGAL
+        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway' },
+        'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway' }
     };
 
     function internalData() {
 
         // highlighted items
-        var highlightedCells=[];
-        d3.selectAll('[bgcolor="#F3F315"]').each(function(d) {
+        var highlightedCells = [];
+        d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
             var hienc = d3.select(this).attr('class');
             var row = hienc.match(/row\d+/g)[0];
             var col = hienc.match(/col\d+/g)[0];
-            highlightedCells.push( {encoding: row, dim: col} );
+            highlightedCells.push({encoding: row, dim: col});
         });
 
         //keep thing in same order as encoding rows so I can do array lookup
         var thing = [
-            {func: nodecolor_seq, style:'background-color', type:'node', range: colorbrewer.Reds},
-            {func: nodecolor_div, style:'background-color', type:'node', range: colorbrewer.RdBu},
-            {func: nodecolor_cat, style:'background-color', type:'node', range: colorbrewer.Set2},
-            {func: nodeshape_cat, style:'shape', type:'node', range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]},
-            {func: nodeborder_quant, style:'border-width', type:'node', range: [1,5,10]},
-            {func: nodeborder_bin, style:'border-width', type:'node', range: [1,5,10]},
-            {func: nodeborder_cat, style:'border-width', type:'node', range: [1,5,10]},
-            {func: edgewidth_quant, style:'width', type:'edge', range: [1,5,10]},
-            {func: edgewidth_bin, style:'width', type:'edge', range: [1,5,10]},
-            {func: edgecolor_seq, style:'line-color', type:'edge', range: colorbrewer.Blues},
-            {func: edgecolor_div, style:'line-color', type:'edge', range: colorbrewer.BuGn},
-            {func: edgecolor_cat, style:'line-color', type:'edge', range: colorbrewer.Set3},
-            {func: edgepattern_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]},
-            {func: edgearrow_cat, style:'line-style', type:'edge', range : ["solid", "dotted", "dashed"]}
+            {func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
+            {func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
+            {func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
+            {
+                func: nodeshape_cat,
+                style: 'shape',
+                type: 'node',
+                range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
+            },
+            {func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
+            {func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
+            {func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
+            {func: edgepattern_cat, style: 'line-style', type: 'edge', range: ["solid", "dotted", "dashed"]},
+            {func: edgearrow_cat, style: 'line-style', type: 'edge', range: ["solid", "dotted", "dashed"]}
         ];
 
         var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
-                          edgecolor_cat, edgecolor_div, edgecolor_seq];
+            edgecolor_cat, edgecolor_div, edgecolor_seq];
 
         // for each highlight, get the column (dimension) and row (encoding)
 //        var dim_task = cy.nodes().map(function(k) { return(k.data().dimension) }).getUnique();
 
-        highlightedCells.forEach(function(rc) {
-            var columnNumber = rc.dim.replace('col','');
-            var rowNumber = rc.encoding.replace('row','');
-            var arrayOfDimTask = Object.keys(manifest).map(function(k) { return manifest[k]; });
-            var condition = "[dimension=\'"+arrayOfDimTask[columnNumber-1].name+"\']";
-            var ele = thing[rowNumber-1];
+        highlightedCells.forEach(function (rc) {
+            var columnNumber = rc.dim.replace('col', '');
+            var rowNumber = rc.encoding.replace('row', '');
+            var arrayOfDimTask = Object.keys(manifest).map(function (k) {
+                return manifest[k];
+            });
+            var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
+            var ele = thing[rowNumber - 1];
             console.log([condition, ele]);
 
-            if ( ele.type === "node") {
-                var domain = cy.nodes(condition).map(function( val ) { return val.data().value }).getUnique();
+            if (ele.type === "node") {
+                var domain = cy.nodes(condition).map(function (val) {
+                    return val.data().value
+                }).getUnique();
                 console.log(['node', columnNumber, rowNumber, ele.func, condition, domain]);
-                cy.nodes(condition).css(ele.style, function(n) {
+                cy.nodes(condition).css(ele.style, function (n) {
                     if (colorfuncs.indexOf(ele.func) !== -1) {
                         console.log([domain, ele.range[domain.length | 3], n.data().value]);
                         return ele.func(
@@ -179,14 +191,16 @@
                     else {
                         return ele.func(
                                 domain,
-                                ele.range.slice(0,domain.length))(n.data().value);
+                                ele.range.slice(0, domain.length))(n.data().value);
                     }
                 });
             }
             else {
-                var domain = cy.edges(condition).map(function( val ) { return val.data().value }).getUnique();
+                var domain = cy.edges(condition).map(function (val) {
+                    return val.data().value
+                }).getUnique();
                 console.log(['edge', ele.func, condition, domain]);
-                cy.edges(condition).css(ele.style, function(n) {
+                cy.edges(condition).css(ele.style, function (n) {
                     if (colorfuncs.indexOf(ele.func) !== -1) {
                         return ele.func(
                                 domain,
@@ -195,430 +209,362 @@
                     else {
                         return ele.func(
                                 domain,
-                                ele.range.slice(0,domain.length))(n.data().value);
+                                ele.range.slice(0, domain.length))(n.data().value);
                     }
                 });
             }
 
         });
+    }
 
-//        dim_task.forEach(function(dt) {
-//
-//            var dcond = "[dimension=\'"+dt+"\']";
-//            var nodecondition;
-//            var edgecondition;
-//            if (dtype === "node") {
-//                nodecondition = dcond;
-//            }
-//            else {
-//                edgecondition = dcond;
-//            }
-//
-//            thing.forEach(function( ele ) {
-//                if ( ele.type === "node") {
-//                    var domain = cy.nodes(nodecondition).map(function( val ) { return val.data().value });
-//                    // in the above line, I can setup logic to choose between which data to map to domain
-//                    cy.nodes(nodecondition).css(ele.style, function(n) {
-//                        if (colorfuncs.indexOf(ele.func) !== -1) {
-//                            return ele.func(
-//                                    domain,
-//                                    ele.range[domain.length | 3])(n.data().value);
-//                        }
-//                        else {
-//                            return ele.func(
-//                                    domain,
-//                                    ele.range.slice(0,domain.length))(n.data().value);
-//                        }
-//                    });
-//                }
-//                else {
-//                    var domain = cy.edges(edgecondition).map(function( val ) { return val.data().value });
-//                    cy.edges(edgecondition).css(ele.style, function(n) {
-//                        if (colorfuncs.indexOf(ele.func) !== -1) {
-//                            return ele.func(
-//                                    domain,
-//                                    ele.range[domain.length | 3])(n.data().value);
-//                        }
-//                        else {
-//                            return ele.func(
-//                                    domain,
-//                                    ele.range.slice(0,domain.length))(n.data().value);
-//                        }
-//                    });
-//                }
-//            });
-//        });
-//
-//        var encattrs=[];
-//        d3.selectAll('[bgcolor="#F3F315"]').each(function(d) {
-//            var hienc = d3.select(this).attr('class').match(/row\d+/g)[0].replace('row','enc');
-//            encattrs.push( d3.selectAll('.'+hienc).text() );
-//        });
-//
-//        var thing = encattrs.map(function(e) { return {func: encodingRenderFunctions[e], style: encodingStyleFunctions[e].name}; });
-
-        // items = [ 'node color (cat)' : {style:'background-color', func: nodecolor_cat(domain,range)} ]
-
-        // Step 1. Identify encodings of highlighted values
-        // Step 2. For those highlighted values, instantiate the style functions
-        // for k in items, ..css(items[k].style, function( ele ) { return items[k].func} )
-//        cy.nodes('[dimension="p-val"]').css(thing[0].style, function(){
-//            return thing[0].func([0,40],colorbrewer.Reds[5]);
-//        });
-
-
-
-//        var nodecondition = "[dimension='p-val'],[dimension='coexpression']";
-//        var edgecondition = '';
-
-        // perhaps I can just go through all column names and not have to feed in parameters?
-
-
-
-        // the following below will need to feed in data and encodings!
-
-        // Step 3. Feed in domain values for functions
-
+    function dataHierarchy(input) {
+        if (input === 'numeric') {
+            return ['numeric','categorical'];
+        }
+        else if (input === 'categorical') {
+            return ['categorical'];
+        }
+        else {
+            return ['error'];
+        }
     }
 
 
-//    var allowedEncodings = {
-//        'node color'   : ['categorical', 'numeric'], //if cat, then bins? if numeric, then function?
-////        'node border'  : ['categorical', 'numeric'],
-//        'node border'  : ['numeric'],
-//        'edge width'   : ['categorical', 'numeric'],
-//        'edge color'   : ['categorical', 'numeric'],
-//        'edge pattern' : ['categorical'],
-//        'edge arrow'   : ['categorical']
-//    };
+        var allowedEncodings = {
+            'node color (seq)': ['numeric'],
+            'node color (div)': ['numeric'],
+            'node color (cat)': ['categorical'], // seems to work better when set to numeric..
+            'node shape (cat)': ['categorical'],
+            'node border (quant)': ['numeric'],
+            'node border (bin)': ['numeric'],
+            'node border (cat)': ['categorical'], //patterns
+            'edge width (quant)': ['numeric'],
+            'edge width (bin)': ['numeric'],
+            'edge color (seq)': ['numeric'],
+            'edge color (div)': ['numeric'],
+            'edge color (cat)': ['categorical'],
+            'edge pattern (cat)': ['categorical'],
+            'edge arrow (cat)': ['categorical']
+        };
 
-    var allowedEncodings = {
-        'node color (seq)' : ['numeric'],
-        'node color (div)' : ['numeric'],
-        'node color (cat)' : ['categorical'],
-        'node shape (cat)' : ['categorical'],
-        'node border (quant)' : ['numeric'],
-        'node border (bin)' : ['categorical'],
-        'node border (cat)' : ['categorical'], //patterns
-        'edge width (quant)' : ['numeric'],
-        'edge width (bin)' : ['categorical'],
-        'edge color (seq)' : ['numeric'],
-        'edge color (div)' : ['numeric'],
-        'edge color (cat)' : ['categorical'],
-        'edge pattern (cat)' : ['categorical'],
-        'edge arrow (cat)' : ['categorical']
-    };
 
-    var encodingRenderFunctions = {
-        'node color (seq)' : nodecolor_seq,
-        'node color (div)' : nodecolor_div,
-        'node color (cat)' : nodecolor_cat,
-        'node shape (cat)' : nodeshape_cat,
-        'node border (quant)' : nodeborder_quant,
-        'node border (bin)' : nodeborder_bin,
-        'node border (cat)' : nodeborder_cat,
-        'edge width (quant)' : edgewidth_quant,
-        'edge width (bin)' : edgewidth_bin,
-        'edge color (seq)' : edgecolor_seq,
-        'edge color (div)' : edgecolor_div,
-        'edge color (cat)' : edgecolor_cat,
-        'edge pattern (cat)' : edgepattern_cat,
-        'edge arrow (cat)' : edgearrow_cat
-    };
+        var encodingRenderFunctions = {
+            'node color (seq)': {func:nodecolor_seq, intype:['numeric'], outtype:['categorical']},
+            'node color (div)': {func:nodecolor_div, intype:['numeric'], outtype:['categorical']},
+            'node color (cat)': {func:nodecolor_cat, intype:['numeric', 'categorical'], outtype:['categorical']},
+            'node shape (cat)': nodeshape_cat,
+            'node border (quant)': nodeborder_quant,
+            'node border (bin)': nodeborder_bin,
+            'node border (cat)': nodeborder_cat,
+            'edge width (quant)': edgewidth_quant,
+            'edge width (bin)': edgewidth_bin,
+            'edge color (seq)': edgecolor_seq,
+            'edge color (div)': edgecolor_div,
+            'edge color (cat)': edgecolor_cat,
+            'edge pattern (cat)': edgepattern_cat,
+            'edge arrow (cat)': edgearrow_cat
+        };
 
-    var encodingStyleFunctions = {
-        'node color (seq)' : {name:'background-color', param:colorbrewer.Reds},
-        'node color (div)' : {name:'background-color', param:colorbrewer.RdBu},
-        'node color (cat)' : {name:'background-color', param:colorbrewer.Set2},
-        'node shape (cat)' : {name:'shape'},
-        'node border (quant)' : {name:'border-width'},
-        'node border (bin)' : {name:'border-width'},
-        'node border (cat)' : {name:'border-width'},
-        'edge width (quant)' : {name:'width'},
-        'edge width (bin)' : {name:'width'},
-        'edge color (seq)' : {name:'line-color'},
-        'edge color (div)' : {name:'line-color'},
-        'edge color (cat)' : {name:'line-color'},
-        'edge pattern (cat)' : {name:'line-style'},
-        'edge arrow (cat)' : {name:'target-arrow-shape'}
-    };
-    // encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
+        var encodingStyleFunctions = {
+            'node color (seq)': {name: 'background-color', param: colorbrewer.Reds},
+            'node color (div)': {name: 'background-color', param: colorbrewer.RdBu},
+            'node color (cat)': {name: 'background-color', param: colorbrewer.Set2},
+            'node shape (cat)': {name: 'shape'},
+            'node border (quant)': {name: 'border-width'},
+            'node border (bin)': {name: 'border-width'},
+            'node border (cat)': {name: 'border-width'},
+            'edge width (quant)': {name: 'width'},
+            'edge width (bin)': {name: 'width'},
+            'edge color (seq)': {name: 'line-color'},
+            'edge color (div)': {name: 'line-color'},
+            'edge color (cat)': {name: 'line-color'},
+            'edge pattern (cat)': {name: 'line-style'},
+            'edge arrow (cat)': {name: 'target-arrow-shape'}
+        };
+        // encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
 
-    function highlightImproperEncodings() {
-        //allowedEncodings['edge pattern'].indexOf(manifest["dim1 task 1"].usage) === -1 then improper
-        //d3.selectAll('.rankedcell').attr('bgcolor', null);
-        var encodingsWithNamesReplaced = [];
-        for (var i = 1; i < encodings.length+1; i++) {
-            encodingsWithNamesReplaced.push( d3.selectAll('.enc'+i).text() );
-        }
+        function highlightImproperEncodings() {
+            //allowedEncodings['edge pattern'].indexOf(manifest["dim1 task 1"].usage) === -1 then improper
+            //d3.selectAll('.rankedcell').attr('bgcolor', null);
+            var encodingsWithNamesReplaced = [];
+            for (var i = 1; i < encodings.length + 1; i++) {
+                encodingsWithNamesReplaced.push(d3.selectAll('.enc' + i).text());
+            }
 
-        for (var t = 0; t < tasks.length; t++) {
-            for (var e = 0; e < encodingsWithNamesReplaced.length; e++) {
-                if ( Object.keys(allowedEncodings).indexOf(encodingsWithNamesReplaced[e]) !== -1 ) {
-                    //console.log([  tasks[t], encodingsWithNamesReplaced[e], allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage)  ])
-                    if ( allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage) === -1 ) {
-                        //highlight in red
-                        console.log([t, tasks[t], e, encodingsWithNamesReplaced[e]]);
-                        d3.selectAll('.col'+(t+1))
-                                .filter('.row'+(e+1))
-                                .attr('bgcolor', 'gray')
-                                .text('0');
+            console.log(encodingsWithNamesReplaced);
+
+            for (var t = 0; t < tasks.length; t++) {
+                for (var e = 0; e < encodingsWithNamesReplaced.length; e++) {
+                    if (Object.keys(allowedEncodings).indexOf(encodingsWithNamesReplaced[e]) !== -1) {
+                        //console.log([  tasks[t], encodingsWithNamesReplaced[e], allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage)  ])
+//                        console.log([allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, manifest[tasks[t]].usage.indexOf(allowedEncodings[encodingsWithNamesReplaced[e]][0])]);
+//                        if (allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage) === -1) {
+                        if (manifest[tasks[t]].usage.indexOf(allowedEncodings[encodingsWithNamesReplaced[e]][0]) === -1) {
+                            //highlight in red
+                            console.log()
+                            console.log([t, tasks[t], manifest[tasks[t]].name, e, encodingsWithNamesReplaced[e], manifest[tasks[t]].type, manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]][0] ]);
+                            d3.selectAll('.col' + (t + 1))
+                                    .filter('.row' + (e + 1))
+                                    .attr('bgcolor', 'gray')
+                                    .text('0');
+                        }
                     }
                 }
             }
         }
-    }
 
-    function updateTableDimensions() {
-        numberOfEncodings = parseInt($("#numEncodings").val());
-        numberOfTasks = parseInt($("#numTasks").val());
+        function updateTableDimensions() {
+            numberOfEncodings = parseInt($("#numEncodings").val());
+            numberOfTasks = parseInt($("#numTasks").val());
 //        numberOfEncodings = parseInt(d3.select('#numEncodings')[0][0].value);
 //        numberOfTasks = parseInt(d3.select('#numTasks')[0][0].value);
-        console.log(numberOfEncodings);
-        console.log(numberOfTasks);
-        createTable(numberOfEncodings,numberOfTasks);
-        for (var i = 0; i < encs.length; i++) {
-            d3.select('.enc'+(i+1)).text(encs[i]);
-        }
-    }
-
-    function createTable(numberOfEncodings,numberOfTasks) {
-        $('#rankTable').remove();
-        tasks = [];
-//        tasks = makeTasks(numberOfTasks);
-        encodings = makeEncodings(numberOfEncodings);
-        for (var d = 0; d < dims.length; d++) {
-            for (var e = 0; e < makeTasks(numberOfTasks).length; e++) {
-                tasks.push(dims[d]+' '+makeTasks(numberOfTasks)[e]);
-            }
-        }
-        console.log(encodings);
-        console.log(tasks);
-        var tabl = makeTable(encodings.length,tasks.length);
-    }
-
-
-    function makeTable(nr,nc) {
-        var table = body.append("table")
-                .attr("id", "rankTable");
-        var trData = [];
-
-        d3.range(0,nr+1).forEach(function(r) {
-            var tr = table.append("tr");
-            var tdData = [];
-            d3.range(0,nc+1).forEach(function(c) {
-                var td = tr.append("td")
-                        .attr('contenteditable', 'true')
-                        .text(function() {
-                            if(r === 0) {
-                                return tasks[c-1];
-                            }
-                            if(c === 0) {
-                                return encodings[r-1];
-                            }
-                            return "("+r+","+c+")";
-                        })
-                        .attr("id", function() {
-                            if(r === 0) {
-                                return tasks[c-1];
-                            }
-                            if(c === 0) {
-                                return encodings[r-1];
-                            }
-                            return "cell_row"+r+"_col"+c;
-                        })
-                        .attr("class", function() {
-                            if(r === 0) {
-                                return tasks[c-1];
-                            }
-                            if(c === 0) {
-                                return encodings[r-1];
-                            }
-                            return "rankedcell row"+r+" col"+c;
-                        });;
-                tdData.push(td);
-            });
-            trData.push(tr);
-        });
-        return(trData);
-    }
-
-    function randomRanks() {
-        d3.selectAll('.rankedcell').attr('bgcolor', null);
-        for (var i = 1; i < tasks.length+1; i++) {
             console.log(numberOfEncodings);
-            var ranks = generateArrayofValues(numberOfEncodings);
-            console.log(ranks);
-            d3.selectAll(".col"+i)
-                    .data(ranks)
-                    .text(function(d) {
-                        return d;
-                    });
-        }
-
-
-        function generateArrayofValues(nrows) {
-            var arr = [];
-            d3.range(1,nrows+1).forEach(function(k) {
-                arr.push(getRandomIntInclusive(1,nrows));
-            });
-            return shuffle(arr);
-        }
-
-        function getRandomIntInclusive(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        function shuffle(array) {
-            var currentIndex = array.length, temporaryValue, randomIndex;
-
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
+            console.log(numberOfTasks);
+            createTable(numberOfEncodings, numberOfTasks);
+            for (var i = 0; i < encs.length; i++) {
+                d3.select('.enc' + (i + 1)).text(encs[i]);
             }
-
-            return array;
         }
 
-    }
-
-    function sendToR() {
-        d3.selectAll('.rankedcell').attr('bgcolor', null);
-        highlightImproperEncodings();
-        var jsontable = rankTableToJSON();
-        console.log(jsontable);
-
-
-        return $.ajax({
-            type: 'POST',
-            url: 'lp',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(jsontable),
-            success: function (data) {
-                console.log(data);
-                Robj = data;
-                highlightAssignedCells();
-                return data;
-            }
-        });
-    }
-
-    function uploadUserNetwork() {
-     // this function needs work before it will run
-        var file = $.get('#txtFileUpload');
-
-
-        return $.ajax({
-            type: 'POST',
-            url: 'convert',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(file),
-            success: function (data) {
-                console.log(data);
-                return data;
-            }
-        });
-    }
-
-
-
-    function rankTableToJSON() {
-        return $('table#rankTable tr').get().map(function(row) {
-            return $(row).find('td').get().map(function(cell) {
-                return $(cell).html();
-            });
-        });
-    }
-
-    function makeTasks(amount) {
-        return d3.range(1,amount+1).map(function(a) {
-            return "task"+a;
-        });
-    }
-
-    function makeEncodings(amount) {
-        return d3.range(1,amount+1).map(function(a) {
-            return "enc"+a;
-        });
-    }
-
-    function highlightAssignedCells() {
-//        d3.selectAll('.rankedcell').attr('bgcolor', null);
-        var assignments = Robj;
-        var numcols = Object.keys(Robj).length;
-        console.log(numcols);
-        for (var i = 0; i < numcols; i++) {
-//            var row = assignments[Object.keys(Robj)[i]].indexOf(1);
-            var row = assignments[Object.keys(Robj)[i]].map(function(d, i) {
-                if (d === 1) {
-                    return i;
+        function createTable(numberOfEncodings, numberOfTasks) {
+            $('#rankTable').remove();
+            tasks = [];
+//        tasks = makeTasks(numberOfTasks);
+            encodings = makeEncodings(numberOfEncodings);
+            for (var d = 0; d < dims.length; d++) {
+                for (var e = 0; e < makeTasks(numberOfTasks).length; e++) {
+                    tasks.push(dims[d] + ' ' + makeTasks(numberOfTasks)[e]);
                 }
-            }).filter(function(d) { return d !== undefined});
-            for (var k = 0; k < row.length; k++) {
-                var cellAssignment = d3.selectAll('.col'+(i+1))
-                        .filter('.row'+(row[k]+1))
-                        .attr('bgcolor', "#F3F315");
+            }
+            console.log(encodings);
+            console.log(tasks);
+            var tabl = makeTable(encodings.length, tasks.length);
+        }
+
+
+        function makeTable(nr, nc) {
+            var table = body.append("table")
+                    .attr("id", "rankTable");
+            var trData = [];
+
+            d3.range(0, nr + 1).forEach(function (r) {
+                var tr = table.append("tr");
+                var tdData = [];
+                d3.range(0, nc + 1).forEach(function (c) {
+                    var td = tr.append("td")
+                            .attr('contenteditable', 'true')
+                            .text(function () {
+                                if (r === 0) {
+                                    return tasks[c - 1];
+                                }
+                                if (c === 0) {
+                                    return encodings[r - 1];
+                                }
+                                return "(" + r + "," + c + ")";
+                            })
+                            .attr("id", function () {
+                                if (r === 0) {
+                                    return tasks[c - 1];
+                                }
+                                if (c === 0) {
+                                    return encodings[r - 1];
+                                }
+                                return "cell_row" + r + "_col" + c;
+                            })
+                            .attr("class", function () {
+                                if (r === 0) {
+                                    return tasks[c - 1];
+                                }
+                                if (c === 0) {
+                                    return encodings[r - 1];
+                                }
+                                return "rankedcell row" + r + " col" + c;
+                            });
+                    ;
+                    tdData.push(td);
+                });
+                trData.push(tr);
+            });
+            return (trData);
+        }
+
+        function randomRanks() {
+            d3.selectAll('.rankedcell').attr('bgcolor', null);
+            for (var i = 1; i < tasks.length + 1; i++) {
+                console.log(numberOfEncodings);
+                var ranks = generateArrayofValues(numberOfEncodings);
+                console.log(ranks);
+                d3.selectAll(".col" + i)
+                        .data(ranks)
+                        .text(function (d) {
+                            return d;
+                        });
+            }
+
+
+            function generateArrayofValues(nrows) {
+                var arr = [];
+                d3.range(1, nrows + 1).forEach(function (k) {
+                    arr.push(getRandomIntInclusive(1, nrows));
+                });
+                return shuffle(arr);
+            }
+
+            function getRandomIntInclusive(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function shuffle(array) {
+                var currentIndex = array.length, temporaryValue, randomIndex;
+
+                // While there remain elements to shuffle...
+                while (0 !== currentIndex) {
+
+                    // Pick a remaining element...
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+
+                    // And swap it with the current element.
+                    temporaryValue = array[currentIndex];
+                    array[currentIndex] = array[randomIndex];
+                    array[randomIndex] = temporaryValue;
+                }
+
+                return array;
+            }
+
+        }
+
+        function sendToR() {
+            d3.selectAll('.rankedcell').attr('bgcolor', null);
+            highlightImproperEncodings();
+            var jsontable = rankTableToJSON();
+            console.log(jsontable);
+
+
+            return $.ajax({
+                type: 'POST',
+                url: 'lp',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(jsontable),
+                success: function (data) {
+                    console.log(data);
+                    Robj = data;
+                    highlightAssignedCells();
+                    return data;
+                }
+            });
+        }
+
+        function uploadUserNetwork() {
+            // this function needs work before it will run
+            var file = $.get('#txtFileUpload');
+
+
+            return $.ajax({
+                type: 'POST',
+                url: 'convert',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(file),
+                success: function (data) {
+                    console.log(data);
+                    return data;
+                }
+            });
+        }
+
+
+        function rankTableToJSON() {
+            return $('table#rankTable tr').get().map(function (row) {
+                return $(row).find('td').get().map(function (cell) {
+                    return $(cell).html();
+                });
+            });
+        }
+
+        function makeTasks(amount) {
+            return d3.range(1, amount + 1).map(function (a) {
+                return "task" + a;
+            });
+        }
+
+        function makeEncodings(amount) {
+            return d3.range(1, amount + 1).map(function (a) {
+                return "enc" + a;
+            });
+        }
+
+        function highlightAssignedCells() {
+//        d3.selectAll('.rankedcell').attr('bgcolor', null);
+            var assignments = Robj;
+            var numcols = Object.keys(Robj).length;
+            console.log(numcols);
+            for (var i = 0; i < numcols; i++) {
+//            var row = assignments[Object.keys(Robj)[i]].indexOf(1);
+                var row = assignments[Object.keys(Robj)[i]].map(function (d, i) {
+                    if (d === 1) {
+                        return i;
+                    }
+                }).filter(function (d) {
+                    return d !== undefined
+                });
+                for (var k = 0; k < row.length; k++) {
+                    var cellAssignment = d3.selectAll('.col' + (i + 1))
+                            .filter('.row' + (row[k] + 1))
+                            .attr('bgcolor', "#F3F315");
+                }
             }
         }
-    }
 
-    function plotNetwork() {
-        var cyCanvas = d3.selectAll('#cy')
-                .style('display', 'inline');
+        function plotNetwork() {
+            var cyCanvas = d3.selectAll('#cy')
+                    .style('display', 'inline');
 
-        cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: [
-                { data: { id: 'a', value: 40, usage: 'numeric', dimension: 'p-val' } },
-                { data: { id: 'b', value: 25, usage: 'numeric', dimension: 'p-val' } },
-                { data: { id: 'c', value: 15, usage: 'numeric', dimension: 'coexpression' } },
-                { data: { id: 'd', value: 15, usage: 'numeric', dimension: 'coexpression' } },
-                { data: { id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway' } },
-                { data: { id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway' } },
-                { data: { id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway' } },
-                {
-                    data: {
-                        id: 'ab',
-                        source: 'a',
-                        target: 'b',
-                        dimension: 'type',
-                        value: 'relationship1',
-                        usage: 'categorical'
-                    }
-                },
-                {
-                    data: {
-                        id: 'bc',
-                        source: 'b',
-                        target: 'c',
-                        dimension: 'type',
-                        value: 30,
-                        usage: 'numeric'
-                    }
-                },
-                {
-                    data: {
-                        id: 'af',
-                        source: 'a',
-                        target: 'f',
-                        dimension: 'type',
-                        value: 10,
-                        usage: 'numeric'
-                    }
-                }],
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: [
+                    {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
+                    {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
+                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'coexpression'}},
+                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'coexpression'}},
+                    {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
+                    {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+                    {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+                    {
+                        data: {
+                            id: 'ab',
+                            source: 'a',
+                            target: 'b',
+                            dimension: 'type',
+                            value: 'relationship1',
+                            usage: 'categorical'
+                        }
+                    },
+                    {
+                        data: {
+                            id: 'bc',
+                            source: 'b',
+                            target: 'c',
+                            dimension: 'type',
+                            value: 30,
+                            usage: 'numeric'
+                        }
+                    },
+                    {
+                        data: {
+                            id: 'af',
+                            source: 'a',
+                            target: 'f',
+                            dimension: 'type',
+                            value: 10,
+                            usage: 'numeric'
+                        }
+                    }],
 //            style: generateStyle()
-            style: editStyle(generateStyle(),whichHighlight())
-        });
+                style: editStyle(generateStyle(), whichHighlight())
+            });
 
 
 //        var cy = cytoscape(makeRandomNetwork());
@@ -636,122 +582,126 @@
 //        };
 //
 //        cy.layout( options );
-    }
-
-    var stylein = {
-        'background-color' : {func: encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])},
-        'node color (cat)' : ['a', 'b', 'c', 'd']
-    }; //could this be input to generateStyle?
-
-    function generateStyle() {
-        var style = [
-            {
-                selector: 'node',
-                style: {
-                    'background-color': 'red',
-                    'shape': 'hexagon', //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
-                    //'shape': encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
-                    'width': null,
-                    'height': null,
-                    'border-width' : 4
-                }
-            },
-            {
-                selector: 'edge',
-                style: {
-                    'width': 5,
-                    'line-color': 'blue',
-                    'line-style': 'dotted',   //solid, dotted, or dashed
-                    'target-arrow-shape' : 'triangle'
-                }
-            }
-        ];
-        return style;
-    }
-
-    function editStyle(instyle,rows) {
-        // rows are ['row1', 'row2', 'row4']
-        var style = instyle;
-        var attrs = {'nodes':[], 'edges':[]};
-        rows.forEach(function(r) {
-            //ensure row has encoding in software
-            if (Object.keys(enclookup).indexOf(r) !== -1) {
-                var type = enclookup[r].type;
-                var attr = enclookup[r].attribute;
-                console.log(type);
-                if (type === "node") {
-                    attrs.nodes.push(attr);
-                }
-                else {
-                    attrs.edges.push(attr);
-                }
-            }
-        });
-        console.log(attrs);
-
-        var node_attrs = Object.keys(style[0].style);
-        var edge_attrs = Object.keys(style[1].style);
-
-        // set style attribute to null unless highlighted
-        for (var i = 0; i < node_attrs.length; i++) {
-            if (attrs.nodes.indexOf(node_attrs[i]) === -1) {
-                style[0].style[node_attrs[i]] = null;
-            }
         }
 
-        for (var i = 0; i < edge_attrs.length; i++) {
-            if (attrs.edges.indexOf(edge_attrs[i]) === -1) {
-                style[1].style[edge_attrs[i]] = null;
+        var stylein = {
+            'background-color': {func: encodingRenderFunctions['node shape (cat)']([1, 2, 3, 4, 5])},
+            'node color (cat)': ['a', 'b', 'c', 'd']
+        }; //could this be input to generateStyle?
+
+        function generateStyle() {
+            var style = [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': 'red',
+                        'shape': 'hexagon', //rectangle, roundrectangle, ellipse, triangle, pentagon, hexagon, heptagon, octagon, star, diamond, vee, rhomboid, or polygon
+                        //'shape': encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
+                        'width': null,
+                        'height': null,
+                        'border-width': 4
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 5,
+                        'line-color': 'blue',
+                        'line-style': 'dotted',   //solid, dotted, or dashed
+                        'target-arrow-shape': 'triangle'
+                    }
+                }
+            ];
+            return style;
+        }
+
+        function editStyle(instyle, rows) {
+            // rows are ['row1', 'row2', 'row4']
+            var style = instyle;
+            var attrs = {'nodes': [], 'edges': []};
+            rows.forEach(function (r) {
+                //ensure row has encoding in software
+                if (Object.keys(enclookup).indexOf(r) !== -1) {
+                    var type = enclookup[r].type;
+                    var attr = enclookup[r].attribute;
+                    console.log(type);
+                    if (type === "node") {
+                        attrs.nodes.push(attr);
+                    }
+                    else {
+                        attrs.edges.push(attr);
+                    }
+                }
+            });
+            console.log(attrs);
+
+            var node_attrs = Object.keys(style[0].style);
+            var edge_attrs = Object.keys(style[1].style);
+
+            // set style attribute to null unless highlighted
+            for (var i = 0; i < node_attrs.length; i++) {
+                if (attrs.nodes.indexOf(node_attrs[i]) === -1) {
+                    style[0].style[node_attrs[i]] = null;
+                }
             }
+
+            for (var i = 0; i < edge_attrs.length; i++) {
+                if (attrs.edges.indexOf(edge_attrs[i]) === -1) {
+                    style[1].style[edge_attrs[i]] = null;
+                }
+            }
+
+            return style;
         }
 
-        return style;
-    }
-
-    function makeRandomNetwork() {
-        var nodes = d3.range(0,100).map(function(d) {
-            return { data: {
-                id: d.toString()
-            } };
-        });
-        var edges = d3.range(101,150).map(function(d) {
-            return { data: {
-                id: d.toString(),
-                source: Math.floor(Math.random()*100).toString(),
-                target: Math.floor(Math.random()*100).toString()
-            } };
-        });
-        var data = [];
-        for (var i = 0; i < nodes.length; i++) {
-            data.push(nodes[i]);
-        }
-        for (var i = 0; i < edges.length; i++) {
-            data.push(edges[i]);
-        }
-        console.log(data);
-        return {
-            container : document.getElementById('cy'),
-            elements: data,
+        function makeRandomNetwork() {
+            var nodes = d3.range(0, 100).map(function (d) {
+                return {
+                    data: {
+                        id: d.toString()
+                    }
+                };
+            });
+            var edges = d3.range(101, 150).map(function (d) {
+                return {
+                    data: {
+                        id: d.toString(),
+                        source: Math.floor(Math.random() * 100).toString(),
+                        target: Math.floor(Math.random() * 100).toString()
+                    }
+                };
+            });
+            var data = [];
+            for (var i = 0; i < nodes.length; i++) {
+                data.push(nodes[i]);
+            }
+            for (var i = 0; i < edges.length; i++) {
+                data.push(edges[i]);
+            }
+            console.log(data);
+            return {
+                container: document.getElementById('cy'),
+                elements: data,
 //            style: generateStyle()
-            style: editStyle(generateStyle(),whichHighlight())
-        };
-    }
+                style: editStyle(generateStyle(), whichHighlight())
+            };
+        }
 
 
-    function whichHighlight() {
-        var items = [];
-        d3.selectAll('.rankedcell').each(function(k){
-            var it = d3.select(this);
-            var high = it.attr('bgcolor');
-            var reg = /row\d+/g;
-            console.log(high);
-            if (high !== null) {
-                var row = it.attr('class').match(reg);
-                items.push(row[0]);
-            }
-        });
-        return items.getUnique();
-    }
+        function whichHighlight() {
+            var items = [];
+            d3.selectAll('.rankedcell').each(function (k) {
+                var it = d3.select(this);
+                var high = it.attr('bgcolor');
+                var reg = /row\d+/g;
+                console.log(high);
+                if (high !== null) {
+                    var row = it.attr('class').match(reg);
+                    items.push(row[0]);
+                }
+            });
+            return items.getUnique();
+        }
 
 
     //editStyle(generateStyle(),whichHighlight())

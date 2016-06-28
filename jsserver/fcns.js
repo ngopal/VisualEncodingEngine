@@ -56,12 +56,12 @@ function edgepattern_cat(domain,range) {
 }
 
 function nodeborder_quant(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.linear()
         .domain(domain)
         .range(range);
 };
 function nodeborder_bin(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.quantize()
         .domain(domain)
         .range(range);
 };
@@ -72,24 +72,24 @@ function nodeborder_cat(domain,range) {
 };
 
 function edgewidth_quant(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.linear()
         .domain(domain)
         .range(range);
 };
 function edgewidth_bin(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.quantize()
         .domain(domain)
         .range(range);
 };
 
 function edgecolor_seq(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.linear()
         .domain(domain)
         .range(range);
 };
 
 function edgecolor_div(domain,range) {
-    return d3.scale.ordinal()
+    return d3.scale.linear()
         .domain(domain)
         .range(range);
 };
