@@ -25,13 +25,13 @@
 
 function nodecolor_seq(domain,range) {
     return d3.scale.linear()
-        .domain(domain)
+        .domain( d3.extent(domain) )
         .range(range);
 }
 
 function nodecolor_div(domain,range) {
     return d3.scale.linear()
-        .domain(domain)
+        .domain( d3.extent(domain) )
         .range(range);
 }
 
@@ -83,7 +83,7 @@ function edgewidth_bin(domain,range) {
 
 function edgecolor_seq(domain,range) {
     return d3.scale.linear()
-        .domain(domain)
+        .domain(  d3.extent(domain)  )
         .range(range);
 };
 

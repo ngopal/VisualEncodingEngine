@@ -118,19 +118,13 @@
     // and used. In a nutshell, it doesn't look like the highlightimproperencodings function is working the way I
     // want, and I think it's due to the way I've defined and used some of these terms
     var manifest = {
-        'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node' },
-        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node' },
-        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge' },
-        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge' },
-        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node' },
-        'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node' }
+        'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node', ind:0 },
+        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node', ind:1 },
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:2 },
+        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:3 },
+        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node', ind:4 },
+        'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node', ind:5 }
     };
-
-    function getDomain(cond) {
-        return cy.nodes(cond).map(function (val) {
-                return val.data().value;
-            }).getUnique();
-    }
 
     function internalData() {
 
@@ -145,25 +139,50 @@
 
         //keep thing in same order as encoding rows so I can do array lookup
         var thing = [
-            {func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
-            {func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
-            {func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
+            {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
+            {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
+            {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
             {
+                encname: 'node shape (cat)',
                 func: nodeshape_cat,
                 style: 'shape',
                 type: 'node',
-                range: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
+//                range: [ ["rectangle"], ["roundrectangle"], ["ellipse"], ["triangle"], ["pentagon"], ["hexagon"], ["heptagon"], ["octagon"], ["star"], ["diamond"], ["vee"], ["rhomboid"] ]
+                range: { 1: ["rectangle"],
+                    2: ["rectangle", "roundrectangle"],
+                    3: ["rectangle", "roundrectangle", "ellipse"],
+                    4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+                    5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+                    6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+                    7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+                    8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+                    9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+                    10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+                    11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+                    12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
             },
-            {func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
-            {func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
-            {func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
-            {func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
-            {func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
-            {func: edgepattern_cat, style: 'line-style', type: 'edge', range: ["solid", "dotted", "dashed"]},
-            {func: edgearrow_cat, style: 'line-style', type: 'edge', range: ["solid", "dotted", "dashed"]}
+            {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
+            {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
+            {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
+            {
+                encname: 'edge pattern (cat)',
+                func: edgepattern_cat,
+                style: 'line-style',
+                type: 'edge',
+                range: ["solid", "dotted", "dashed"]
+            },
+            {
+                encname: 'edge arrow (cat)',
+                func: edgearrow_cat,
+                style: 'line-style',
+                type: 'edge',
+                range: ["solid", "dotted", "dashed"]
+            }
         ];
 
         var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
@@ -180,61 +199,41 @@
             });
             var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
             var ele = thing[rowNumber - 1];
-            var domain;
-            console.log([condition, ele]);
+            console.log([condition, ele.encname, ele.func, rowNumber, columnNumber, ele ]);
 
 
             if (ele.type === "node") {
-                cy.nodes(condition).css(ele.style, function (n) {
-                    domain = getDomain(condition);
-                    console.log(['in css setter', columnNumber-1, rowNumber-1, condition, domain, ele.func, ele.style, ele.range, n.data()]);
-                    if (colorfuncs.indexOf(ele.func) !== -1) {
-                        // logic in this block is for color functions
-                        var numberOfColors;
-                        if ( domain.length <= +d3.min(Object.keys(ele.range)) ) {
-                            numberOfColors = +d3.min(Object.keys(ele.range));
-                        }
-                        else if ( domain.length >= +d3.max(Object.keys(ele.range)) ) {
-                            numberOfColors = +d3.max(Object.keys(ele.range));
-                        }
-                        else {
-                            numberOfColors = domain.length;
-                        }
-                        return ele.func(
-                                domain,
-                                ele.range[numberOfColors])(n.data().value);
-                    }
-                    else {
-                        domain = getDomain(condition);
-                        console.log(["slice", condition, domain, ele.range.slice(0, domain.length), n.data().value]);
+                var tempdomain = getDomain(ele.type, condition);
+                var temprange = function() {
+                    return ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
+                };
+                var specificfunc = ele.func(
+                        tempdomain,
+                        temprange()
+                );
 
-                        return ele.func(
-                                domain,
-                                ele.range.slice(0, domain.length))(n.data().value);
-                    }
-                });
+                cy.nodes(condition).css( ele.style, function(n) {
+                    console.log([ 'node', tempdomain, temprange(), n.data().value, specificfunc(n.data().value) ]);
+//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
+                    return specificfunc(n.data().value);
+                })
             }
+            else {
+                var tempdomain = getDomain(ele.type, condition);
+                var temprange = function() {
+                    return ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
+                };
+                var specificfunc = ele.func(
+                        tempdomain,
+                        temprange()
+                );
 
-
-//            else {
-//                cy.edges(condition).css(ele.style, function (n) {
-//                    var domain = cy.edges(condition).map(function (val) {
-//                        return val.data().value
-//                    }).getUnique();
-//                    console.log(['edge', columnNumber, rowNumber, ele.func, condition, domain]);
-//
-//                    if (colorfuncs.indexOf(ele.func) !== -1) {
-//                        return ele.func(
-//                                domain,
-//                                ele.range[domain.length | 3])(n.data().value);
-//                    }
-//                    else {
-//                        return ele.func(
-//                                domain,
-//                                ele.range.slice(0, domain.length))(n.data().value);
-//                    }
-//                });
-//            }
+                cy.edges(condition).css( ele.style, function(n) {
+                    console.log([ 'edge', tempdomain, temprange(), n.data().value, specificfunc(n.data().value) ]);
+//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
+                    return specificfunc(n.data().value);
+                })
+            }
 
         });
     }
@@ -271,20 +270,20 @@
 
 
         var encodingRenderFunctions = {
-            'node color (seq)':    {func:nodecolor_seq, intype:['numeric'], outtype:['categorical'], element:'node'},
-            'node color (div)':    {func:nodecolor_div, intype:['numeric'], outtype:['categorical'], element:'node'},
-            'node color (cat)':    {func:nodecolor_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
-            'node shape (cat)':    {func:nodeshape_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
-            'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric'], element:'node'},
-            'node border (bin)':   {func:nodeborder_bin,intype:['numeric'], outtype:['categorical'], element:'node'},
-            'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
-            'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge'},
-            'edge width (bin)':    {func:edgewidth_bin,intype:['numeric'], outtype:['categorical'], element:'edge'},
-            'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge'},
-            'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge'},
-            'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'},
-            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'},
-            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'}
+            'node color (seq)':    {func:nodecolor_seq, intype:['numeric'], outtype:['categorical'], element:'node', ind:0},
+            'node color (div)':    {func:nodecolor_div, intype:['numeric'], outtype:['categorical'], element:'node', ind:1},
+            'node color (cat)':    {func:nodecolor_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:2},
+            'node shape (cat)':    {func:nodeshape_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:3},
+            'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric'], element:'node', ind:4},
+            'node border (bin)':   {func:nodeborder_bin,intype:['numeric'], outtype:['categorical'], element:'node', ind:5},
+            'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:6},
+            'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge', ind:7},
+            'edge width (bin)':    {func:edgewidth_bin,intype:['numeric'], outtype:['categorical'], element:'edge', ind:8},
+            'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge', ind:9},
+            'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge', ind:10},
+            'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:11},
+            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:12},
+            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:13}
         };
 
         var encodingStyleFunctions = {
@@ -319,12 +318,14 @@
                 for (var e = 0; e < encodingsWithNamesReplaced.length; e++) {
                     if (Object.keys(allowedEncodings).indexOf(encodingsWithNamesReplaced[e]) !== -1) {
                         console.log([  t, tasks[t], e, encodingsWithNamesReplaced[e], manifest[tasks[t]].type, encodingRenderFunctions[encodingsWithNamesReplaced[e]].intype  ]);
+                        // invalidate cells with conflicting data types
                         if (encodingRenderFunctions[encodingsWithNamesReplaced[e]].intype.indexOf(manifest[tasks[t]].type) === -1) {
                             d3.selectAll('.col' + (t + 1))
                                     .filter('.row' + (e + 1))
                                     .attr('bgcolor', 'gray')
                                     .text('0');
                         }
+                        // ensure node dims not assigned to edge encodings, and visa-versa
                         if (encodingRenderFunctions[encodingsWithNamesReplaced[e]].element !== manifest[tasks[t]].element) {
                             d3.selectAll('.col' + (t + 1))
                                     .filter('.row' + (e + 1))
@@ -550,8 +551,8 @@
                 elements: [
                     {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
                     {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
-                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'coexpression'}},
-                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'coexpression'}},
+//                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
+//                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
                     {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
                     {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
                     {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
@@ -560,17 +561,17 @@
                             id: 'ab',
                             source: 'a',
                             target: 'b',
-                            dimension: 'type',
-                            value: 'relationship1',
-                            usage: 'categorical'
+                            dimension: 'coexpression',
+                            value: 20,
+                            usage: 'numeric'
                         }
                     },
                     {
                         data: {
-                            id: 'bc',
+                            id: 'bf',
                             source: 'b',
-                            target: 'c',
-                            dimension: 'type',
+                            target: 'f',
+                            dimension: 'coexpression',
                             value: 30,
                             usage: 'numeric'
                         }
@@ -580,13 +581,22 @@
                             id: 'af',
                             source: 'a',
                             target: 'f',
-                            dimension: 'type',
+                            dimension: 'coexpression',
                             value: 10,
                             usage: 'numeric'
                         }
                     }],
 //            style: generateStyle()
                 style: editStyle(generateStyle(), whichHighlight())
+//                style: cytoscape.stylesheet()
+//                    .selector('[dimension="p-val"]')
+//                    .style({
+//                        'background-color': function( ele ) {
+//                            var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                            console.log(['heyho', ele.data(), predomain]);
+//                            return 'green';
+//                        }
+//                    })
             });
 
 
@@ -634,6 +644,18 @@
                         'target-arrow-shape': 'triangle'
                     }
                 }
+//                {
+//                    selector: '[dimension="p-val"]',
+//                    style: {
+//                        'width': 50,
+//                        'background-color': function(n) {
+//                            var tdom = cy.nodes('[dimension="p-val"]').map(function(h) {return h.data().value});
+//                            var prefunc = d3.scale.ordinal.domain(tdom).range(d3.extent(colorbrewer.Greens[4]));
+//                            console.log([tdom, d3.extent(colorbrewer.Greens[4]), prefunc]);
+//                            return  prefunc(n.data().value)
+//                        }
+//                    }
+//                }
             ];
             return style;
         }
@@ -728,6 +750,20 @@
 
 
     //editStyle(generateStyle(),whichHighlight())
+
+    function getDomain(type, cond) {
+        if (type === "node") {
+            return cy.nodes(cond).map(function (val) {
+                return val.data().value;
+            }).getUnique();
+        }
+        else {
+            return cy.edges(cond).map(function (val) {
+                return val.data().value;
+            }).getUnique();
+        }
+    }
+
     function debugo() {
 
         // highlighted items
@@ -801,28 +837,129 @@
             });
             var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
             var ele = thing[rowNumber - 1];
-            var domain;
             console.log([condition, ele.encname, ele.func, rowNumber, columnNumber, ele ]);
+            var tempdomain = cy.nodes(condition).map(function(n) { return n.data().value; });
+            console.log(["domain", tempdomain]);
+            var temprange = ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
+            console.log(["range", temprange ]);
+//            letsee(condition, ele.style, ele.func, temprange);
 
-            var tempdomain = getDomain(condition);
-            var temprange = function() {
-                return ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
-            };
-            var specificfunc = ele.func(
-                    tempdomain,
-                    temprange()
-            );
 
-            cy.nodes(condition).css( ele.style, function(n) {
-//                console.log([n.data().value, testglob(n.data().value) ]);
-                console.log([ tempdomain, temprange(), n.data().value, specificfunc(n.data().value) ]);
-                return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
-//                return specificfunc(n.data().value);
-            })
+
+
+//            if (ele.type === "node") {
+//                cy.nodes(condition).css( ele.style, function(n) {
+//                    console.log(['node', ele.encname, ele.func, n.data().value, n.data() ]);
+//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
+////                    return specificfunc(n.data().value);
+//                })
+//            }
+
+//            else {
+//                cy.edges(condition).css( ele.style, function(n) {
+//                    console.log(['edge', ele.encname, ele.func, encodingRenderFunctions[ele.encname].func, thing[rowNumber - 1].func, n.data().value, n.data() ]);
+//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
+////                    return specificfunc(n.data().value);
+//                })
+//            }
+
+
 
 
 
         });
+    }
+
+//    function letsee(selector, styleoption, infunc, inrange) {
+//        var selector = selector;
+//        var newstyle = cytoscape.stylesheet()
+//                .selector(selector)
+//                .style({
+//                    styleoption : function( ele ) {
+//                        var predomain = cy.nodes(selector).map(function(k){return k.data().value});
+//                        var prefunc = infunc(predomain,inrange)
+//                        console.log(['heyho', ele.data(), predomain, prefunc, prefunc(ele.data().value)]);
+//                        return prefunc(ele.data().value);
+//                    }
+//                });
+//        cy.style(newstyle);
+//    }
+
+    var thing = [
+        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
+        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
+        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
+        {
+            encname: 'node shape (cat)',
+            func: nodeshape_cat,
+            style: 'shape',
+            type: 'node',
+//                range: [ ["rectangle"], ["roundrectangle"], ["ellipse"], ["triangle"], ["pentagon"], ["hexagon"], ["heptagon"], ["octagon"], ["star"], ["diamond"], ["vee"], ["rhomboid"] ]
+            range: { 1: ["rectangle"],
+                2: ["rectangle", "roundrectangle"],
+                3: ["rectangle", "roundrectangle", "ellipse"],
+                4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+                5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+                6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+                7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+                8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+                9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+                10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+                11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
+        },
+        {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
+        {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
+        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
+        {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
+        {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
+        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
+        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
+        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
+        {
+            encname: 'edge pattern (cat)',
+            func: edgepattern_cat,
+            style: 'line-style',
+            type: 'edge',
+            range: ["solid", "dotted", "dashed"]
+        },
+        {
+            encname: 'edge arrow (cat)',
+            func: edgearrow_cat,
+            style: 'line-style',
+            type: 'edge',
+            range: ["solid", "dotted", "dashed"]
+        }
+    ];
+
+    function anotherTry(dimension_task,encoding_type) {
+//        var selector = '[dimension="p-val"]';
+        var selector = '[dimension=\"'+manifest[dimension_task].name+'\"]';
+        console.log(['coord', manifest[dimension_task], encodingRenderFunctions[encoding_type], thing[encodingRenderFunctions[encoding_type].ind].style   ]);
+        var thang = {};
+        thang[ thing[encodingRenderFunctions[encoding_type].ind].style ] = function( ele ) {
+            var predomain = cy.nodes(selector).map(function(k){return k.data().value});
+//            var prefunc = d3.scale.ordinal().domain(predomain).range(colorbrewer.Dark2[3]);
+            var prerange = function() {
+                return thing[encodingRenderFunctions[encoding_type].ind].range[predomain.length | 3] || thing[encodingRenderFunctions[encoding_type].ind].range.slice(0,predomain.length);
+            }
+            var prefunc = thing[encodingRenderFunctions[encoding_type].ind].func(predomain,prerange());
+            console.log(['heyho', ele.data(), predomain, prerange(), prefunc, prefunc(ele.data().value)]);
+            return prefunc(ele.data().value);
+        };
+        console.log(thang);
+        var newstyle = cytoscape.stylesheet()
+                .selector(selector)
+//                .style({
+//                    'background-color' : function( ele ) {
+//                        var predomain = cy.nodes(selector).map(function(k){return k.data().value});
+//                        var prefunc = d3.scale.ordinal().domain(predomain).range(colorbrewer.Dark2[3]);
+//                        console.log(['heyho', ele.data(), predomain, prefunc, prefunc(ele.data().value)]);
+//                        return prefunc(ele.data().value);
+//                    }
+//                })
+                .style(thang);
+        cy.style(newstyle);
     }
 
 
