@@ -118,13 +118,19 @@
     // and used. In a nutshell, it doesn't look like the highlightimproperencodings function is working the way I
     // want, and I think it's due to the way I've defined and used some of these terms
     var manifest = {
-        'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val' },
-        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val' },
-        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression' },
-        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression' }, //SHOULD BE ILLEGAL
-        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway' },
-        'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway' }
+        'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node' },
+        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node' },
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge' },
+        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge' },
+        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node' },
+        'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node' }
     };
+
+    function getDomain(cond) {
+        return cy.nodes(cond).map(function (val) {
+                return val.data().value;
+            }).getUnique();
+    }
 
     function internalData() {
 
@@ -174,17 +180,16 @@
             });
             var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
             var ele = thing[rowNumber - 1];
+            var domain;
             console.log([condition, ele]);
+
 
             if (ele.type === "node") {
                 cy.nodes(condition).css(ele.style, function (n) {
-                    var domain = cy.nodes(condition).map(function (val) {
-                        return val.data().value
-                    }).getUnique();
-                    console.log(['node', columnNumber, rowNumber, ele.func, condition, domain]);
-
+                    domain = getDomain(condition);
+                    console.log(['in css setter', columnNumber-1, rowNumber-1, condition, domain, ele.func, ele.style, ele.range, n.data()]);
                     if (colorfuncs.indexOf(ele.func) !== -1) {
-//                        console.log([ele.func, " is a color function"]);
+                        // logic in this block is for color functions
                         var numberOfColors;
                         if ( domain.length <= +d3.min(Object.keys(ele.range)) ) {
                             numberOfColors = +d3.min(Object.keys(ele.range));
@@ -195,18 +200,14 @@
                         else {
                             numberOfColors = domain.length;
                         }
-                        console.log([condition, domain, numberOfColors, ele.range[numberOfColors], n.data().value]);
-                        //value is still "group1" when domain is [15,115]! why?!
                         return ele.func(
                                 domain,
                                 ele.range[numberOfColors])(n.data().value);
                     }
                     else {
-                        var domain = cy.nodes(condition).map(function (val) {
-                            return val.data().value
-                        }).getUnique();
-//                        console.log(['node', columnNumber, rowNumber, ele.func, condition, domain]);
-                        console.log(["slice", domain, ele.range.slice(0, domain.length), n.data().value]);
+                        domain = getDomain(condition);
+                        console.log(["slice", condition, domain, ele.range.slice(0, domain.length), n.data().value]);
+
                         return ele.func(
                                 domain,
                                 ele.range.slice(0, domain.length))(n.data().value);
@@ -215,25 +216,25 @@
             }
 
 
-            else {
-                cy.edges(condition).css(ele.style, function (n) {
-                    var domain = cy.edges(condition).map(function (val) {
-                        return val.data().value
-                    }).getUnique();
-                    console.log(['edge', columnNumber, rowNumber, ele.func, condition, domain]);
-
-                    if (colorfuncs.indexOf(ele.func) !== -1) {
-                        return ele.func(
-                                domain,
-                                ele.range[domain.length | 3])(n.data().value);
-                    }
-                    else {
-                        return ele.func(
-                                domain,
-                                ele.range.slice(0, domain.length))(n.data().value);
-                    }
-                });
-            }
+//            else {
+//                cy.edges(condition).css(ele.style, function (n) {
+//                    var domain = cy.edges(condition).map(function (val) {
+//                        return val.data().value
+//                    }).getUnique();
+//                    console.log(['edge', columnNumber, rowNumber, ele.func, condition, domain]);
+//
+//                    if (colorfuncs.indexOf(ele.func) !== -1) {
+//                        return ele.func(
+//                                domain,
+//                                ele.range[domain.length | 3])(n.data().value);
+//                    }
+//                    else {
+//                        return ele.func(
+//                                domain,
+//                                ele.range.slice(0, domain.length))(n.data().value);
+//                    }
+//                });
+//            }
 
         });
     }
@@ -270,20 +271,20 @@
 
 
         var encodingRenderFunctions = {
-            'node color (seq)': {func:nodecolor_seq, intype:['numeric'], outtype:['categorical']},
-            'node color (div)': {func:nodecolor_div, intype:['numeric'], outtype:['categorical']},
-            'node color (cat)': {func:nodecolor_cat, intype:['numeric', 'categorical'], outtype:['categorical']},
-            'node shape (cat)': {func:nodeshape_cat,intype:['numeric', 'categorical'], outtype:['categorical']},
-            'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric']},
-            'node border (bin)': {func:nodeborder_bin,intype:['numeric'], outtype:['categorical']},
-            'node border (cat)': {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical']},
-            'edge width (quant)': {func:edgewidth_quant,intype:['numeric'], outtype:['numeric']},
-            'edge width (bin)': {func:edgewidth_bin,intype:['numeric'], outtype:['categorical']},
-            'edge color (seq)': {func:edgecolor_seq,intype:['numeric'], outtype:['categorical']},
-            'edge color (div)': {func:edgecolor_div,intype:['numeric'], outtype:['categorical']},
-            'edge color (cat)': {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical']},
-            'edge pattern (cat)': {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical']},
-            'edge arrow (cat)': {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical']}
+            'node color (seq)':    {func:nodecolor_seq, intype:['numeric'], outtype:['categorical'], element:'node'},
+            'node color (div)':    {func:nodecolor_div, intype:['numeric'], outtype:['categorical'], element:'node'},
+            'node color (cat)':    {func:nodecolor_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
+            'node shape (cat)':    {func:nodeshape_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
+            'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric'], element:'node'},
+            'node border (bin)':   {func:nodeborder_bin,intype:['numeric'], outtype:['categorical'], element:'node'},
+            'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node'},
+            'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge'},
+            'edge width (bin)':    {func:edgewidth_bin,intype:['numeric'], outtype:['categorical'], element:'edge'},
+            'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge'},
+            'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge'},
+            'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'},
+            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'},
+            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge'}
         };
 
         var encodingStyleFunctions = {
@@ -317,14 +318,14 @@
             for (var t = 0; t < tasks.length; t++) {
                 for (var e = 0; e < encodingsWithNamesReplaced.length; e++) {
                     if (Object.keys(allowedEncodings).indexOf(encodingsWithNamesReplaced[e]) !== -1) {
-                        //console.log([  tasks[t], encodingsWithNamesReplaced[e], allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage)  ])
-//                        console.log([allowedEncodings[encodingsWithNamesReplaced[e]], manifest[tasks[t]].usage, manifest[tasks[t]].usage.indexOf(allowedEncodings[encodingsWithNamesReplaced[e]][0])]);
-//                        if (allowedEncodings[encodingsWithNamesReplaced[e]].indexOf(manifest[tasks[t]].usage) === -1) {
                         console.log([  t, tasks[t], e, encodingsWithNamesReplaced[e], manifest[tasks[t]].type, encodingRenderFunctions[encodingsWithNamesReplaced[e]].intype  ]);
                         if (encodingRenderFunctions[encodingsWithNamesReplaced[e]].intype.indexOf(manifest[tasks[t]].type) === -1) {
-//                            Object.keys(manifest).map(function(n) { return encodingRenderFunctions['node color (cat)'].intype.indexOf(manifest[n].type); })
-                            //highlight in red
-//                            console.log([t, tasks[t], manifest[tasks[t]].name, e, encodingsWithNamesReplaced[e], manifest[tasks[t]].type, manifest[tasks[t]].usage, allowedEncodings[encodingsWithNamesReplaced[e]][0] ]);
+                            d3.selectAll('.col' + (t + 1))
+                                    .filter('.row' + (e + 1))
+                                    .attr('bgcolor', 'gray')
+                                    .text('0');
+                        }
+                        if (encodingRenderFunctions[encodingsWithNamesReplaced[e]].element !== manifest[tasks[t]].element) {
                             d3.selectAll('.col' + (t + 1))
                                     .filter('.row' + (e + 1))
                                     .attr('bgcolor', 'gray')
@@ -727,7 +728,102 @@
 
 
     //editStyle(generateStyle(),whichHighlight())
+    function debugo() {
 
+        // highlighted items
+        var highlightedCells = [];
+        d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
+            var hienc = d3.select(this).attr('class');
+            var row = hienc.match(/row\d+/g)[0];
+            var col = hienc.match(/col\d+/g)[0];
+            highlightedCells.push({encoding: row, dim: col});
+        });
+
+        //keep thing in same order as encoding rows so I can do array lookup
+        var thing = [
+            {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
+            {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
+            {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
+            {
+                encname: 'node shape (cat)',
+                func: nodeshape_cat,
+                style: 'shape',
+                type: 'node',
+//                range: [ ["rectangle"], ["roundrectangle"], ["ellipse"], ["triangle"], ["pentagon"], ["hexagon"], ["heptagon"], ["octagon"], ["star"], ["diamond"], ["vee"], ["rhomboid"] ]
+                range: { 1: ["rectangle"],
+                         2: ["rectangle", "roundrectangle"],
+                         3: ["rectangle", "roundrectangle", "ellipse"],
+                         4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+                         5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+                         6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+                         7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+                         8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+                         9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+                         10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+                         11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+                         12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
+            },
+            {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
+            {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
+            {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
+            {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
+            {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
+            {
+                encname: 'edge pattern (cat)',
+                func: edgepattern_cat,
+                style: 'line-style',
+                type: 'edge',
+                range: ["solid", "dotted", "dashed"]
+            },
+            {
+                encname: 'edge arrow (cat)',
+                func: edgearrow_cat,
+                style: 'line-style',
+                type: 'edge',
+                range: ["solid", "dotted", "dashed"]
+            }
+        ];
+
+        var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
+            edgecolor_cat, edgecolor_div, edgecolor_seq];
+
+        // for each highlight, get the column (dimension) and row (encoding)
+//        var dim_task = cy.nodes().map(function(k) { return(k.data().dimension) }).getUnique();
+
+        highlightedCells.forEach(function (rc) {
+            var columnNumber = rc.dim.replace('col', '');
+            var rowNumber = rc.encoding.replace('row', '');
+            var arrayOfDimTask = Object.keys(manifest).map(function (k) {
+                return manifest[k];
+            });
+            var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
+            var ele = thing[rowNumber - 1];
+            var domain;
+            console.log([condition, ele.encname, ele.func, rowNumber, columnNumber, ele ]);
+
+            var tempdomain = getDomain(condition);
+            var temprange = function() {
+                return ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
+            };
+            var specificfunc = ele.func(
+                    tempdomain,
+                    temprange()
+            );
+
+            cy.nodes(condition).css( ele.style, function(n) {
+//                console.log([n.data().value, testglob(n.data().value) ]);
+                console.log([ tempdomain, temprange(), n.data().value, specificfunc(n.data().value) ]);
+                return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
+//                return specificfunc(n.data().value);
+            })
+
+
+
+        });
+    }
 
 
 </script>

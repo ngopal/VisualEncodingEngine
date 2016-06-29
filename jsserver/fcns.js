@@ -42,10 +42,8 @@ function nodecolor_cat(domain,range) {
 }
 
 function nodeshape_cat(domain,range) {
-    //var shapes = ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"];
     return d3.scale.ordinal()
         .domain(domain)
-        //.range(shapes.slice(0,domain.length));
         .range(range);
 }
 
@@ -62,7 +60,7 @@ function nodeborder_quant(domain,range) {
 };
 function nodeborder_bin(domain,range) {
     //only takes numeric input, otherwise will throw undefined.
-    return d3.scale.linear()
+    return d3.scale.ordinal()
         .domain(domain)
         .range(range);
 };
