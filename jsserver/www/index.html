@@ -934,6 +934,7 @@
 
     function anotherTry(dimension_task,encoding_type) {
 //        var selector = '[dimension="p-val"]';
+        var items = [];
         var selector = '[dimension=\"'+manifest[dimension_task].name+'\"]';
         console.log(['coord', manifest[dimension_task], encodingRenderFunctions[encoding_type], thing[encodingRenderFunctions[encoding_type].ind].style   ]);
         var thang = {};
@@ -948,6 +949,15 @@
             return prefunc(ele.data().value);
         };
         console.log(thang);
+
+        thang['shape'] = function() {
+            return 'triangle';
+        };
+
+        thang['width'] = function() {
+            return 400;
+        }
+
         var newstyle = cytoscape.stylesheet()
                 .selector(selector)
 //                .style({
@@ -962,6 +972,97 @@
         cy.style(newstyle);
     }
 
+    function makeThang(inputDimension, inputEncodings){
+        var selector = '[dimension=\"'+inputDimension+'\"]';
+        var sheet = {};
+        inputEncodings.sort().forEach(function(e) {
+            console.log([selector, e, thing[e].encname]);
+            if (thing[e].type === "node") {
+                var predomain = cy.nodes(selector).map(function(k){return k.data().value});
+                var prerange = function() {
+                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length);
+                };
+                var prefunc = thing[e].func(predomain,prerange());
+                sheet[ thing[e].style ] = function( ele ) {
+                    return prefunc(ele.data().value);
+                }
+            }
+        });
+        console.log(sheet);
+        return cytoscape.stylesheet().selector(selector).style(sheet);
+    }
+
+
+
+    //This works
+//    cy.style(  cytoscape.stylesheet()
+//            .selector('[dimension="p-val"]')
+//            .style({
+//                'background-color': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'green';
+//                },
+//                'shape': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'triangle';
+//                }
+//            })
+//    )
+
+    //This also works
+//    cy.style(  cytoscape.stylesheet()
+//            .selector('[dimension="p-val"]')
+//            .style({
+//                'background-color': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'pink';
+//                }
+//            })
+//            .style({
+//                'shape': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'rectangle';
+//                }
+//            })
+//    )
+
+//    highlightedCells.sort(function(a, b) {return +a.dim.replace('col','') - +b.dim.replace('col','');})
+
+
+
+
+    // Get unique dimension names
+//    var uniqueDims = Object.keys(manifest).map(function (k) {
+//        return manifest[k].name;
+//    }).getUnique()
+
+    // Get indexes of columns of first dimension in array. I need to match these numbers to highlightedcell dim numbers
+//    var toMatchtoHC = Object.keys(manifest).map(function (k,i) {
+//        if (manifest[k].name === uniqueDims[0]) {
+//            return i;
+//        }
+//    }).filter(function( element ) {
+//        return element !== undefined;
+//    });
+
+    // Only retrieve manifest columns of matched numbers
+//    highlightedCells.map(function(n){ if ( toMatchtoHC.indexOf(+n.dim.replace('col','')-1)!== -1 ) { return n }  }).filter(function( element ) {
+//        return element !== undefined;
+//    })
+
+    // Use previous step to obtain encoding row numbers (for thing lookup)
+//    var encToUse = highlightedCells.map(function(n){ if ( toMatchtoHC.indexOf(+n.dim.replace('col','')-1)!== -1 ) { return n; }  }).filter(function( element ) {
+//        return element !== undefined;
+//    }).map(function(n) { return +n.encoding.replace('row','')-1; })
+
+
+
 
 </script>
 </html>
+
+
