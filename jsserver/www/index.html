@@ -989,7 +989,20 @@
             }
         });
         console.log(sheet);
-        return cytoscape.stylesheet().selector(selector).style(sheet);
+//        return cytoscape.stylesheet().selector(selector).style(sheet);
+        return [selector,sheet];
+    }
+
+    function composeSelectors(arrOfSelectors) {
+//        [   { selector: makeThang('pathway',[2,3])[0], style : makeThang('pathway',[2,3])[1] },
+//            { selector: makeThang('p-val',[0,5])[0], style : makeThang('p-val',[0,5])[1] }   ]
+        var ne = [];
+        for (var i = 0; i < arrOfSelectors.length; i++) {
+            ne.push( { selector: arrOfSelectors[i][0], style: arrOfSelectors[i][1]  } );
+//            console.log(["selector", arrOfSelectors[i][0].replace('\"','\'').replace('\"','\''), "style", arrOfSelectors[i][1]]);
+        }
+        console.log(ne);
+        return ne;
     }
 
 
@@ -1030,8 +1043,109 @@
 //            })
 //    )
 
+    //This works for compound styles. This is what I should try and use.
+//    cy.style(  cytoscape.stylesheet()
+//            .selector('[dimension="p-val"]')
+//            .style({
+//                'background-color': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'pink';
+//                }
+//            })
+//            .style({
+//                'shape': function( ele ) {
+//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
+//                    console.log(['heyho', ele.data(), predomain]);
+//                    return 'rectangle';
+//                }
+//            }).selector('[dimension="pathway"]').style(makeThang('pathway',[2,3]) ) )
+
 //    highlightedCells.sort(function(a, b) {return +a.dim.replace('col','') - +b.dim.replace('col','');})
 
+    // In the end, I just ended up re-calling the cy function
+//    cy = cytoscape({
+//        container: document.getElementById('cy'),
+//        elements: [
+//            {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
+//            {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
+////                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
+////                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
+//            {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
+//            {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+//            {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+//            {
+//                data: {
+//                    id: 'ab',
+//                    source: 'a',
+//                    target: 'b',
+//                    dimension: 'coexpression',
+//                    value: 20,
+//                    usage: 'numeric'
+//                }
+//            },
+//            {
+//                data: {
+//                    id: 'bf',
+//                    source: 'b',
+//                    target: 'f',
+//                    dimension: 'coexpression',
+//                    value: 30,
+//                    usage: 'numeric'
+//                }
+//            },
+//            {
+//                data: {
+//                    id: 'af',
+//                    source: 'a',
+//                    target: 'f',
+//                    dimension: 'coexpression',
+//                    value: 10,
+//                    usage: 'numeric'
+//                }
+//            }],
+//        style: [({ selector: makeThang('pathway',[2,3])[0], style : makeThang('pathway',[2,3])[1] }),({ selector: makeThang('p-val',[0,5])[0], style : makeThang('p-val',[0,5])[1] })]
+//    });
+
+function reviseViz() {
+    // highlighted items
+    var highlightedCells = [];
+    d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
+        var hienc = d3.select(this).attr('class');
+        var row = hienc.match(/row\d+/g)[0];
+        var col = hienc.match(/col\d+/g)[0];
+        highlightedCells.push({encoding: row, dim: col});
+    });
+
+    // Get unique dimension names
+    var uniqueDims = Object.keys(manifest).map(function (k) {
+        return manifest[k].name;
+    }).getUnique();
+
+    var makecomposeselectorInput = [];
+    for (var q = 0; q < uniqueDims.length; q++) {
+        // Get indexes of columns of first dimension in array. I need to match these numbers to highlightedcell dim numbers
+        var toMatchtoHC = Object.keys(manifest).map(function (k,i) {
+            if (manifest[k].name === uniqueDims[q]) {
+                return i;
+            }
+        }).filter(function( element ) {
+            return element !== undefined;
+        });
+
+        // Only retrieve manifest columns of matched numbers
+        // Use this step to obtain encoding row numbers (for thing lookup)
+        var encToUse = highlightedCells.map(function(n){ if ( toMatchtoHC.indexOf(+n.dim.replace('col','')-1)!== -1 ) { return n; }  }).filter(function( element ) {
+            return element !== undefined;
+        }).map(function(n) { return +n.encoding.replace('row','')-1; });
+
+        makecomposeselectorInput.push( makeThang(uniqueDims[q], encToUse) )
+    }
+
+//    composeSelectors( [ makeThang('pathway',[3,6]), makeThang('p-val',[1,4])  ] )
+    console.log('makecomposeselectorInput', makecomposeselectorInput);
+    return composeSelectors( makecomposeselectorInput );
+}
 
 
 
