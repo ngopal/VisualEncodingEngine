@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <head>
-    <!--<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>-->
     <meta charset="utf-8">
     <title>Visual Encoding App</title>
-    <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
-    <!--<script src="http://localhost:3000/bundle.js"></script>-->
-    <!--<script data-main="main.js" src="require.js"></script>-->
     <script src="colorbrewer.js"></script>
     <script src="cytoscape.js"></script>
     <script src="d3.js"></script>
     <script src="jquery.js"></script>
     <script src="fcns.js"></script>
-    <!--<script src="http://localhost:3000/bundle.js"></script>-->
-    <!--<script src="node_modules/cytoscape/src/index.js"></script>-->
-    <!--<script src="node_modules/jquery/src/jquery.js"></script>-->
-    <!--<script src="node_modules/d3/d3.min.js"></script>-->
     <style>
         #cy {
             width: 100%;
@@ -478,41 +470,10 @@
                             usage: 'numeric'
                         }
                     }],
-//            style: generateStyle()
                 style: editStyle(generateStyle(), whichHighlight())
-//                style: cytoscape.stylesheet()
-//                    .selector('[dimension="p-val"]')
-//                    .style({
-//                        'background-color': function( ele ) {
-//                            var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                            console.log(['heyho', ele.data(), predomain]);
-//                            return 'green';
-//                        }
-//                    })
             });
-
-
-//        var cy = cytoscape(makeRandomNetwork());
-//        var options = {
-//            name: 'random',
-//
-//            fit: true, // whether to fit to viewport
-//            padding: 30, // fit padding
-//            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-//            animate: false, // whether to transition the node positions
-//            animationDuration: 500, // duration of animation in ms if enabled
-//            animationEasing: undefined, // easing of animation if enabled
-//            ready: undefined, // callback on layoutready
-//            stop: undefined // callback on layoutstop
-//        };
-//
-//        cy.layout( options );
         }
 
-//        var stylein = {
-//            'background-color': {func: encodingRenderFunctions['node shape (cat)']([1, 2, 3, 4, 5])},
-//            'node color (cat)': ['a', 'b', 'c', 'd']
-//        }; //could this be input to generateStyle?
 
         function generateStyle() {
             var style = [
@@ -536,18 +497,6 @@
                         'target-arrow-shape': 'triangle'
                     }
                 }
-//                {
-//                    selector: '[dimension="p-val"]',
-//                    style: {
-//                        'width': 50,
-//                        'background-color': function(n) {
-//                            var tdom = cy.nodes('[dimension="p-val"]').map(function(h) {return h.data().value});
-//                            var prefunc = d3.scale.ordinal.domain(tdom).range(d3.extent(colorbrewer.Greens[4]));
-//                            console.log([tdom, d3.extent(colorbrewer.Greens[4]), prefunc]);
-//                            return  prefunc(n.data().value)
-//                        }
-//                    }
-//                }
             ];
             return style;
         }
@@ -619,7 +568,6 @@
             return {
                 container: document.getElementById('cy'),
                 elements: data,
-//            style: generateStyle()
                 style: editStyle(generateStyle(), whichHighlight())
             };
         }
@@ -640,9 +588,6 @@
             return items.getUnique();
         }
 
-
-    //editStyle(generateStyle(),whichHighlight())
-
     function getDomain(type, cond) {
         if (type === "node") {
             return cy.nodes(cond).map(function (val) {
@@ -656,127 +601,6 @@
         }
     }
 
-    function debugo() {
-
-        // highlighted items
-        var highlightedCells = [];
-        d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
-            var hienc = d3.select(this).attr('class');
-            var row = hienc.match(/row\d+/g)[0];
-            var col = hienc.match(/col\d+/g)[0];
-            highlightedCells.push({encoding: row, dim: col});
-        });
-
-        //keep thing in same order as encoding rows so I can do array lookup
-        var thing = [
-            {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
-            {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
-            {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
-            {
-                encname: 'node shape (cat)',
-                func: nodeshape_cat,
-                style: 'shape',
-                type: 'node',
-//                range: [ ["rectangle"], ["roundrectangle"], ["ellipse"], ["triangle"], ["pentagon"], ["hexagon"], ["heptagon"], ["octagon"], ["star"], ["diamond"], ["vee"], ["rhomboid"] ]
-                range: { 1: ["rectangle"],
-                         2: ["rectangle", "roundrectangle"],
-                         3: ["rectangle", "roundrectangle", "ellipse"],
-                         4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
-                         5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
-                         6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
-                         7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
-                         8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
-                         9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
-                         10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
-                         11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
-                         12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
-            },
-            {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
-            {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
-            {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
-            {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
-            {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
-            {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
-            {
-                encname: 'edge pattern (cat)',
-                func: edgepattern_cat,
-                style: 'line-style',
-                type: 'edge',
-                range: ["solid", "dotted", "dashed"]
-            },
-            {
-                encname: 'edge arrow (cat)',
-                func: edgearrow_cat,
-                style: 'line-style',
-                type: 'edge',
-                range: ["solid", "dotted", "dashed"]
-            }
-        ];
-
-        var colorfuncs = [nodecolor_cat, nodecolor_div, nodecolor_seq,
-            edgecolor_cat, edgecolor_div, edgecolor_seq];
-
-        // for each highlight, get the column (dimension) and row (encoding)
-//        var dim_task = cy.nodes().map(function(k) { return(k.data().dimension) }).getUnique();
-
-        highlightedCells.forEach(function (rc) {
-            var columnNumber = rc.dim.replace('col', '');
-            var rowNumber = rc.encoding.replace('row', '');
-            var arrayOfDimTask = Object.keys(manifest).map(function (k) {
-                return manifest[k];
-            });
-            var condition = "[dimension=\'" + arrayOfDimTask[columnNumber - 1].name + "\']";
-            var ele = thing[rowNumber - 1];
-            console.log([condition, ele.encname, ele.func, rowNumber, columnNumber, ele ]);
-            var tempdomain = cy.nodes(condition).map(function(n) { return n.data().value; });
-            console.log(["domain", tempdomain]);
-            var temprange = ele.range[tempdomain.length | 3] || ele.range.slice(0,tempdomain.length);
-            console.log(["range", temprange ]);
-//            letsee(condition, ele.style, ele.func, temprange);
-
-
-
-
-//            if (ele.type === "node") {
-//                cy.nodes(condition).css( ele.style, function(n) {
-//                    console.log(['node', ele.encname, ele.func, n.data().value, n.data() ]);
-//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
-////                    return specificfunc(n.data().value);
-//                })
-//            }
-
-//            else {
-//                cy.edges(condition).css( ele.style, function(n) {
-//                    console.log(['edge', ele.encname, ele.func, encodingRenderFunctions[ele.encname].func, thing[rowNumber - 1].func, n.data().value, n.data() ]);
-//                    return n.css(ele.style); // this is so it won't complain that cytoscape doesn't take null setter values
-////                    return specificfunc(n.data().value);
-//                })
-//            }
-
-
-
-
-
-        });
-    }
-
-//    function letsee(selector, styleoption, infunc, inrange) {
-//        var selector = selector;
-//        var newstyle = cytoscape.stylesheet()
-//                .selector(selector)
-//                .style({
-//                    styleoption : function( ele ) {
-//                        var predomain = cy.nodes(selector).map(function(k){return k.data().value});
-//                        var prefunc = infunc(predomain,inrange)
-//                        console.log(['heyho', ele.data(), predomain, prefunc, prefunc(ele.data().value)]);
-//                        return prefunc(ele.data().value);
-//                    }
-//                });
-//        cy.style(newstyle);
-//    }
-
     var thing = [
         {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
         {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
@@ -786,7 +610,6 @@
             func: nodeshape_cat,
             style: 'shape',
             type: 'node',
-//                range: [ ["rectangle"], ["roundrectangle"], ["ellipse"], ["triangle"], ["pentagon"], ["hexagon"], ["heptagon"], ["octagon"], ["star"], ["diamond"], ["vee"], ["rhomboid"] ]
             range: { 1: ["rectangle"],
                 2: ["rectangle", "roundrectangle"],
                 3: ["rectangle", "roundrectangle", "ellipse"],
@@ -823,46 +646,6 @@
             range: ["solid", "dotted", "dashed"]
         }
     ];
-
-    function anotherTry(dimension_task,encoding_type) {
-//        var selector = '[dimension="p-val"]';
-        var items = [];
-        var selector = '[dimension=\"'+manifest[dimension_task].name+'\"]';
-        console.log(['coord', manifest[dimension_task], encodingRenderFunctions[encoding_type], thing[encodingRenderFunctions[encoding_type].ind].style   ]);
-        var thang = {};
-        thang[ thing[encodingRenderFunctions[encoding_type].ind].style ] = function( ele ) {
-            var predomain = cy.nodes(selector).map(function(k){return k.data().value});
-//            var prefunc = d3.scale.ordinal().domain(predomain).range(colorbrewer.Dark2[3]);
-            var prerange = function() {
-                return thing[encodingRenderFunctions[encoding_type].ind].range[predomain.length | 3] || thing[encodingRenderFunctions[encoding_type].ind].range.slice(0,predomain.length);
-            }
-            var prefunc = thing[encodingRenderFunctions[encoding_type].ind].func(predomain,prerange());
-            console.log(['heyho', ele.data(), predomain, prerange(), prefunc, prefunc(ele.data().value)]);
-            return prefunc(ele.data().value);
-        };
-        console.log(thang);
-
-        thang['shape'] = function() {
-            return 'triangle';
-        };
-
-        thang['width'] = function() {
-            return 400;
-        }
-
-        var newstyle = cytoscape.stylesheet()
-                .selector(selector)
-//                .style({
-//                    'background-color' : function( ele ) {
-//                        var predomain = cy.nodes(selector).map(function(k){return k.data().value});
-//                        var prefunc = d3.scale.ordinal().domain(predomain).range(colorbrewer.Dark2[3]);
-//                        console.log(['heyho', ele.data(), predomain, prefunc, prefunc(ele.data().value)]);
-//                        return prefunc(ele.data().value);
-//                    }
-//                })
-                .style(thang);
-        cy.style(newstyle);
-    }
 
     function makeThang(inputDimension, inputEncodings){
         var selector = '[dimension=\"'+inputDimension+'\"]';
@@ -907,108 +690,6 @@
         return ne;
     }
 
-
-
-    //This works
-//    cy.style(  cytoscape.stylesheet()
-//            .selector('[dimension="p-val"]')
-//            .style({
-//                'background-color': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'green';
-//                },
-//                'shape': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'triangle';
-//                }
-//            })
-//    )
-
-    //This also works
-//    cy.style(  cytoscape.stylesheet()
-//            .selector('[dimension="p-val"]')
-//            .style({
-//                'background-color': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'pink';
-//                }
-//            })
-//            .style({
-//                'shape': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'rectangle';
-//                }
-//            })
-//    )
-
-    //This works for compound styles. This is what I should try and use.
-//    cy.style(  cytoscape.stylesheet()
-//            .selector('[dimension="p-val"]')
-//            .style({
-//                'background-color': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'pink';
-//                }
-//            })
-//            .style({
-//                'shape': function( ele ) {
-//                    var predomain = cy.nodes('[dimension="p-val"]').map(function(k){return k.data().value});
-//                    console.log(['heyho', ele.data(), predomain]);
-//                    return 'rectangle';
-//                }
-//            }).selector('[dimension="pathway"]').style(makeThang('pathway',[2,3]) ) )
-
-//    highlightedCells.sort(function(a, b) {return +a.dim.replace('col','') - +b.dim.replace('col','');})
-
-    // In the end, I just ended up re-calling the cy function
-//    cy = cytoscape({
-//        container: document.getElementById('cy'),
-//        elements: [
-//            {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
-//            {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
-////                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
-////                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
-//            {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
-//            {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
-//            {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
-//            {
-//                data: {
-//                    id: 'ab',
-//                    source: 'a',
-//                    target: 'b',
-//                    dimension: 'coexpression',
-//                    value: 20,
-//                    usage: 'numeric'
-//                }
-//            },
-//            {
-//                data: {
-//                    id: 'bf',
-//                    source: 'b',
-//                    target: 'f',
-//                    dimension: 'coexpression',
-//                    value: 30,
-//                    usage: 'numeric'
-//                }
-//            },
-//            {
-//                data: {
-//                    id: 'af',
-//                    source: 'a',
-//                    target: 'f',
-//                    dimension: 'coexpression',
-//                    value: 10,
-//                    usage: 'numeric'
-//                }
-//            }],
-//        style: [({ selector: makeThang('pathway',[2,3])[0], style : makeThang('pathway',[2,3])[1] }),({ selector: makeThang('p-val',[0,5])[0], style : makeThang('p-val',[0,5])[1] })]
-//    });
-
 function reviseViz() {
     // highlighted items
     var highlightedCells = [];
@@ -1051,48 +732,24 @@ function reviseViz() {
 
 
 
-    // Get unique dimension names
-//    var uniqueDims = Object.keys(manifest).map(function (k) {
-//        return manifest[k].name;
-//    }).getUnique()
-
-    // Get indexes of columns of first dimension in array. I need to match these numbers to highlightedcell dim numbers
-//    var toMatchtoHC = Object.keys(manifest).map(function (k,i) {
-//        if (manifest[k].name === uniqueDims[0]) {
-//            return i;
-//        }
-//    }).filter(function( element ) {
-//        return element !== undefined;
-//    });
-
-    // Only retrieve manifest columns of matched numbers
-//    highlightedCells.map(function(n){ if ( toMatchtoHC.indexOf(+n.dim.replace('col','')-1)!== -1 ) { return n }  }).filter(function( element ) {
-//        return element !== undefined;
-//    })
-
-    // Use previous step to obtain encoding row numbers (for thing lookup)
-//    var encToUse = highlightedCells.map(function(n){ if ( toMatchtoHC.indexOf(+n.dim.replace('col','')-1)!== -1 ) { return n; }  }).filter(function( element ) {
-//        return element !== undefined;
-//    }).map(function(n) { return +n.encoding.replace('row','')-1; })
-
-    window.onkeypress = function(event) {
-        if (event.keyCode == 113) {
-            // do random
-            randomRanks();
-        }
-        else if (event.keyCode == 119) {
-            // send table
-            sendToR();
-        }
-        else if (event.keyCode == 101) {
-            // dynamo
-            internalData();
-        }
-        else if (event.keyCode == 114) {
-            // reset viz
-            plotNetwork();
-        }
+window.onkeypress = function(event) {
+    if (event.keyCode == 113) {
+        // do random
+        randomRanks();
     }
+    else if (event.keyCode == 119) {
+        // send table
+        sendToR();
+    }
+    else if (event.keyCode == 101) {
+        // dynamo
+        internalData();
+    }
+    else if (event.keyCode == 114) {
+        // reset viz
+        plotNetwork();
+    }
+}
 
 
 
