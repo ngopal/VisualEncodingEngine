@@ -50,7 +50,7 @@
             u[this[i]] = 1;
         }
         return a;
-    }
+    };
 
     var body = d3.select('body');
 
@@ -435,8 +435,8 @@
                 elements: [
                     {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
                     {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
-//                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
-//                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
+                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
+                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
                     {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
                     {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
                     {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
@@ -465,6 +465,36 @@
                             id: 'af',
                             source: 'a',
                             target: 'f',
+                            dimension: 'coexpression',
+                            value: 10,
+                            usage: 'numeric'
+                        }
+                    },
+                    {
+                        data: {
+                            id: 'bf',
+                            source: 'b',
+                            target: 'f',
+                            dimension: 'coexpression',
+                            value: 100,
+                            usage: 'numeric'
+                        }
+                    },
+                    {
+                        data: {
+                            id: 'cg',
+                            source: 'c',
+                            target: 'g',
+                            dimension: 'coexpression',
+                            value: 70,
+                            usage: 'numeric'
+                        }
+                    },
+                    {
+                        data: {
+                            id: 'ag',
+                            source: 'a',
+                            target: 'g',
                             dimension: 'coexpression',
                             value: 10,
                             usage: 'numeric'

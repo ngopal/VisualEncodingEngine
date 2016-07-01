@@ -23,6 +23,18 @@
 
 //only if numeric
 
+Array.prototype.getUnique = function(){
+    var u = {}, a = [];
+    for(var i = 0, l = this.length; i < l; ++i){
+        if(u.hasOwnProperty(this[i])) {
+            continue;
+        }
+        a.push(this[i]);
+        u[this[i]] = 1;
+    }
+    return a;
+};
+
 function nodecolor_seq(domain,range) {
     return d3.scale.linear()
         .domain( d3.extent(domain) )
@@ -37,19 +49,25 @@ function nodecolor_div(domain,range) {
 
 function nodecolor_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 }
 
+//function nodecolor_cat(domain,range) {
+//    return d3.scale.ordinal()
+//        .domain(domain)
+//        .range(range);
+//}
+
 function nodeshape_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 }
 
 function edgepattern_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 }
 
@@ -61,12 +79,12 @@ function nodeborder_quant(domain,range) {
 function nodeborder_bin(domain,range) {
     //only takes numeric input, otherwise will throw undefined.
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 };
 function nodeborder_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 };
 
@@ -89,19 +107,19 @@ function edgecolor_seq(domain,range) {
 
 function edgecolor_div(domain,range) {
     return d3.scale.linear()
-        .domain(domain)
+        .domain( d3.extent(domain)  )
         .range(range);
 };
 
 function edgecolor_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 };
 
 function edgearrow_cat(domain,range) {
     return d3.scale.ordinal()
-        .domain(domain)
+        .domain(domain.getUnique())
         .range(range);
 };
 
