@@ -73,7 +73,7 @@ function edgepattern_cat(domain,range) {
 
 function nodeborder_quant(domain,range) {
     return d3.scale.linear()
-        .domain(domain)
+        .domain(d3.extent(domain))
         .range(range);
 };
 function nodeborder_bin(domain,range) {

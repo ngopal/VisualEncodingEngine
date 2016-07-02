@@ -111,10 +111,10 @@
     // want, and I think it's due to the way I've defined and used some of these terms
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node', ind:0 },
-        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node', ind:1 },
-        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:2 },
-        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:3 },
-        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node', ind:4 },
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:1 },
+        'dim3 task1' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node', ind:2 },
+        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'p-val', element: 'node', ind:3 },
+        'dim2 task2' : {type: 'numeric', usage: ['numeric'], name: 'coexpression', element: 'edge', ind:4 },
         'dim3 task2' : {type: 'categorical', usage: ['categorical'], name: 'pathway', element: 'node', ind:5 }
     };
 
@@ -239,8 +239,8 @@
             tasks = [];
 //        tasks = makeTasks(numberOfTasks);
             encodings = makeEncodings(numberOfEncodings);
-            for (var d = 0; d < dims.length; d++) {
-                for (var e = 0; e < makeTasks(numberOfTasks).length; e++) {
+            for (var e = 0; e < makeTasks(numberOfTasks).length; e++) {
+                for (var d = 0; d < dims.length; d++) {
                     tasks.push(dims[d] + ' ' + makeTasks(numberOfTasks)[e]);
                 }
             }
