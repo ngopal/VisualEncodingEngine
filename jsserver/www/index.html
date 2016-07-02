@@ -24,7 +24,9 @@
     <input id="numTasks">
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
-    <button id="sendranktable" onclick="sendToR()">send table</button>
+    <button id="sendranktable" onclick="sendToR()">send table</button><br><br>
+    <input id="numNodes">
+    <input id="numEdges">
     <button id="visualizeNetwork" onclick="plotNetwork()">visualize default</button>
     <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
 </div>
@@ -36,6 +38,11 @@
         </fieldset>
     </div>
 </div>
+<button id="layoutRand" onclick="newlayout('random')">Random</button>
+<button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
+<button id="layoutCose" onclick="newlayout('cose')">Cose</button>
+<button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
+<button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
 <div id="cy">
 </div>
 </body>
@@ -529,7 +536,7 @@
 //                            usage: 'numeric'
 //                        }
 //                    }],
-                elements: generateNetwork(50,115,['p-val','pathway'],['coexpression','probability']),
+                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                 style: editStyle(generateStyle(), whichHighlight())
             });
         }
@@ -600,37 +607,37 @@
             return style;
         }
 
-        function makeRandomNetwork() {
-            var nodes = d3.range(0, 100).map(function (d) {
-                return {
-                    data: {
-                        id: d.toString()
-                    }
-                };
-            });
-            var edges = d3.range(101, 150).map(function (d) {
-                return {
-                    data: {
-                        id: d.toString(),
-                        source: Math.floor(Math.random() * 100).toString(),
-                        target: Math.floor(Math.random() * 100).toString()
-                    }
-                };
-            });
-            var data = [];
-            for (var i = 0; i < nodes.length; i++) {
-                data.push(nodes[i]);
-            }
-            for (var i = 0; i < edges.length; i++) {
-                data.push(edges[i]);
-            }
-            console.log(data);
-            return {
-                container: document.getElementById('cy'),
-                elements: data,
-                style: editStyle(generateStyle(), whichHighlight())
-            };
-        }
+//        function makeRandomNetwork() {
+//            var nodes = d3.range(0, 100).map(function (d) {
+//                return {
+//                    data: {
+//                        id: d.toString()
+//                    }
+//                };
+//            });
+//            var edges = d3.range(101, 150).map(function (d) {
+//                return {
+//                    data: {
+//                        id: d.toString(),
+//                        source: Math.floor(Math.random() * 100).toString(),
+//                        target: Math.floor(Math.random() * 100).toString()
+//                    }
+//                };
+//            });
+//            var data = [];
+//            for (var i = 0; i < nodes.length; i++) {
+//                data.push(nodes[i]);
+//            }
+//            for (var i = 0; i < edges.length; i++) {
+//                data.push(edges[i]);
+//            }
+//            console.log(data);
+//            return {
+//                container: document.getElementById('cy'),
+//                elements: data,
+//                style: editStyle(generateStyle(), whichHighlight())
+//            };
+//        }
 
 
         function whichHighlight() {
@@ -802,6 +809,11 @@ function reviseViz() {
     return composeSelectors( makecomposeselectorInput );
 }
 
+function newlayout(l) {
+    cy.makeLayout({
+        name: l
+    }).run();
+}
 
 
 window.onkeypress = function(event) {
