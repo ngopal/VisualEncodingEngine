@@ -2,6 +2,7 @@
 <head>
     <meta charset="utf-8">
     <title>Visual Encoding App</title>
+    <script src="networkgenerator.js"></script>
     <script src="colorbrewer.js"></script>
     <script src="cytoscape.js"></script>
     <script src="d3.js"></script>
@@ -300,6 +301,7 @@
             d3.selectAll('.rankedcell').attr('bgcolor', null);
             for (var i = 1; i < tasks.length + 1; i++) {
                 console.log(numberOfEncodings);
+//                var ranks = generateArrayofBinaryValues(numberOfEncodings);
                 var ranks = generateArrayofValues(numberOfEncodings);
                 console.log(ranks);
                 d3.selectAll(".col" + i)
@@ -307,6 +309,14 @@
                         .text(function (d) {
                             return d;
                         });
+            }
+
+            function generateArrayofBinaryValues(nrows) {
+                var arr = [];
+                d3.range(1, nrows + 1).forEach(function (k) {
+                    arr.push(getRandomIntInclusive(0, 1));
+                });
+                return shuffle(arr);
             }
 
 
@@ -432,93 +442,94 @@
 
             cy = cytoscape({
                 container: document.getElementById('cy'),
-                elements: [
-                    {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
-                    {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
-                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
-                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
-                    {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
-                    {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
-                    {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
-                    {
-                        data: {
-                            id: 'ab',
-                            source: 'a',
-                            target: 'b',
-                            dimension: 'coexpression',
-                            value: 20,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'bf',
-                            source: 'b',
-                            target: 'f',
-                            dimension: 'coexpression',
-                            value: 30,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'af',
-                            source: 'a',
-                            target: 'f',
-                            dimension: 'coexpression',
-                            value: 10,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'be',
-                            source: 'b',
-                            target: 'e',
-                            dimension: 'coexpression',
-                            value: 100,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'cg',
-                            source: 'c',
-                            target: 'g',
-                            dimension: 'coexpression',
-                            value: 70,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ag',
-                            source: 'a',
-                            target: 'g',
-                            dimension: 'coexpression',
-                            value: 10,
-                            usage: 'numeric'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ag',
-                            source: 'a',
-                            target: 'g',
-                            dimension: 'coexpression',
-                            value: 1,
-                            usage: 'numeric'
-                        }
-                    },{
-                        data: {
-                            id: 'bg',
-                            source: 'b',
-                            target: 'g',
-                            dimension: 'coexpression',
-                            value: 10,
-                            usage: 'numeric'
-                        }
-                    }],
+//                elements: [
+//                    {data: {id: 'a', value: 40, usage: 'numeric', dimension: 'p-val'}},
+//                    {data: {id: 'b', value: 25, usage: 'numeric', dimension: 'p-val'}},
+//                    {data: {id: 'c', value: 15, usage: 'numeric', dimension: 'p-val'}},
+//                    {data: {id: 'd', value: 115, usage: 'numeric', dimension: 'p-val'}},
+//                    {data: {id: 'e', value: "group1", usage: 'categorical', dimension: 'pathway'}},
+//                    {data: {id: 'f', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+//                    {data: {id: 'g', value: "group2", usage: 'categorical', dimension: 'pathway'}},
+//                    {
+//                        data: {
+//                            id: 'ab',
+//                            source: 'a',
+//                            target: 'b',
+//                            dimension: 'coexpression',
+//                            value: 20,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'bf',
+//                            source: 'b',
+//                            target: 'f',
+//                            dimension: 'coexpression',
+//                            value: 30,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'af',
+//                            source: 'a',
+//                            target: 'f',
+//                            dimension: 'coexpression',
+//                            value: 10,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'be',
+//                            source: 'b',
+//                            target: 'e',
+//                            dimension: 'coexpression',
+//                            value: 100,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'cg',
+//                            source: 'c',
+//                            target: 'g',
+//                            dimension: 'coexpression',
+//                            value: 70,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'ag',
+//                            source: 'a',
+//                            target: 'g',
+//                            dimension: 'coexpression',
+//                            value: 10,
+//                            usage: 'numeric'
+//                        }
+//                    },
+//                    {
+//                        data: {
+//                            id: 'ag',
+//                            source: 'a',
+//                            target: 'g',
+//                            dimension: 'coexpression',
+//                            value: 1,
+//                            usage: 'numeric'
+//                        }
+//                    },{
+//                        data: {
+//                            id: 'bg',
+//                            source: 'b',
+//                            target: 'g',
+//                            dimension: 'coexpression',
+//                            value: 10,
+//                            usage: 'numeric'
+//                        }
+//                    }],
+                elements: generateNetwork(50,115,['p-val','pathway'],['coexpression','probability']),
                 style: editStyle(generateStyle(), whichHighlight())
             });
         }
@@ -696,6 +707,16 @@
         }
     ];
 
+    function rez(predomain,e) {
+        if (Array.isArray(thing[e].range)) {
+            console.log(e+" is an array");
+            return thing[e].range.slice(0,predomain.length);
+        }
+        else {
+            return thing[e].range[predomain.length | 3] || thing[e].range[ +d3.max(Object.keys(thing[e].range)) ];
+        }
+    }
+
     function makeThang(inputDimension, inputEncodings){
         var selector = '[dimension=\"'+inputDimension+'\"]';
         var sheet = {};
@@ -704,7 +725,8 @@
             if (thing[e].type === "node") {
                 var predomain = cy.nodes(selector).map(function(k){return k.data().value});
                 var prerange = function() {
-                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length);
+//                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length) || thing[e].range[ +d3.max(Object.keys(thing[e].range)) ];
+                    return rez(predomain,e);
                 };
                 var prefunc = thing[e].func(predomain,prerange());
                 sheet[ thing[e].style ] = function( ele ) {
@@ -714,7 +736,8 @@
             else {
                 var predomain = cy.edges(selector).map(function(k){return k.data().value});
                 var prerange = function() {
-                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length);
+//                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length) || thing[e].range[ +d3.max(Object.keys(thing[e].range)) ];
+                    return rez(predomain,e);
                 };
                 var prefunc = thing[e].func(predomain,prerange());
                 sheet[ thing[e].style ] = function( ele ) {
