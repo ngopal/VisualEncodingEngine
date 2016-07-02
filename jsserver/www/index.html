@@ -815,6 +815,9 @@ function newlayout(l) {
     }).run();
 }
 
+function radius(s,fudge) { var factor = fudge || 10; return Math.sqrt(s/Math.PI)*factor; }
+//example use: cy.nodes("[usage='numeric']").css('height', function( ele ) { return radius(  ele.data().value  ); }).css('width', function( ele ) { return radius(  ele.data().value  ); })
+
 
 window.onkeypress = function(event) {
     if (event.keyCode == 113) {
