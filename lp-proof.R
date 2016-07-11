@@ -357,3 +357,15 @@ linprogNew <- function(inputMatrix) {
   return(soln)
   
 }
+
+
+samp_mat <-c()
+for (i in 1:100) {
+  samp_mat <- rbind(samp_mat,sample(1:14))
+}
+samp_mat <- matrix(samp_mat, 100, 14)
+samp_out <- sample(1:100)
+samp_out <- rep(sample(0:1),50)
+samp_lm <- glm(samp_out ~ ., data=data.frame(samp_mat), family = "gaussian")
+samp_lm <- glm(samp_out ~ ., data=data.frame(samp_mat), family = "binomial")
+plot(samp_lm)

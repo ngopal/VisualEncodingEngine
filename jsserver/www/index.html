@@ -9,13 +9,24 @@
     <script src="jquery.js"></script>
     <script src="fcns.js"></script>
     <style>
+        /*#cy {*/
+            /*width: 100%;*/
+            /*height: 40%;*/
+            /*position: absolute;*/
+            /*top: 400px;*/
+            /*left: 0px;*/
+            /*display: none;*/
+        /*}*/
         #cy {
-            width: 100%;
-            height: 40%;
+            width: 50%;
+            height: 100%;
             position: absolute;
-            top: 400px;
-            left: 0px;
+            /*top: 500px;*/
+            /*left: 0px;*/
+            top: 0px;
+            left: 600px;
             display: none;
+            float: right;
         }
     </style>
 </head>
@@ -78,15 +89,19 @@
         'node border (quant)',
         'node border (bin)',
         'node border (cat)', //patterns
+        'node size (quant)',
+        'node size (bin)',
         'edge width (quant)',
         'edge width (bin)',
         'edge color (seq)',
         'edge color (div)',
         'edge color (cat)',
         'edge pattern (cat)',
-        'edge arrow (cat)'];
+        'edge arrow (cat)'
+    ];
 
 
+    //only used in editStyle()?
     var enclookup = {'row1': {'type':'node','attribute':'background-color'}, //can define function to use here?
                     'row2': {'type':'node','attribute':'border-width'},
                     'row3': {'type':'edge','attribute':'width'},
@@ -127,7 +142,16 @@
     };
 
     function internalData() {
-        try {  cy.style(reviseViz()) } catch(err) { console.log(err); cy.style(reviseViz().reverse()) }
+        try {
+            cy.style(reviseViz());
+            //make sure that the node width is symmetrical to height
+            cy.nodes().style('width', function(n){return n.height();});
+        } catch(err) {
+            console.log(err);
+            cy.style(reviseViz().reverse())
+            //make sure that the node width is symmetrical to height
+            cy.nodes().style('width', function(n){return n.height();});
+        }
     }
 
     function dataHierarchy(input) {
@@ -151,6 +175,8 @@
             'node border (quant)': ['numeric'],
             'node border (bin)': ['numeric'],
             'node border (cat)': ['categorical'], //patterns
+            'node size (quant)' : ['numeric'],
+            'node size (bin)' : ['numeric'],
             'edge width (quant)': ['numeric'],
             'edge width (bin)': ['numeric'],
             'edge color (seq)': ['numeric'],
@@ -169,31 +195,36 @@
             'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric'], element:'node', ind:4},
             'node border (bin)':   {func:nodeborder_bin,intype:['numeric'], outtype:['categorical'], element:'node', ind:5},
             'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:6},
-            'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge', ind:7},
-            'edge width (bin)':    {func:edgewidth_bin,intype:['numeric'], outtype:['categorical'], element:'edge', ind:8},
-            'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge', ind:9},
-            'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge', ind:10},
-            'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:11},
-            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:12},
-            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:13}
+            'node size (quant)': {func:nodesize_quant, intype:['numeric'], outtype:['numeric'], element:'node', ind:7},
+            'node size (bin)':   {func:nodesize_bin, intype:['numeric'], outtype:['categorical'], element:'node', ind:8},
+            'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge', ind:9},
+            'edge width (bin)':    {func:edgewidth_bin,intype:['numeric'], outtype:['categorical'], element:'edge', ind:10},
+            'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge', ind:11},
+            'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge', ind:12},
+            'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:13},
+            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:14},
+            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:15}
         };
 
-        var encodingStyleFunctions = {
-            'node color (seq)': {name: 'background-color', param: colorbrewer.Reds},
-            'node color (div)': {name: 'background-color', param: colorbrewer.RdBu},
-            'node color (cat)': {name: 'background-color', param: colorbrewer.Set2},
-            'node shape (cat)': {name: 'shape'},
-            'node border (quant)': {name: 'border-width'},
-            'node border (bin)': {name: 'border-width'},
-            'node border (cat)': {name: 'border-width'},
-            'edge width (quant)': {name: 'width'},
-            'edge width (bin)': {name: 'width'},
-            'edge color (seq)': {name: 'line-color'},
-            'edge color (div)': {name: 'line-color'},
-            'edge color (cat)': {name: 'line-color'},
-            'edge pattern (cat)': {name: 'line-style'},
-            'edge arrow (cat)': {name: 'target-arrow-shape'}
-        };
+        //encodingStyleFunctions seems to be unused!
+//        var encodingStyleFunctions = {
+//            'node color (seq)': {name: 'background-color', param: colorbrewer.Reds},
+//            'node color (div)': {name: 'background-color', param: colorbrewer.RdBu},
+//            'node color (cat)': {name: 'background-color', param: colorbrewer.Set2},
+//            'node shape (cat)': {name: 'shape'},
+//            'node border (quant)': {name: 'border-width'},
+//            'node border (bin)': {name: 'border-width'},
+//            'node border (cat)': {name: 'border-width'},
+//            'edge width (quant)': {name: 'width'},
+//            'edge width (bin)': {name: 'width'},
+//            'edge color (seq)': {name: 'line-color'},
+//            'edge color (div)': {name: 'line-color'},
+//            'edge color (cat)': {name: 'line-color'},
+//            'edge pattern (cat)': {name: 'line-style'},
+//            'edge arrow (cat)': {name: 'target-arrow-shape'}
+//            'node size (quant)': {name: 'width'}
+//            'node size (quant)': {name: 'heght'}
+//        };
         // encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
 
         function highlightImproperEncodings() {
@@ -447,6 +478,31 @@
             var cyCanvas = d3.selectAll('#cy')
                     .style('display', 'inline');
 
+            var options = {
+                name: 'random',
+                fit: true, // whether to fit to viewport
+                padding: 30, // fit padding
+                boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+                animate: false, // whether to transition the node positions
+                animationDuration: 500, // duration of animation in ms if enabled
+                animationEasing: undefined, // easing of animation if enabled
+                ready: undefined, // callback on layoutready
+                stop: undefined, // callback on layoutstop
+                minZoom: 1e-50,
+                maxZoom: 1e50,
+                zoomingEnabled: true,
+                userZoomingEnabled: true,
+                panningEnabled: true,
+                userPanningEnabled: true,
+                boxSelectionEnabled: false,
+                selectionType: 'single',
+                touchTapThreshold: 8,
+                desktopTapThreshold: 4,
+                autolock: false,
+                autoungrabify: false,
+                autounselectify: false
+            };
+
             cy = cytoscape({
                 container: document.getElementById('cy'),
 //                elements: [
@@ -539,6 +595,8 @@
                 elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                 style: editStyle(generateStyle(), whichHighlight())
             });
+
+            cy.layout( options );
         }
 
 
@@ -668,6 +726,54 @@
         }
     }
 
+//    var thing = [
+//        {encname: 'node color (seq)', func: nodecolor_seq, style: ['background-color'], type: 'node', range: colorbrewer.Reds},
+//        {encname: 'node color (div)', func: nodecolor_div, style: ['background-color'], type: 'node', range: colorbrewer.RdBu},
+//        {encname: 'node color (cat)', func: nodecolor_cat, style: ['background-color'], type: 'node', range: colorbrewer.Set2},
+//        {
+//            encname: 'node shape (cat)',
+//            func: nodeshape_cat,
+//            style: ['shape'],
+//            type: 'node',
+//            range: { 1: ["rectangle"],
+//                2: ["rectangle", "roundrectangle"],
+//                3: ["rectangle", "roundrectangle", "ellipse"],
+//                4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+//                5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+//                6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+//                7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+//                8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+//                9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+//                10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+//                11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+//                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
+//        },
+//        {encname: 'node border (quant)', func: nodeborder_quant, style: ['border-width'], type: 'node', range: [1, 5, 10]},
+//        {encname: 'node border (bin)', func: nodeborder_bin, style: ['border-width'], type: 'node', range: [1, 5, 10]},
+//        {encname: 'node border (cat)', func: nodeborder_cat, style: ['border-width'], type: 'node', range: [1, 5, 10]},
+//        {encname: 'node size (quant)', func: nodesize_quant, style: ['width','height'], type: 'node', range: [20, 50, 75]},
+//        {encname: 'node size (bin)', func: nodesize_bin, style: ['width','height'], type: 'node', range: [20, 50, 75]},
+//        {encname: 'edge width (quant)', func: edgewidth_quant, style: ['width'], type: 'edge', range: [1, 5, 10]},
+//        {encname: 'edge width (bin)', func: edgewidth_bin, style: ['width'], type: 'edge', range: [1, 5, 10]},
+//        {encname: 'edge color (seq)', func: edgecolor_seq, style: ['line-color'], type: 'edge', range: colorbrewer.Blues},
+//        {encname: 'edge color (div)', func: edgecolor_div, style: ['line-color'], type: 'edge', range: colorbrewer.BuGn},
+//        {encname: 'edge color (cat)', func: edgecolor_cat, style: ['line-color'], type: 'edge', range: colorbrewer.Set3},
+//        {
+//            encname: 'edge pattern (cat)',
+//            func: edgepattern_cat,
+//            style: ['line-style'],
+//            type: 'edge',
+//            range: ["solid", "dotted", "dashed"]
+//        },
+//        {
+//            encname: 'edge arrow (cat)',
+//            func: edgearrow_cat,
+//            style: ['line-style'],
+//            type: 'edge',
+//            range: ["solid", "dotted", "dashed"]
+//        }
+//    ];
+
     var thing = [
         {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
         {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
@@ -693,6 +799,8 @@
         {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
         {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
         {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
+        {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75]},
+        {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75]},
         {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
         {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
         {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
@@ -736,6 +844,13 @@
                     return rez(predomain,e);
                 };
                 var prefunc = thing[e].func(predomain,prerange());
+
+//                for (var s=0;s<thing[e].style.length;s++) {
+//                    sheet[ thing[e].style[s] ] = function( ele ) {
+//                        return prefunc(ele.data().value);
+//                    }
+//                }
+
                 sheet[ thing[e].style ] = function( ele ) {
                     return prefunc(ele.data().value);
                 }
@@ -747,12 +862,17 @@
                     return rez(predomain,e);
                 };
                 var prefunc = thing[e].func(predomain,prerange());
+//                for (var s=0;s<thing[e].style.length;s++) {
+//                    sheet[ thing[e].style[s] ] = function( ele ) {
+//                        return prefunc(ele.data().value);
+//                    }
+//                }
                 sheet[ thing[e].style ] = function( ele ) {
                     return prefunc(ele.data().value);
                 }
             }
         });
-        console.log(sheet);
+        console.log("sheet", sheet);
 //        return cytoscape.stylesheet().selector(selector).style(sheet);
         return [selector,sheet];
     }

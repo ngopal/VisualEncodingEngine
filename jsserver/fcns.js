@@ -35,6 +35,8 @@ Array.prototype.getUnique = function(){
     return a;
 };
 
+function radius(s,fudge) { var factor = fudge || 10; return Math.sqrt(s/Math.PI)*factor; }
+
 function nodecolor_seq(domain,range) {
     return d3.scale.linear()
         .domain( d3.extent(domain) )
@@ -59,6 +61,20 @@ function nodecolor_cat(domain,range) {
 //        .range(range);
 //}
 
+function nodesize_quant(domain,range) {
+    return d3.scale.linear()
+        .domain(d3.extent(domain.map(function(r){return radius(r)})))
+        .range(range);
+};
+function nodesize_bin(domain,range) {
+    //only takes numeric input, otherwise will throw undefined.
+    // since this only takes numeric input, I could write a function to actually bin the data
+    // rather than just create a domain of unique values.
+    return d3.scale.ordinal()
+        .domain(domain.getUnique().map(function(r){return radius(r)}))
+        .range(range);
+};
+
 function nodeshape_cat(domain,range) {
     return d3.scale.ordinal()
         .domain(domain.getUnique())
@@ -82,6 +98,7 @@ function nodeborder_bin(domain,range) {
         .domain(domain.getUnique())
         .range(range);
 };
+
 function nodeborder_cat(domain,range) {
     return d3.scale.ordinal()
         .domain(domain.getUnique())
