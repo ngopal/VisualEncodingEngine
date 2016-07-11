@@ -10,15 +10,18 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.1",
+    "cola": "^0.1.7",
     "colorbrewer": "^1.0.0",
     "cytoscape": "^2.7.2",
     "cytoscape-arbor": "^1.2.1",
+    "cytoscape-cola": "^1.4.1",
     "d3": "^3.5.17",
     "define": "^1.0.1",
     "express": "^4.13.4",
     "jquery": "^2.2.4",
     "jsonfile": "^2.3.1",
     "requirejs": "^2.2.0",
-    "vis": "^4.16.1"
+    "vis": "^4.16.1",
+    "webcola": "^3.1.3"
   }
 }

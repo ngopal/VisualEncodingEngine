@@ -369,3 +369,81 @@ samp_out <- rep(sample(0:1),50)
 samp_lm <- glm(samp_out ~ ., data=data.frame(samp_mat), family = "gaussian")
 samp_lm <- glm(samp_out ~ ., data=data.frame(samp_mat), family = "binomial")
 plot(samp_lm)
+
+
+
+
+## Load in GeneMANIA example into Cytoscape form
+
+toCytoJSON_GeneMANIA <- function(g) {
+  s = c()
+  s = append(s,"[")
+  for (i in 1:length(V(g))) {
+    s = append(s, paste("{ data: { id: \'",i,"\', name: \'",names(V(g)[i]),"\' } },", sep=''))
+  }
+  temp <- get.edgelist(g)
+  for (i in 1:length(E(g))) {
+    if (i == length(E(g))) {
+      s = append(s, paste("{ data: { id: \'",i+length(V(g)),"\', source: \'",temp[i,1],"\', target: \'",temp[i,2],"\' } }", sep=''))
+    }
+    else {
+      s = append(s, paste("{ data: { id: \'",i+length(V(g)),"\', source: \'",temp[i,1],"\', target: \'",temp[i,2],"\' } },", sep=''))
+    }  
+  }
+  s = append(s, "]")
+  return( paste(s, collapse="") )
+}
+
+genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-network.txt", skip=6, header = TRUE)
+View(genemania.network)
+colnames(genemania.network) <- c("Entity.1", "Entity.2", "weight", "group", "publication")
+#write.table(genemania.network, file = "~/Code/VisualEncodingEngine/data/genemania-network-edgelist.txt", quote = FALSE, row.names = FALSE)
+#read_graph("~/Code/VisualEncodingEngine/data/genemania-network-edgelist.txt", format = c("edgelist"))
+#plot(graph.data.frame(read.table("~/Code/VisualEncodingEngine/data/genemania-network-edgelist-short.txt"), directed=FALSE))
+genemania.network.graph <- graph.data.frame(genemania.network, directed=FALSE)
+
+toCytoJSON_GeneMANIA(genemania.network.graph)
+
+tpyFunc <- function(g) {
+  s = c();
+  s = append(s, '[')
+  vert.attrs <- list.vertex.attributes(g);
+  edge.attrs <- list.edge.attributes(g);
+  for (i in 1:length(V(g))) {
+#     cat('{ data: { id: \"',i,'\", ')
+    s = append(s, paste('{ data: { id: "',i,'", ', sep=''))
+    for (k in 1:length(vert.attrs)) {
+      if (k==length(vert.attrs)) {
+        s = append(s, paste(vert.attrs[k],' : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'" ', sep='') )
+#         cat(vert.attrs[k],' : \"', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'\" ' )
+      }
+      else {
+        s = append(s, paste(vert.attrs[k],' : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'", ', sep='') )
+#         cat(vert.attrs[k],' : \"', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'\", ' )
+      }
+    }
+    s = append(s, paste(' } },', sep=''))
+#     cat(' } },', '\n')
+  }
+  for (e in 1:length(E(g))) {
+    pairs = get.edgelist(g)
+    for (k in 1:length(edge.attrs)) {
+#       cat('{ data: { id: \"',i+e,'\", ')
+#       cat('source: \"',  which(V(g)$name == get.edgelist(g)[e,1])  ,'\", target: \"',  which(V(g)$name == get.edgelist(g)[e,2])  ,'\", ')
+#       cat('dimension: \"', edge.attrs[k],'\", value:\"',eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))),'\"' )
+#       cat('} },')
+      s = append(s, paste('{ data: { id: "',i+e,'", ',
+                          'source: "',  which(V(g)$name == get.edgelist(g)[e,1])  ,'", target: "',  which(V(g)$name == get.edgelist(g)[e,2])  ,'", ',
+                          'dimension: "', edge.attrs[k],'", value:"',eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))),'"',
+                          '} },', sep='')
+                 )
+    }
+  }
+#   s = substr(s, 1, nchar(s)-1)
+  s = append(s, ']')
+#   s = gsub('},]', '}]', s)
+#   return(paste(s, collapse="") )
+#   return( gsub('},]', '}]', paste(s, collapse="")) )
+  return( gsub("\"","'", gsub('},]', '}]', paste(s, collapse="")) ) )
+}
+tpyFunc(genemania.network.graph)
