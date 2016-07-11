@@ -374,35 +374,10 @@ plot(samp_lm)
 
 
 ## Load in GeneMANIA example into Cytoscape form
-
-toCytoJSON_GeneMANIA <- function(g) {
-  s = c()
-  s = append(s,"[")
-  for (i in 1:length(V(g))) {
-    s = append(s, paste("{ data: { id: \'",i,"\', name: \'",names(V(g)[i]),"\' } },", sep=''))
-  }
-  temp <- get.edgelist(g)
-  for (i in 1:length(E(g))) {
-    if (i == length(E(g))) {
-      s = append(s, paste("{ data: { id: \'",i+length(V(g)),"\', source: \'",temp[i,1],"\', target: \'",temp[i,2],"\' } }", sep=''))
-    }
-    else {
-      s = append(s, paste("{ data: { id: \'",i+length(V(g)),"\', source: \'",temp[i,1],"\', target: \'",temp[i,2],"\' } },", sep=''))
-    }  
-  }
-  s = append(s, "]")
-  return( paste(s, collapse="") )
-}
-
 genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-network.txt", skip=6, header = TRUE)
 View(genemania.network)
 colnames(genemania.network) <- c("Entity.1", "Entity.2", "weight", "group", "publication")
-#write.table(genemania.network, file = "~/Code/VisualEncodingEngine/data/genemania-network-edgelist.txt", quote = FALSE, row.names = FALSE)
-#read_graph("~/Code/VisualEncodingEngine/data/genemania-network-edgelist.txt", format = c("edgelist"))
-#plot(graph.data.frame(read.table("~/Code/VisualEncodingEngine/data/genemania-network-edgelist-short.txt"), directed=FALSE))
 genemania.network.graph <- graph.data.frame(genemania.network, directed=FALSE)
-
-toCytoJSON_GeneMANIA(genemania.network.graph)
 
 tpyFunc <- function(g) {
   s = c();

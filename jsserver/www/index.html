@@ -40,8 +40,8 @@
     <button id="sendranktable" onclick="sendToR()">send table</button><br><br>
     <input id="numNodes">
     <input id="numEdges">
-    <button id="visualizeNetwork" onclick="plotNetwork()">visualize default</button>
-    <button id="visualizeGeneMANIA" onclick="plotNetwork()">visualize GeneMANIA</button>
+    <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
+    <button id="visualizeGeneMANIA" onclick="plotNetwork('genemania')">visualize GeneMANIA</button>
     <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
 </div>
 <div id="uploadGraphSection">
@@ -485,7 +485,7 @@
             }
         }
 
-        function plotNetwork() {
+        function plotNetwork(desireddata) {
             var cyCanvas = d3.selectAll('#cy')
                     .style('display', 'inline');
 
@@ -514,12 +514,21 @@
                 autounselectify: false
             };
 
-            cy = cytoscape({
-                container: document.getElementById('cy'),
+            if (desireddata === 'genemania') {
+                cy = cytoscape({
+                    container: document.getElementById('cy'),
 //                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
-                elements: genemania,
-                style: editStyle(generateStyle(), whichHighlight())
-            });
+                    elements: genemania,
+                    style: editStyle(generateStyle(), whichHighlight())
+                });
+            }
+            else {
+                cy = cytoscape({
+                    container: document.getElementById('cy'),
+                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
+                    style: editStyle(generateStyle(), whichHighlight())
+                });
+            }
 
             cy.layout( options );
         }
@@ -535,7 +544,8 @@
                         //'shape': encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
                         'width': null,
                         'height': null,
-                        'border-width': 4
+                        'border-width': 4,
+                        'label': 'data(id)'
                     }
                 },
                 {
@@ -859,9 +869,6 @@ function newlayout(l) {
         name: l
     }).run();
 }
-
-function radius(s,fudge) { var factor = fudge || 10; return Math.sqrt(s/Math.PI)*factor; }
-//example use: cy.nodes("[usage='numeric']").css('height', function( ele ) { return radius(  ele.data().value  ); }).css('width', function( ele ) { return radius(  ele.data().value  ); })
 
 
 window.onkeypress = function(event) {
