@@ -35,6 +35,7 @@
 <div id="rankTableSection">
     <input id="numEncodings">
     <input id="numTasks">
+    <input id="numAssignments">
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
     <button id="sendranktable" onclick="sendToR()">send table</button><br><br>
@@ -79,6 +80,7 @@
 
     var numberOfEncodings = 5;
     var numberOfTasks = 5;
+    var numberOfAssignments;
     var cy;
     var tasks = [];
     var encodings;
@@ -407,7 +409,9 @@
             d3.selectAll('.rankedcell').attr('bgcolor', null);
             highlightImproperEncodings();
             var jsontable = rankTableToJSON();
-            console.log(jsontable);
+            var numAssign = getNumberOfAssignments();
+            console.log({table:jsontable, toAssign:numAssign});
+            var tosend= {table:jsontable, toAssign:numAssign};
 
 
             return $.ajax({
@@ -415,7 +419,7 @@
                 url: 'lp',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(jsontable),
+                data: JSON.stringify(tosend),
                 success: function (data) {
                     console.log(data);
                     Robj = data;
@@ -483,6 +487,17 @@
                             .filter('.row' + (row[k] + 1))
                             .attr('bgcolor', "#F3F315");
                 }
+            }
+        }
+
+        function getNumberOfAssignments() {
+            if (isNaN(parseInt($("#numAssignments").val()))) {
+                numberOfAssignments = d3.min([tasks.length, encodings.length]);
+                return numberOfAssignments;
+            }
+            else {
+                numberOfAssignments = parseInt($("#numAssignments").val());
+                return numberOfAssignments;
             }
         }
 

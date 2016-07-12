@@ -41,7 +41,9 @@ app.get('/sfunction', function (req, res) {
 });
 
 app.post('/lp', function (req, res) {
-    var rdata = req.body;
+    var dataObject = req.body;
+    var rdata = req.body.table;
+    var assn = req.body.toAssign;
     var jfile = 'savedinput/' + Date.now() + '.json';
     var jfileout = 'savedoutput/' + Date.now() + '.json';
     jsonfile.writeFile(jfile, rdata, function (err, success) {
@@ -51,7 +53,7 @@ app.post('/lp', function (req, res) {
         else {
 
 
-            exec('Rscript r/silly.r ' + jfile + ' ' + jfileout, function (error, stdout, stderr) {
+            exec('Rscript r/silly.r ' + jfile + ' ' + jfileout + ' ' + assn, function (error, stdout, stderr) {
                 if (error) {
                     console.log(error);
                     res.send(error);
