@@ -34,21 +34,9 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41272432">
-              <caret line="528" column="71" selection-start-line="528" selection-start-column="71" selection-end-line="528" selection-end-column="71" />
+            <state vertical-scroll-proportion="0.7585644">
+              <caret line="44" column="92" selection-start-line="44" selection-start-column="92" selection-end-line="44" selection-end-column="92" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="datafiles.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/datafiles.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="1084" selection-start-line="4" selection-start-column="1084" selection-end-line="4" selection-end-column="1084" />
-              <folding>
-                <element signature="e#0#45#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -419,8 +407,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/datafiles.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="1084" selection-start-line="4" selection-start-column="1084" selection-end-line="4" selection-end-column="1084" />
+        <state vertical-scroll-proportion="16.203619">
+          <caret line="6" column="82293" selection-start-line="6" selection-start-column="82293" selection-end-line="6" selection-end-column="82293" />
           <folding>
             <element signature="e#0#45#0" expanded="false" />
           </folding>
@@ -429,8 +417,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41272432">
-          <caret line="528" column="71" selection-start-line="528" selection-start-column="71" selection-end-line="528" selection-end-column="71" />
+        <state vertical-scroll-proportion="0.7585644">
+          <caret line="44" column="92" selection-start-line="44" selection-start-column="92" selection-end-line="44" selection-end-column="92" />
           <folding />
         </state>
       </provider>

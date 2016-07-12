@@ -41,7 +41,8 @@
     <input id="numNodes">
     <input id="numEdges">
     <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
-    <button id="visualizeGeneMANIA" onclick="plotNetwork('genemania')">visualize GeneMANIA</button>
+    <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
+    <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
     <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
 </div>
 <div id="uploadGraphSection">
@@ -514,11 +515,21 @@
                 autounselectify: false
             };
 
-            if (desireddata === 'genemania') {
+            if (desireddata === 'genemania_BRCA') {
+                options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
 //                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
-                    elements: genemania,
+                    elements: genemania_BRCA,
+                    style: editStyle(generateStyle(), whichHighlight())
+                });
+            }
+            else if (desireddata === "genemania_APP") {
+                options.name = 'cose';
+                cy = cytoscape({
+                    container: document.getElementById('cy'),
+//                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
+                    elements: genemania_APP,
                     style: editStyle(generateStyle(), whichHighlight())
                 });
             }

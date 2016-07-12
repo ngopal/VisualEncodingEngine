@@ -374,7 +374,8 @@ plot(samp_lm)
 
 
 ## Load in GeneMANIA example into Cytoscape form
-genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-network.txt", skip=6, header = TRUE)
+genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-network-BRCA.txt", skip=6, header = TRUE)
+genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-network-APP.txt", skip=6, header = TRUE)
 View(genemania.network)
 colnames(genemania.network) <- c("Entity.1", "Entity.2", "weight", "group", "publication")
 genemania.network.graph <- graph.data.frame(genemania.network, directed=FALSE)
