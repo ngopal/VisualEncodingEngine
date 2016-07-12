@@ -736,9 +736,9 @@
 //    ];
 
     var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds},
-        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu},
-        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2},
+        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds, incompatability:[1,2,9,10,11,12,13,14,15]},
+        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu, incompatability:[0,2,9,10,11,12,13,14,15]},
+        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1,9,10,11,12,13,14,15]},
         {
             encname: 'node shape (cat)',
             func: nodeshape_cat,
@@ -755,31 +755,35 @@
                 9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
                 10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
                 11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
-                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
+                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
+            },
+            incompatability:[9,10,11,12,13,14,15]
         },
-        {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10]},
-        {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10]},
-        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10]},
-        {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75]},
-        {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75]},
-        {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10]},
-        {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10]},
-        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues},
-        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn},
-        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3},
+        {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5,6,9,10,11,12,13,14,15]},
+        {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,6,9,10,11,12,13,14,15]},
+        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
+        {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[8,9,10,11,12,13,14,15]},
+        {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7,9,10,11,12,13,14,15]},
+        {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,10]},
+        {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,9]},
+        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues, incompatability:[0,1,2,3,4,5,6,7,8,12,13]},
+        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:[0,1,2,3,4,5,6,7,8,11,13]},
+        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:[0,1,2,3,4,5,6,7,8,11,12]},
         {
             encname: 'edge pattern (cat)',
             func: edgepattern_cat,
             style: 'line-style',
             type: 'edge',
-            range: ["solid", "dotted", "dashed"]
+            range: ["solid", "dotted", "dashed"],
+            incompatability:[0,1,2,3,4,5,6,7,8]
         },
         {
             encname: 'edge arrow (cat)',
             func: edgearrow_cat,
             style: 'line-style',
             type: 'edge',
-            range: ["solid", "dotted", "dashed"]
+            range: ["solid", "dotted", "dashed"],
+            incompatability:[0,1,2,3,4,5,6,7,8]
         }
     ];
 
@@ -915,6 +919,45 @@ window.onkeypress = function(event) {
         plotNetwork();
     }
 }
+
+    function overEncoding(numberOfClasses) {
+        var rangematrix = [];
+        for (var i=0; i < thing.length; i++) {
+            for (var k=i+1; k < thing.length; k++) {
+                var one;
+                var two;
+                if ( !Array.isArray(thing[i].range ) ) {
+                    one = +d3.max(Object.keys(thing[i].range))
+                }
+                else {
+                    one = thing[i].range.length;
+                }
+                if ( !Array.isArray(thing[k].range ) ) {
+                    two = +d3.max(Object.keys(thing[k].range))
+                }
+                else {
+                    two = thing[k].range.length;
+                }
+                console.log([i,k,thing[i],thing[k],one,two])
+                if (thing[i].incompatability.indexOf(k) === -1) {
+                    rangematrix.push({indexes:[i,k], potential:one*two})
+                }
+            }
+        }
+
+        // calculate difference between numberOfClasses and potentials
+        var retrangematr = rangematrix.map(function(n){
+                    return {indexes:n.indexes, potential:n.potential-numberOfClasses};
+                }).filter(function(n){
+                    if (n.potential >=0) {
+                        return {indexes:n.indexes, potential:n.potential}
+                    }
+                }).sort(function(a,b){
+                    return a.potential-b.potential
+                });
+
+        return retrangematr;
+    }
 
 
 
