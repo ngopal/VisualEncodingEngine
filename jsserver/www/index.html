@@ -10,6 +10,7 @@
     <script src="fcns.js"></script>
     <script src="cytoscape-cola.js"></script>
     <script src="../datafiles.js"></script>
+    <script src="reimg.js"></script>
     <style>
         /*#cy {*/
             /*width: 100%;*/
@@ -38,7 +39,8 @@
     <input id="numAssignments">
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
-    <button id="sendranktable" onclick="sendToR()">send table</button><br><br>
+    <button id="sendranktable" onclick="sendToR()">send table</button>
+    <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
     <input id="numNodes">
     <input id="numEdges">
     <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
@@ -61,6 +63,7 @@
 <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
 <div id="cy">
 </div>
+<image id="theimage"></image>
 </body>
 <script type="application/javascript">
 
@@ -75,6 +78,13 @@
         }
         return a;
     };
+
+    function to_image(){
+//        var base64img = cy.png();
+//        var url = base64img.src.replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+//        window.open(url);
+        return window.open(cy.png().replace(/^data:image\/[^;]/, 'data:application/octet-stream'));
+    }
 
     var body = d3.select('body');
 
