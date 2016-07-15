@@ -34,28 +34,30 @@
     </style>
 </head>
 <div id="rankTableSection">
-    <input id="numEncodings">
-    <input id="numTasks">
-    <input id="numAssignments">
+    <input id="numEncodings" placeholder="Number of Encodings">
+    <input id="numTasks" placeholder="Number of Dim*Tasks">
+    <input id="numAssignments" placeholder="Number of Assignments">
+    <input id="taskChoice" placeholder="Index of Task">
     <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
     <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
+    <button id="rankvalues" onclick="generateBaselineRank(taskNames[parseInt($('#taskChoice').val())])">load ranks</button>
     <button id="sendranktable" onclick="sendToR()">send table</button>
     <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
-    <input id="numNodes">
-    <input id="numEdges">
+    <input id="numNodes" placeholder="Number of Nodes">
+    <input id="numEdges" placeholder="Number of Edges">
     <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
     <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
     <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
     <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
 </div>
-<div id="uploadGraphSection">
-    <div id="dvImportSegments" class="fileupload">
-        <fieldset>
-            <legend>Upload your Network File</legend>
-            <input type="file" name="File Upload" id="txtFileUpload" />
-        </fieldset>
-    </div>
-</div>
+<!--<div id="uploadGraphSection">-->
+    <!--<div id="dvImportSegments" class="fileupload">-->
+        <!--<fieldset>-->
+            <!--<legend>Upload your Network File</legend>-->
+            <!--<input type="file" name="File Upload" id="txtFileUpload" />-->
+        <!--</fieldset>-->
+    <!--</div>-->
+<!--</div>-->
 <button id="layoutRand" onclick="newlayout('random')">Random</button>
 <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
 <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
@@ -173,7 +175,7 @@
             cy.nodes().style('width', function(n){return n.height();});
         } catch(err) {
             console.log(err);
-            cy.style(reviseViz().reverse())
+            cy.style(reviseViz().reverse());
             //make sure that the node width is symmetrical to height
             cy.nodes().style('width', function(n){return n.height();});
         }
@@ -231,26 +233,6 @@
             'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:15}
         };
 
-        //encodingStyleFunctions seems to be unused!
-//        var encodingStyleFunctions = {
-//            'node color (seq)': {name: 'background-color', param: colorbrewer.Reds},
-//            'node color (div)': {name: 'background-color', param: colorbrewer.RdBu},
-//            'node color (cat)': {name: 'background-color', param: colorbrewer.Set2},
-//            'node shape (cat)': {name: 'shape'},
-//            'node border (quant)': {name: 'border-width'},
-//            'node border (bin)': {name: 'border-width'},
-//            'node border (cat)': {name: 'border-width'},
-//            'edge width (quant)': {name: 'width'},
-//            'edge width (bin)': {name: 'width'},
-//            'edge color (seq)': {name: 'line-color'},
-//            'edge color (div)': {name: 'line-color'},
-//            'edge color (cat)': {name: 'line-color'},
-//            'edge pattern (cat)': {name: 'line-style'},
-//            'edge arrow (cat)': {name: 'target-arrow-shape'}
-//            'node size (quant)': {name: 'width'}
-//            'node size (quant)': {name: 'heght'}
-//        };
-        // encodingRenderFunctions['node shape (cat)']([1,2,3,4,5])
 
         function highlightImproperEncodings() {
             //allowedEncodings['edge pattern'].indexOf(manifest["dim1 task 1"].usage) === -1 then improper
@@ -414,6 +396,26 @@
                 return array;
             }
 
+        }
+
+        function generateBaselineRank(taskname) {
+            var taskItem = taskname || 'Task_Topology_Find_Clusters';
+            var baselineranksdata = {};
+            baselineValues.forEach(function(b){
+                if (Object.keys(baselineMappings).indexOf(b.Encoding) !== -1){
+                    baselineMappings[b.Encoding].forEach(function(enc){
+                        console.log([enc, +b[taskItem]])
+                        baselineranksdata[enc] = +b[taskItem];
+                    })
+                }
+            });
+            var encods = Object.keys(allowedEncodings);
+            for (var i = 0; i < encods.length; i++) {
+                d3.selectAll('.row'+(i+1)).text(function(){
+                    return baselineranksdata[encods[i]] || 0;
+                }).attr('bgcolor', null);
+            }
+            console.log("TASK AT HAND: "+ taskname);
         }
 
         function sendToR() {
@@ -637,38 +639,6 @@
             return style;
         }
 
-//        function makeRandomNetwork() {
-//            var nodes = d3.range(0, 100).map(function (d) {
-//                return {
-//                    data: {
-//                        id: d.toString()
-//                    }
-//                };
-//            });
-//            var edges = d3.range(101, 150).map(function (d) {
-//                return {
-//                    data: {
-//                        id: d.toString(),
-//                        source: Math.floor(Math.random() * 100).toString(),
-//                        target: Math.floor(Math.random() * 100).toString()
-//                    }
-//                };
-//            });
-//            var data = [];
-//            for (var i = 0; i < nodes.length; i++) {
-//                data.push(nodes[i]);
-//            }
-//            for (var i = 0; i < edges.length; i++) {
-//                data.push(edges[i]);
-//            }
-//            console.log(data);
-//            return {
-//                container: document.getElementById('cy'),
-//                elements: data,
-//                style: editStyle(generateStyle(), whichHighlight())
-//            };
-//        }
-
 
         function whichHighlight() {
             var items = [];
@@ -698,53 +668,6 @@
         }
     }
 
-//    var thing = [
-//        {encname: 'node color (seq)', func: nodecolor_seq, style: ['background-color'], type: 'node', range: colorbrewer.Reds},
-//        {encname: 'node color (div)', func: nodecolor_div, style: ['background-color'], type: 'node', range: colorbrewer.RdBu},
-//        {encname: 'node color (cat)', func: nodecolor_cat, style: ['background-color'], type: 'node', range: colorbrewer.Set2},
-//        {
-//            encname: 'node shape (cat)',
-//            func: nodeshape_cat,
-//            style: ['shape'],
-//            type: 'node',
-//            range: { 1: ["rectangle"],
-//                2: ["rectangle", "roundrectangle"],
-//                3: ["rectangle", "roundrectangle", "ellipse"],
-//                4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
-//                5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
-//                6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
-//                7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
-//                8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
-//                9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
-//                10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
-//                11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
-//                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"] }
-//        },
-//        {encname: 'node border (quant)', func: nodeborder_quant, style: ['border-width'], type: 'node', range: [1, 5, 10]},
-//        {encname: 'node border (bin)', func: nodeborder_bin, style: ['border-width'], type: 'node', range: [1, 5, 10]},
-//        {encname: 'node border (cat)', func: nodeborder_cat, style: ['border-width'], type: 'node', range: [1, 5, 10]},
-//        {encname: 'node size (quant)', func: nodesize_quant, style: ['width','height'], type: 'node', range: [20, 50, 75]},
-//        {encname: 'node size (bin)', func: nodesize_bin, style: ['width','height'], type: 'node', range: [20, 50, 75]},
-//        {encname: 'edge width (quant)', func: edgewidth_quant, style: ['width'], type: 'edge', range: [1, 5, 10]},
-//        {encname: 'edge width (bin)', func: edgewidth_bin, style: ['width'], type: 'edge', range: [1, 5, 10]},
-//        {encname: 'edge color (seq)', func: edgecolor_seq, style: ['line-color'], type: 'edge', range: colorbrewer.Blues},
-//        {encname: 'edge color (div)', func: edgecolor_div, style: ['line-color'], type: 'edge', range: colorbrewer.BuGn},
-//        {encname: 'edge color (cat)', func: edgecolor_cat, style: ['line-color'], type: 'edge', range: colorbrewer.Set3},
-//        {
-//            encname: 'edge pattern (cat)',
-//            func: edgepattern_cat,
-//            style: ['line-style'],
-//            type: 'edge',
-//            range: ["solid", "dotted", "dashed"]
-//        },
-//        {
-//            encname: 'edge arrow (cat)',
-//            func: edgearrow_cat,
-//            style: ['line-style'],
-//            type: 'edge',
-//            range: ["solid", "dotted", "dashed"]
-//        }
-//    ];
 
     var thing = [
         {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds, incompatability:[1,2,9,10,11,12,13,14,15]},
@@ -931,6 +854,10 @@ window.onkeypress = function(event) {
         // do random
         randomRanks();
     }
+    else if (event.keyCode == 97) {
+        // load ranks
+        generateBaselineRank(taskNames[parseInt($('#taskChoice').val())]);
+    }
     else if (event.keyCode == 119) {
         // send table
         sendToR();
@@ -943,7 +870,7 @@ window.onkeypress = function(event) {
         // reset viz
         plotNetwork();
     }
-}
+};
 
     function overEncoding(numberOfClasses) {
         var rangematrix = [];
@@ -992,26 +919,23 @@ window.onkeypress = function(event) {
         return ret;
     }
 
+
     var baselineMappings = {
-        "node color (seq)" : "Saturation..Brightness",
-        "node color (div)" : "Saturation..Brightness",
-        "node color (cat)" : "Color",
-        "node shape (cat)" : "Shape..Icon",
-        "node border (quant)" : "Weight..Boldness",
-        "node border (bin)" : "Weight..Boldness",
-        "node size (quant)" : "Size.Area",
-        "node size (bin)" : "Size.Area",
-        "edge width (quant)" : "Size.Area.1",
-        "edge width (bin)" : "Size.Area.1",
-        "edge color (seq)" : "Saturation..Brightness.1",
-        "edge color (div)" : "Saturation..Brightness.1",
-        "edge color (cat)" : "Color.1",
-        "edge pattern (cat)" : "Shape..Icon.1",
-        "node label (cat)" : "Text",
-        "edge label (cat)" : "Text.1"
-    }
+        "Saturation..Brightness": ["node color (seq)", "node color (div)"],
+        "Color" : ["node color (cat)"],
+        "Shape..Icon": ["node shape (cat)"],
+        "Weight..Boldness": ["node border (quant)", "node border (bin)"],
+        "Size.Area" : ["node size (quant)", "node size (bin)"],
+        "Size.Area.1": ["edge width (quant)", "edge width (bin)"],
+        "Saturation..Brightness.1" : ["edge color (seq)", "edge color (div)"],
+        "Color.1" : ["edge color (cat)"],
+        "Shape..Icon.1" : ["edge pattern (cat)"],
+        "Text" : ["node label (cat)"],
+        "Text.1" : ["edge label (cat)"]
+    };
 
     var baselineValues;
+    var taskNames;
 
     $(document).ready(function() {
         d3.csv('/ranktable.csv', function(err, data) {
@@ -1023,6 +947,7 @@ window.onkeypress = function(event) {
                     }
                 });
                 baselineValues = data;
+                taskNames = Object.keys(baselineValues[0]);
             }
             else {
                 console.log('This is embarassing!')
@@ -1031,7 +956,11 @@ window.onkeypress = function(event) {
     });
 
 //    baselineValues.forEach(function(b){
-//        console.log([b.Encoding, +b['Task_Topology_Find_Clusters']])
+//        if (Object.keys(baselineMappings).indexOf(b.Encoding) !== -1){
+//            baselineMappings[b.Encoding].forEach(function(enc){
+//                console.log([enc, +b['Task_Topology_Find_Clusters']])
+//            })
+//        }
 //    })
 
     // to calculate set space, dim1 task1 * dim2 task1 + dim1task2 * dim2task2
