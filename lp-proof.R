@@ -423,3 +423,28 @@ tpyFunc <- function(g) {
   return( gsub("\"","'", gsub('},]', '}]', paste(s, collapse="")) ) )
 }
 tpyFunc(genemania.network.graph)
+
+
+
+
+# MANOVA example
+y1 = c(18.2, 20.1, 17.6, 16.8, 18.8, 19.7, 19.1)
+y2 = c(17.4, 18.7, 19.1, 16.4, 15.9, 18.4, 17.7)
+y3 = c(15.2, 18.8, 17.7, 16.5, 15.9, 17.1, 16.7)
+y = c(y1, y2, y3)
+n = rep(7, 3)
+group = rep(1:3, n)
+groupData = data.frame(y = y, group = factor(group))
+fit = lm(y ~ group, groupData)
+anova(fit)
+
+# what to do to run F-test on net vs path data
+chisq.test(matrix(as.integer(runif(52)*100), 4, 13), matrix(as.integer(runif(52)*100), 4, 13))
+
+library(org.Hs.eg.db)
+xx <- as.list(org.Hs.egALIAS2EG)
+genenames <- names(xx)
+# randomly sample 30 genes
+sample(genenames, 10, replace=T)
+
+

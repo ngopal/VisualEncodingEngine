@@ -15,6 +15,7 @@ app.use('/fcns.js', express.static(__dirname + '/fcns.js'));
 app.use('/networkgenerator.js', express.static(__dirname + '/networkgenerator.js'));
 app.use('/cytoscape-cola.js', express.static(__dirname + '/node_modules/cytoscape-cola/cytoscape-cola.js'));
 app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));
+app.use('/ranktable.csv', express.static(__dirname + '/ranktable.csv'));
 //app.use('/cola.js', express.static(__dirname + '/node_modules/cola/cola.js'));
 //app.use('/require.js', express.static(__dirname + '/node_modules/requirejs/require.js'));
 //app.use('/main.js', express.static(__dirname + '/main.js'));

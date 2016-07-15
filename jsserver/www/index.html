@@ -88,7 +88,8 @@
     var taskWithDims = [];
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
-    var dims = ['dim1', 'dim2'];
+//    var dims = ['dim1', 'dim2'];
+    var dims = ['dim1'];
     var encs = ['node color (seq)',
         'node color (div)',
         'node color (cat)',
@@ -766,7 +767,7 @@
         {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7,9,10,11,12,13,14,15]},
         {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,10]},
         {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,9]},
-        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Blues, incompatability:[0,1,2,3,4,5,6,7,8,12,13]},
+        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Greens, incompatability:[0,1,2,3,4,5,6,7,8,12,13]},
         {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:[0,1,2,3,4,5,6,7,8,11,13]},
         {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:[0,1,2,3,4,5,6,7,8,11,12]},
         {
@@ -803,7 +804,14 @@
         inputEncodings.sort().forEach(function(e) {
             console.log([selector, e, thing[e].encname]);
             if (thing[e].type === "node") {
-                var predomain = cy.nodes(selector).map(function(k){return k.data().value});
+                var predomain = cy.nodes(selector).map(function(k){
+                    if ($.isNumeric(k.data().value)) {
+                        return +k.data().value;
+                    }
+                    else {
+                        return k.data().value;
+                    }
+                });
                 var prerange = function() {
 //                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length) || thing[e].range[ +d3.max(Object.keys(thing[e].range)) ];
                     return rez(predomain,e);
@@ -821,7 +829,14 @@
                 }
             }
             else {
-                var predomain = cy.edges(selector).map(function(k){return k.data().value});
+                var predomain = cy.edges(selector).map(function(k){
+                    if ($.isNumeric(k.data().value)) {
+                        return +k.data().value;
+                    }
+                    else {
+                        return k.data().value;
+                    }
+                });
                 var prerange = function() {
 //                    return thing[e].range[predomain.length | 3] || thing[e].range.slice(0,predomain.length) || thing[e].range[ +d3.max(Object.keys(thing[e].range)) ];
                     return rez(predomain,e);
@@ -959,6 +974,58 @@ window.onkeypress = function(event) {
         return retrangematr;
     }
 
+    function swap(json){
+        var ret = {};
+        for(var key in json){
+            ret[json[key]] = key;
+        }
+        return ret;
+    }
+
+    var baselineMappings = {
+        "node color (seq)" : "Saturation..Brightness",
+        "node color (div)" : "Saturation..Brightness",
+        "node color (cat)" : "Color",
+        "node shape (cat)" : "Shape..Icon",
+        "node border (quant)" : "Weight..Boldness",
+        "node border (bin)" : "Weight..Boldness",
+        "node size (quant)" : "Size.Area",
+        "node size (bin)" : "Size.Area",
+        "edge width (quant)" : "Size.Area.1",
+        "edge width (bin)" : "Size.Area.1",
+        "edge color (seq)" : "Saturation..Brightness.1",
+        "edge color (div)" : "Saturation..Brightness.1",
+        "edge color (cat)" : "Color.1",
+        "edge pattern (cat)" : "Shape..Icon.1",
+        "node label (cat)" : "Text",
+        "edge label (cat)" : "Text.1"
+    }
+
+    var baselineValues;
+
+    $(document).ready(function() {
+        d3.csv('/ranktable.csv', function(err, data) {
+            if(err === null) {
+                data.forEach(function(item){
+                    if(item.hasOwnProperty('')) {
+                        item['Encoding'] = item[''];
+                        delete item[''];
+                    }
+                });
+                baselineValues = data;
+            }
+            else {
+                console.log('This is embarassing!')
+            }
+        })
+    });
+
+//    baselineValues.forEach(function(b){
+//        console.log([b.Encoding, +b['Task_Topology_Find_Clusters']])
+//    })
+
+    // to calculate set space, dim1 task1 * dim2 task1 + dim1task2 * dim2task2
+    // could be better to separate into node and edge encoding set spaces
 
 
 
