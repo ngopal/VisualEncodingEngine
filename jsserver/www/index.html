@@ -547,7 +547,6 @@
                 options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
-//                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                     elements: genemania_BRCA,
                     style: editStyle(generateStyle(), whichHighlight())
                 });
@@ -556,7 +555,6 @@
                 options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
-//                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                     elements: genemania_APP,
                     style: editStyle(generateStyle(), whichHighlight())
                 });
@@ -564,7 +562,7 @@
             else {
                 cy = cytoscape({
                     container: document.getElementById('cy'),
-                elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
+                    elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                     style: editStyle(generateStyle(), whichHighlight())
                 });
             }
