@@ -379,6 +379,7 @@ genemania.network <- read.delim("~/Code/VisualEncodingEngine/data/genemania-netw
 View(genemania.network)
 colnames(genemania.network) <- c("Entity.1", "Entity.2", "weight", "group", "publication")
 genemania.network.graph <- graph.data.frame(genemania.network, directed=FALSE)
+V(genemania.network.graph)$area <- pubMedCounts(genemania.network.graph)
 
 tpyFunc <- function(g) {
   s = c();
@@ -425,6 +426,24 @@ tpyFunc <- function(g) {
 tpyFunc(genemania.network.graph)
 
 
+pubMedCounts <- function(graphObj) {
+  vert_pubmedCount <- c()
+  for (g in V(graphObj)$name) { 
+    vert_pubmedCount <- cbind(vert_pubmedCount, entrez_search(db="pubmed", term=paste(g,'[All Fields] AND "humans"[MeSH Terms]',sep=''))$count )
+  }
+  return( sqrt(vert_pubmedCount/pi) )
+}
+
+
+library(rentrez)
+entrez_search(db="pubmed", term='LIPC[All Fields] AND "humans"[MeSH Terms]')
+vert_pubmedCount <- c()
+for (g in V(genemania.network.graph)$name) { 
+  cat(paste(g,'[All Fields] AND "humans"[MeSH Terms]',sep=''),'\n') 
+  vert_pubmedCount <- cbind(vert_pubmedCount, entrez_search(db="pubmed", term=paste(g,'[All Fields] AND "humans"[MeSH Terms]',sep=''))$count )
+}
+# radius adjusted values
+barplot(sqrt(vert_pubmedCount/pi), las=2, horiz=T, names.arg = V(genemania.network.graph)$name, cex.names = 0.6)
 
 
 # MANOVA example
