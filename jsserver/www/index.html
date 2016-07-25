@@ -100,8 +100,8 @@
     var taskWithDims = [];
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
-//    var dims = ['dim1', 'dim2'];
-    var dims = ['dim1'];
+    var dims = ['dim1', 'dim2'];
+//    var dims = ['dim1'];
     var encs = ['node color (seq)',
         'node color (div)',
         'node color (cat)',
@@ -163,9 +163,10 @@
 
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:0 },
-        'dim2 task1' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:1 },
-        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:2 },
-        'dim2 task2' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:3 }
+//        'dim2 task1' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:1 },
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:1 },
+//        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:2 },
+//        'dim2 task2' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:3 }
     };
 
     function internalData() {
@@ -964,6 +965,10 @@ window.onkeypress = function(event) {
     // to calculate set space, dim1 task1 * dim2 task1 + dim1task2 * dim2task2
     // could be better to separate into node and edge encoding set spaces
 
+
+    // to record information from selected elements
+    //var selectedNodeStyleAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.nodes(':selected').style()[n]; });
+    //var selectedEdgeStyleAttrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.edges(':selected').style()[n]; });
 
 
 </script>

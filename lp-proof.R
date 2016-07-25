@@ -380,47 +380,48 @@ View(genemania.network)
 colnames(genemania.network) <- c("Entity.1", "Entity.2", "weight", "group", "publication")
 genemania.network.graph <- graph.data.frame(genemania.network, directed=FALSE)
 V(genemania.network.graph)$area <- pubMedCounts(genemania.network.graph)
+#genemania.network.graph <- remove.vertex.attribute(genemania.network.graph, "name")
 
 tpyFunc <- function(g) {
   s = c();
   s = append(s, '[')
+  iter = 0;
   vert.attrs <- list.vertex.attributes(g);
   edge.attrs <- list.edge.attributes(g);
   for (i in 1:length(V(g))) {
-#     cat('{ data: { id: \"',i,'\", ')
-    s = append(s, paste('{ data: { id: "',i,'", ', sep=''))
+    iter = iter + 1; # changing i's to iter's
+    s = append(s, paste('{ data: { id: "',iter,'", ', sep=''))
     for (k in 1:length(vert.attrs)) {
-      if (k==length(vert.attrs)) {
-        s = append(s, paste(vert.attrs[k],' : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'" ', sep='') )
-#         cat(vert.attrs[k],' : \"', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'\" ' )
+      if (vert.attrs[k] != "name") {
+          s = append(s, paste('name : "', eval(parse(text=paste("V(g)$name",'[',iter,']',sep=''))),'", dimension : "',vert.attrs[k],'", value : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',iter,']',sep=''))),'", ', sep='') )
+      }
+    }
+   s = append(s, paste(' } },', sep=''))
+  }
+
+  for (e in 1:dim(unique(get.edgelist(g)))[1]) {
+    cat( e,
+         unique(get.edgelist(g))[e,1],
+         unique(get.edgelist(g))[e,2],
+         length(which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])),
+         mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]),
+         '\n')
+    for (k in 1:length(edge.attrs)) {
+      iter = iter + 1;
+      if (  typeof(eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep='')))) == "character"  ) {
+        cat('more to do','\n')
       }
       else {
-        s = append(s, paste(vert.attrs[k],' : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'", ', sep='') )
-#         cat(vert.attrs[k],' : \"', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',i,']',sep=''))),'\", ' )
+        edgeattrmean = mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
+        s = append(s, paste('{ data: { id: "',iter,'", ',
+                            'source: "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", target: "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
+                            'dimension: "', edge.attrs[k],'", value:"',edgeattrmean,'"',
+                            '} },', sep='')
+        )
       }
     }
-    s = append(s, paste(' } },', sep=''))
-#     cat(' } },', '\n')
   }
-  for (e in 1:length(E(g))) {
-    pairs = get.edgelist(g)
-    for (k in 1:length(edge.attrs)) {
-#       cat('{ data: { id: \"',i+e,'\", ')
-#       cat('source: \"',  which(V(g)$name == get.edgelist(g)[e,1])  ,'\", target: \"',  which(V(g)$name == get.edgelist(g)[e,2])  ,'\", ')
-#       cat('dimension: \"', edge.attrs[k],'\", value:\"',eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))),'\"' )
-#       cat('} },')
-      s = append(s, paste('{ data: { id: "',i+e,'", ',
-                          'source: "',  which(V(g)$name == get.edgelist(g)[e,1])  ,'", target: "',  which(V(g)$name == get.edgelist(g)[e,2])  ,'", ',
-                          'dimension: "', edge.attrs[k],'", value:"',eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))),'"',
-                          '} },', sep='')
-                 )
-    }
-  }
-#   s = substr(s, 1, nchar(s)-1)
   s = append(s, ']')
-#   s = gsub('},]', '}]', s)
-#   return(paste(s, collapse="") )
-#   return( gsub('},]', '}]', paste(s, collapse="")) )
   return( gsub("\"","'", gsub('},]', '}]', paste(s, collapse="")) ) )
 }
 tpyFunc(genemania.network.graph)
@@ -434,6 +435,24 @@ pubMedCounts <- function(graphObj) {
   return( sqrt(vert_pubmedCount/pi) )
 }
 
+findEdgesForVertex <- function(vertexname,gra) {
+  return( which(vertexname == get.edgelist(gra)[,1] | vertexname == get.edgelist(gra)[,2]) )
+}
+
+E(genemania.network.graph)$weight[findEdgesForVertex(V(genemania.network.graph)$name[1], genemania.network.graph)]
+unique(get.edgelist(genemania.network.graph))
+which(get.edgelist(genemania.network.graph)[,1] == unique(get.edgelist(genemania.network.graph))[1,1] & get.edgelist(genemania.network.graph)[,2] == unique(get.edgelist(genemania.network.graph))[1,2])
+E(genemania.network.graph)$weight[which(get.edgelist(genemania.network.graph)[,1] == unique(get.edgelist(genemania.network.graph))[1,1] & get.edgelist(genemania.network.graph)[,2] == unique(get.edgelist(genemania.network.graph))[1,2])]
+
+# can use the which indexes to average duplicate entries.
+for (u in 1:dim(unique(get.edgelist(genemania.network.graph)))[1]) {
+  cat( u,
+       unique(get.edgelist(genemania.network.graph))[u,1],
+       unique(get.edgelist(genemania.network.graph))[u,2],
+       length(which(get.edgelist(genemania.network.graph)[,1] == unique(get.edgelist(genemania.network.graph))[u,1] & get.edgelist(genemania.network.graph)[,2] == unique(get.edgelist(genemania.network.graph))[u,2])),
+       mean(E(genemania.network.graph)$weight[which(get.edgelist(genemania.network.graph)[,1] == unique(get.edgelist(genemania.network.graph))[u,1] & get.edgelist(genemania.network.graph)[,2] == unique(get.edgelist(genemania.network.graph))[u,2])]),
+       '\n')
+}
 
 library(rentrez)
 entrez_search(db="pubmed", term='LIPC[All Fields] AND "humans"[MeSH Terms]')
@@ -465,5 +484,62 @@ xx <- as.list(org.Hs.egALIAS2EG)
 genenames <- names(xx)
 # randomly sample 30 genes
 sample(genenames, 10, replace=T)
+
+
+
+# Mock data for evaluation
+matrix(c(sample(0:255, 50, replace = T),sample(0:255, 50, replace = T),sample(0:255, 50, replace = T)), 50, 3) # RGB node colors
+c(sample(0:15, 50, replace = T)) # border width
+sample(c("rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"), 50, replace = T) # shape
+sample(1:300, 50, replace = T) # radius
+sample(1:20, 50, replace = T) # edge width
+matrix(c(sample(0:255, 50, replace = T),sample(0:255, 50, replace = T),sample(0:255, 50, replace = T)), 50, 3) # RGB line colors
+sample(c("solid", "dotted", "dashed"), 50, replace = T) # line pattern
+
+experimentData <- cbind(
+      sample(c("Person1","Person2","Person3","Person4"), 4, replace = T),
+      sample(c("Network1","Network2"), 2, replace = T),
+      matrix(c(sample(0:255, 50, replace = T),sample(0:255, 50, replace = T),sample(0:255, 50, replace = T)), 50, 3), # RGB node colors
+      c(sample(0:15, 50, replace = T)), # border width
+      sample(c("rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"), 50, replace = T), # shape
+      sample(1:300, 50, replace = T), # radius
+      sample(1:20, 50, replace = T), # edge width
+      matrix(c(sample(0:255, 50, replace = T),sample(0:255, 50, replace = T),sample(0:255, 50, replace = T)), 50, 3), # RGB line colors
+      sample(c("solid", "dotted", "dashed"), 50, replace = T), # line pattern
+      sample(0:1, 50, replace = T) #selected or not
+)
+
+colnames(experimentData) <- c("Subject","Network","NodeR","NodeG","NodeB","NodeBorderWidth","NodeShape","NodeRadius","EdgeWidth","EdgeR","EdgeG","EdgeB","EdgePattern","Selected")
+head(experimentData)
+experimentData <- as.data.frame(experimentData)
+lmer(as.numeric(Selected) ~ as.numeric(NodeRadius) + (1|NodeShape), data=experimentData)
+experiment.model <- lmer(as.numeric(Selected) ~ as.numeric(NodeRadius) + (1|Subject) + (1|Network), data=experimentData)
+experiment.model2 <- lmer(as.numeric(Selected) ~ as.numeric(NodeRadius) + NodeShape + (1|Subject) + (1|Network), data=experimentData)
+experiment.null <- lmer(as.numeric(Selected) ~ (1|Subject) + (1|Network), data=experimentData)
+anova(experiment.null,experiment.model)
+
+
+# Selected ~ Node Encodings ... + ... Edge Encodings + ... + (1|Subject) + (1|Network)
+# cols are node visual encodings from app, values are 1 or 0 depending on highlights
+# for values that are value 1, can replace 1 with the actual value as obtained from collected data (e.g. color, radius, shape, etc)
+# This could be useful in determing whether the encoding is noticeable, rather than of the value of the encoding itself.
+# Network could refer to different FD layouts, presented in randomized order to prevent carry-over effects, but also account for layout random effects
+
+experimentData <- cbind(
+  sample(c("Person1","Person2","Person3","Person4"), 4, replace = T),
+  sample(c("Network1","Network2"), 2, replace = T),
+  sample(0:1, 50, replace = T),
+  
+)
+
+expdat <- matrix(0,50,13)
+for (i in 1:dim(expdat)[1]) {
+  expdat[i,sample(1:7,1)] <- 1
+  expdat[i,sample(8:13,1)] <- 1
+}
+expdat <- cbind(expdat, sample(0:1, 50, replace = T))
+colnames(expdat) <- c("NodeColorSeq","NodeColorDiv","NodeColorCat","NodeBorderQuant","NodeBorderBin","NodeSizeQuant","NodeSizeBin",
+                      "EdgeWidthQuant","EdgeWidthBin","EdgeColorSeq","EdgeColorDiv","EdgeColorCat","EdgePatternCat","UserSelected")
+
 
 
