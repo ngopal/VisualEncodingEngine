@@ -42,6 +42,21 @@ app.get('/sfunction', function (req, res) {
     });
 });
 
+app.post('/submitdata', function(req, res) {
+    var dataObject = req.body;
+    var jfile = 'savedData/' + Date.now() + '.json';
+    jsonfile.writeFile(jfile, dataObject, function(err, success) {
+        if(err) {
+            console.log(err);
+        }
+        else {
+            console.log(success);
+            res.setHeader('Content-Type', 'application/json');
+            res.jsonp({'response':'success'});
+        }
+    });
+});
+
 app.post('/lp', function (req, res) {
     var dataObject = req.body;
     var rdata = req.body.table;

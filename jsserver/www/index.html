@@ -536,7 +536,7 @@
                 panningEnabled: true,
                 userPanningEnabled: true,
                 boxSelectionEnabled: false,
-                selectionType: 'single',
+                selectionType: 'additive',
                 touchTapThreshold: 8,
                 desktopTapThreshold: 4,
                 autolock: false,
@@ -550,6 +550,14 @@
                     container: document.getElementById('cy'),
                     elements: genemania_BRCA,
                     style: editStyle(generateStyle(), whichHighlight())
+//                    selectionType: 'additive'
+                });
+                cy.nodes().on("click", function(){
+                    submitUserChoice();
+                });
+
+                cy.edges().on("click", function(){
+                    submitUserChoice();
                 });
             }
             else if (desireddata === "genemania_APP") {
@@ -558,6 +566,7 @@
                     container: document.getElementById('cy'),
                     elements: genemania_APP,
                     style: editStyle(generateStyle(), whichHighlight())
+//                    selectionType: 'additive'
                 });
             }
             else {
@@ -565,6 +574,7 @@
                     container: document.getElementById('cy'),
                     elements: generateNetwork(parseInt($("#numNodes").val()) | 10, parseInt($("#numEdges").val()) | 15,['p-val','pathway'],['coexpression','probability']),
                     style: editStyle(generateStyle(), whichHighlight())
+//                    selectionType: 'additive'
                 });
             }
 
@@ -869,6 +879,9 @@ window.onkeypress = function(event) {
         // reset viz
         plotNetwork();
     }
+    else if (event.keyCode == 115) {
+        submitUserChoice();
+    }
 };
 
     function overEncoding(numberOfClasses) {
@@ -951,8 +964,23 @@ window.onkeypress = function(event) {
             else {
                 console.log('This is embarassing!')
             }
-        })
+        });
     });
+
+    function submitUserChoice() {
+        var tosub = recordData();
+        return $.ajax({
+            type: 'POST',
+            url: '/submitdata',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(tosub),
+            success: function (data) {
+                console.log(['user choice submit success', data]);
+                plotNetwork('genemania_BRCA');
+            }
+        });
+    }
 
     function recordData() {
         var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
@@ -963,6 +991,8 @@ window.onkeypress = function(event) {
         cy.nodes(':selected').forEach(function(n){
             var temp = {};
             temp.name = n.data().name;
+            temp.id = n.data().id;
+            temp.type = 'node';
             temp.results = {};
             selecnodeattrs.forEach(function(k){
                 temp.results[k] = n.style()[k];
@@ -976,6 +1006,8 @@ window.onkeypress = function(event) {
         cy.nodes(':unselected').forEach(function(n){
             var temp = {};
             temp.name = n.data().name;
+            temp.id = n.data().id;
+            temp.type = 'node';
             temp.results = {};
             selecnodeattrs.forEach(function(k){
                 temp.results[k] = n.style()[k];
@@ -989,8 +1021,10 @@ window.onkeypress = function(event) {
         //record edge data
         cy.edges(':selected').forEach(function(n){
             var temp = {};
+            temp.id = n.data().id;
             temp.source = n.data().source;
             temp.target = n.data().target;
+            temp.type = 'edge';
             temp.results = {};
             selecedgeattrs.forEach(function(k){
                 temp.results[k] = n.style()[k];
@@ -1002,8 +1036,10 @@ window.onkeypress = function(event) {
 
         cy.edges(':unselected').forEach(function(n){
             var temp = {};
+            temp.id = n.data().id;
             temp.source = n.data().source;
             temp.target = n.data().target;
+            temp.type = 'edge';
             temp.results = {};
             selecedgeattrs.forEach(function(k){
                 temp.results[k] = n.style()[k];
@@ -1015,6 +1051,8 @@ window.onkeypress = function(event) {
 
         return tempdat;
     }
+
+
 
 //    baselineValues.forEach(function(b){
 //        if (Object.keys(baselineMappings).indexOf(b.Encoding) !== -1){
