@@ -31,20 +31,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.3">
-              <caret line="166" column="57" selection-start-line="166" selection-start-column="57" selection-end-line="166" selection-end-column="57" />
+            <state vertical-scroll-proportion="0.5350734">
+              <caret line="1002" column="29" selection-start-line="1002" selection-start-column="29" selection-end-line="1002" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="datafiles.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="datafiles.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/datafiles.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.95475113">
+            <state vertical-scroll-proportion="0.0">
               <caret line="4" column="10479" selection-start-line="4" selection-start-column="10479" selection-end-line="4" selection-end-column="10479" />
               <folding>
                 <element signature="e#0#45#0" expanded="false" />
@@ -122,8 +122,8 @@
         <option value="$PROJECT_DIR$/www/datafiles.js" />
         <option value="$PROJECT_DIR$/r/silly.r" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/www/index.html" />
         <option value="$PROJECT_DIR$/datafiles.js" />
+        <option value="$PROJECT_DIR$/www/index.html" />
       </list>
     </option>
   </component>
@@ -595,21 +595,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.3">
-          <caret line="166" column="57" selection-start-line="166" selection-start-column="57" selection-end-line="166" selection-end-column="57" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datafiles.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.95475113">
+        <state vertical-scroll-proportion="0.0">
           <caret line="4" column="10479" selection-start-line="4" selection-start-column="10479" selection-end-line="4" selection-end-column="10479" />
           <folding>
             <element signature="e#0#45#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5350734">
+          <caret line="1002" column="29" selection-start-line="1002" selection-start-column="29" selection-end-line="1002" selection-end-column="29" />
+          <folding />
         </state>
       </provider>
     </entry>

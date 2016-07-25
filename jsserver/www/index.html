@@ -954,6 +954,68 @@ window.onkeypress = function(event) {
         })
     });
 
+    function recordData() {
+        var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+        var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+        var tempdat = [];
+
+        //record node data
+        cy.nodes(':selected').forEach(function(n){
+            var temp = {};
+            temp.name = n.data().name;
+            temp.results = {};
+            selecnodeattrs.forEach(function(k){
+                temp.results[k] = n.style()[k];
+            });
+            temp.positions = n.position();
+            temp.selected = 1;
+            console.log(temp);
+            tempdat.push(temp);
+        });
+
+        cy.nodes(':unselected').forEach(function(n){
+            var temp = {};
+            temp.name = n.data().name;
+            temp.results = {};
+            selecnodeattrs.forEach(function(k){
+                temp.results[k] = n.style()[k];
+            });
+            temp.positions = n.position();
+            temp.selected = 0;
+            console.log(temp);
+            tempdat.push(temp);
+        });
+
+        //record edge data
+        cy.edges(':selected').forEach(function(n){
+            var temp = {};
+            temp.source = n.data().source;
+            temp.target = n.data().target;
+            temp.results = {};
+            selecedgeattrs.forEach(function(k){
+                temp.results[k] = n.style()[k];
+            });
+            temp.selected = 1;
+            console.log(temp);
+            tempdat.push(temp);
+        });
+
+        cy.edges(':unselected').forEach(function(n){
+            var temp = {};
+            temp.source = n.data().source;
+            temp.target = n.data().target;
+            temp.results = {};
+            selecedgeattrs.forEach(function(k){
+                temp.results[k] = n.style()[k];
+            });
+            temp.selected = 0;
+            console.log(temp);
+            tempdat.push(temp);
+        });
+
+        return tempdat;
+    }
+
 //    baselineValues.forEach(function(b){
 //        if (Object.keys(baselineMappings).indexOf(b.Encoding) !== -1){
 //            baselineMappings[b.Encoding].forEach(function(enc){
