@@ -541,5 +541,139 @@ expdat <- cbind(expdat, sample(0:1, 50, replace = T))
 colnames(expdat) <- c("NodeColorSeq","NodeColorDiv","NodeColorCat","NodeBorderQuant","NodeBorderBin","NodeSizeQuant","NodeSizeBin",
                       "EdgeWidthQuant","EdgeWidthBin","EdgeColorSeq","EdgeColorDiv","EdgeColorCat","EdgePatternCat","UserSelected")
 
+library(RJSONIO)
+jdat <- fromJSON('~/Code/VisualEncodingEngine/jsserver/savedData/1469473953844.json')
+jnode <- c()
+for (l in 1:length(jdat)) {
+  if(jdat[[l]]$type == "node") {
+    jnode = append(jnode, c(jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
+  }
+}
+expd <- data.frame(t(matrix(jnode, 9, 23)))
+colnames(expd) <- c("id", "name", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
+expd[,5] <- as.numeric(gsub('px','',expd[,5]))
+expd[,6] <- as.numeric(gsub('px','',expd[,6]))
+expd[,7] <- as.numeric(as.character(expd[,7]))
+expd[,8] <- as.numeric(as.character(expd[,8]))
+expd[,9] <- as.numeric(as.character(expd[,9]))
+
+loadResults <- function(path) {
+  files = list.files(path)
+  jnode <- c()
+  for (f in files) {
+    cat(paste(path,f,sep=''), '\n')
+    jdat <- fromJSON(paste(path,f,sep=''))
+    for (l in 1:length(jdat)) {
+      if(jdat[[l]]$type == "node") {
+        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
+      }
+    }
+  }
+  return(jnode)
+}
+
+expd <- loadResults('~/Code/VisualEncodingEngine/jsserver/savedData/')
+expd <- data.frame(t(matrix(expd, 11, length(expd)/11)))
+colnames(expd) <- c("file","id", "name", "encoding", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
+expd[,7] <- as.numeric(gsub('px','',expd[,7]))
+expd[,8] <- as.numeric(gsub('px','',expd[,8]))
+expd[,9] <- as.numeric(as.character(expd[,9]))
+expd[,10] <- as.numeric(as.character(expd[,10]))
+expd[,11] <- as.numeric(as.character(expd[,11]))
+expd[sample(dim(expd)[1], 11, replace = F),11] <- 1
+
+#euclidian distance from center
+mean(expd[which(expd[,1] == "1469475299537.json"),8])
+mean(expd[which(expd[,1] == "1469475299537.json"),9])
+c(expd[which(expd[,1] == "1469475299537.json"),8] - mean(expd[which(expd[,1] == "1469475299537.json"),8]))^2
+c(expd[which(expd[,1] == "1469475299537.json"),9] - mean(expd[which(expd[,1] == "1469475299537.json"),9]))^2
+for (f in levels(expd[,1])) { 
+  cat(f,'\n')
+  #   cbind(expd[which(expd[,1] == f),], calcDistanceFromCenterOfNetwork(f))
+  expd[which(expd[,1] == f),12] <- calcDistanceFromCenterOfNetwork(f)
+}
+
+calcDistanceFromCenterOfNetwork <- function(file) {
+  return(  c(expd[which(expd[,1] == file),9] - mean(expd[which(expd[,1] == file),9]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),10]))^2  )
+}
+
+colnames(expd) <- c("file","id", "name", "encoding", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected","distCent")
+
+expd.model1 <- lmer(as.numeric(selected) ~ as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|file), data=expd)
+expd.model2 <- lmer(as.numeric(selected) ~ as.numeric(nodesize) + (1|name) + (1|file), data=expd)
+anova(expd.model1,expd.model2)
+
+summary(expd.model1)
+coef(expd.model1)
+
+summary(lm(as.numeric(selected) ~ as.numeric(nodeborder) + log10(distCent) + as.numeric(nodesize) + name, data=expd))
+
+
+mod.coef <- coef(lmer(as.numeric(selected) ~ as.numeric(nodeborder) + as.numeric(nodesize) + nodecolor + as.numeric(xpos) + as.numeric(ypos) + (1|name) + (1|file) + (1|encoding), data=expd))
+mod.coef$name
+heatmap(as.matrix(mod.coef$name))
+
+
+#exploring colors
+for (c in levels(expd[which(expd[,1] == "1469475299537.json"),4])) { cat(c, dim(expd[which(expd[,4] == c & expd[,1] == "1469475299537.json"),])[1] / dim(expd[which(expd[,1] == "1469475299537.json"),])[1],'\n') }
+
+
+
+aim2d <- matrix(rbind(
+  c(2,	5),
+  c(30,	25),
+  c(8,	3),
+  c(3,	2),
+  c(5,	1),
+  c(27,	11),
+  c(12,	15),
+  c(9,	14)
+), 8, 2)
+colnames(aim2d) <- c("Network",  "Pathway")
+rownames(aim2d) <- c("Position",
+                     "Text",
+                     "Size,Area",
+                     "Weight, Boldness",
+                     "Saturation, Brightness",
+                     "Color",
+                     "Shape, Icon",
+                     "Enclosure, Connection")
+
+fisher.test(aim2d)
+#prop.test(aim2d, conf.level = 0.95, correct = TRUE)
+
+aim2de <- matrix(t(rbind(
+c(2,0,0,0,14,0,4,4,2,3),
+c(8,18,1,1,11,2,13,9,4,5))), 10, 2)
+colnames(aim2de) <- c("Network",  "Pathway")
+rownames(aim2de) <- c("Position",
+                      "Text",
+                      "Size,Area",
+                      "Saturation, Brightness",
+                      "Color",
+                      "Shape, Icon",
+                      "Enclosure, Connection",
+                      "Line Pattern",
+                      "Line Endings",
+                      "Line Weight")
+aim2de <- aim2de[c(1,2,5,7,8,9,10),] #removing inappropriate values (zero values and encodings that don't make sense)
+
+fisher.test(aim2de)
+chisq.test(aim2de)
+
+var.test(aim2d[,1],aim2d[,2])
+var.test(aim2de[,1],aim2de[,2])
+
+
+
+
+# Comparing centarlities to user selection
+centrality_vals <- cbind(centralization.closeness(genemania.network.graph)$res, centralization.betweenness(genemania.network.graph)$res, centralization.degree(genemania.network.graph)$res, centralization.evcent(genemania.network.graph)$vector)
+colnames(centrality_vals) <- c("closeness", "betweenness", "degree", "eigenvector")
+rownames(centrality_vals) <- V(genemania.network.graph)$name
+
+
+
+
 
 

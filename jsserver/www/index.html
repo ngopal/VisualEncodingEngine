@@ -552,13 +552,97 @@
                     style: editStyle(generateStyle(), whichHighlight())
 //                    selectionType: 'additive'
                 });
-                cy.nodes().on("click", function(){
-                    submitUserChoice();
+
+                cy.on('select', 'node,edge', function(ev) {
+                    console.log(ev);
+                    var selectedElement = ev.cyTarget;
+                    console.log(["CLICKERED", selectedElement.data()]);
+
+                    var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+                    var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+                    var tempdat = [];
+                    var nodeencoding;
+                    var edgeencoding;
+
+                    //record the highlighted encodings
+                    d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
+                        var hienc = d3.select(this).attr('class');
+                        var row = hienc.match(/row\d+/g)[0];
+                        var col = hienc.match(/col\d+/g)[0];
+                        var rowNum = row.replace('row','')
+                        var encText = d3.selectAll('.enc'+rowNum).text();
+                        // This is hacky, and should be properly done when I have time
+                        if (rowNum > 9) {
+                            edgeencoding = encText;
+                        }
+                        else {
+                            nodeencoding = encText;
+                        }
+                    });
+
+                    cy.nodes().map(function(n){
+                        var temp = {};
+                        temp.name = n.data().name;
+                        temp.id = n.data().id;
+                        temp.type = 'node';
+                        temp.encoding = nodeencoding;
+                        temp.results = {};
+                        selecnodeattrs.forEach(function(k){
+                            temp.results[k] = n.style()[k];
+                        });
+                        temp.positions = n.position();
+                        if (selectedElement.data().id === n.data().id) {
+                            temp.selected = 1;
+                        }
+                        else {
+                            temp.selected = 0;
+                        }
+                        console.log(temp);
+                        tempdat.push(temp);
+                    });
+
+                    cy.edges().map(function(n){
+                        var temp = {};
+                        temp.id = n.data().id;
+                        temp.source = n.data().source;
+                        temp.target = n.data().target;
+                        temp.type = 'edge';
+                        temp.encoding = edgeencoding;
+                        temp.results = {};
+                        selecedgeattrs.forEach(function(k){
+                            temp.results[k] = n.style()[k];
+                        });
+                        if (selectedElement.data().id === n.data().id) {
+                            temp.selected = 1;
+                        }
+                        else {
+                            temp.selected = 0;
+                        }
+                        console.log(temp);
+                        tempdat.push(temp);
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/submitdata',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(tempdat),
+                        success: function (data) {
+                            console.log(['user choice submit success', data]);
+                        }
+                    });
+
+//                    return tempdat;
                 });
 
-                cy.edges().on("click", function(){
-                    submitUserChoice();
-                });
+//                cy.nodes().on("click", function(){
+//                    return submitUserChoice();
+//                });
+//
+//                cy.edges().on("click", function(){
+//                    return submitUserChoice();
+//                });
             }
             else if (desireddata === "genemania_APP") {
                 options.name = 'cose';
@@ -967,90 +1051,156 @@ window.onkeypress = function(event) {
         });
     });
 
-    function submitUserChoice() {
-        var tosub = recordData();
-        return $.ajax({
-            type: 'POST',
-            url: '/submitdata',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(tosub),
-            success: function (data) {
-                console.log(['user choice submit success', data]);
-                plotNetwork('genemania_BRCA');
-            }
-        });
-    }
+//    function submitUserChoice() {
+//        var tosub = recordData();
+//        return $.ajax({
+//            type: 'POST',
+//            url: '/submitdata',
+//            contentType: "application/json; charset=utf-8",
+//            dataType: "json",
+//            data: JSON.stringify(tosub),
+//            success: function (data) {
+//                console.log(['user choice submit success', data]);
+////                plotNetwork('genemania_BRCA');
+//            }
+//        });
+//    }
 
-    function recordData() {
-        var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
-        var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
-        var tempdat = [];
-
-        //record node data
-        cy.nodes(':selected').forEach(function(n){
-            var temp = {};
-            temp.name = n.data().name;
-            temp.id = n.data().id;
-            temp.type = 'node';
-            temp.results = {};
-            selecnodeattrs.forEach(function(k){
-                temp.results[k] = n.style()[k];
-            });
-            temp.positions = n.position();
-            temp.selected = 1;
-            console.log(temp);
-            tempdat.push(temp);
-        });
-
-        cy.nodes(':unselected').forEach(function(n){
-            var temp = {};
-            temp.name = n.data().name;
-            temp.id = n.data().id;
-            temp.type = 'node';
-            temp.results = {};
-            selecnodeattrs.forEach(function(k){
-                temp.results[k] = n.style()[k];
-            });
-            temp.positions = n.position();
-            temp.selected = 0;
-            console.log(temp);
-            tempdat.push(temp);
-        });
-
-        //record edge data
-        cy.edges(':selected').forEach(function(n){
-            var temp = {};
-            temp.id = n.data().id;
-            temp.source = n.data().source;
-            temp.target = n.data().target;
-            temp.type = 'edge';
-            temp.results = {};
-            selecedgeattrs.forEach(function(k){
-                temp.results[k] = n.style()[k];
-            });
-            temp.selected = 1;
-            console.log(temp);
-            tempdat.push(temp);
-        });
-
-        cy.edges(':unselected').forEach(function(n){
-            var temp = {};
-            temp.id = n.data().id;
-            temp.source = n.data().source;
-            temp.target = n.data().target;
-            temp.type = 'edge';
-            temp.results = {};
-            selecedgeattrs.forEach(function(k){
-                temp.results[k] = n.style()[k];
-            });
-            temp.selected = 0;
-            console.log(temp);
-            tempdat.push(temp);
-        });
-
-        return tempdat;
-    }
+//    function recordData() {
+//        //record node data
+//        cy.on('select', 'node,edge', function(ev) {
+//            console.log(ev);
+//            var selectedElement = ev.cyTarget;
+//            console.log(["CLICKERED", selectedElement.data()]);
+//
+//            var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+//            var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+//            var tempdat = [];
+//            var nodeencoding;
+//            var edgeencoding;
+//
+//            //record the highlighted encodings
+//            d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
+//                var hienc = d3.select(this).attr('class');
+//                var row = hienc.match(/row\d+/g)[0];
+//                var col = hienc.match(/col\d+/g)[0];
+//                var rowNum = row.replace('row','')
+//                var encText = d3.selectAll('.enc'+rowNum).text();
+//                // This is hacky, and should be properly done when I have time
+//                if (rowNum > 9) {
+//                    edgeencoding = encText;
+//                }
+//                else {
+//                    nodeencoding = encText;
+//                }
+//            });
+//
+//            cy.nodes().map(function(n){
+//                var temp = {};
+//                temp.name = n.data().name;
+//                temp.id = n.data().id;
+//                temp.type = 'node';
+//                temp.encoding = nodeencoding;
+//                temp.results = {};
+//                selecnodeattrs.forEach(function(k){
+//                    temp.results[k] = n.style()[k];
+//                });
+//                temp.positions = n.position();
+//                if (selectedElement.data().id === n.data().id) {
+//                    temp.selected = 1;
+//                }
+//                console.log(temp);
+//                tempdat.push(temp);
+//            });
+//
+//            cy.edges().map(function(n){
+//                var temp = {};
+//                temp.id = n.data().id;
+//                temp.source = n.data().source;
+//                temp.target = n.data().target;
+//                temp.type = 'edge';
+//                temp.encoding = edgeencoding;
+//                temp.results = {};
+//                selecedgeattrs.forEach(function(k){
+//                    temp.results[k] = n.style()[k];
+//                });
+//                if (selectedElement.data().id === n.data().id) {
+//                    temp.selected = 1;
+//                }
+//                console.log(temp);
+//                tempdat.push(temp);
+//            });
+//
+//            return tempdat;
+//        });
+//
+////        cy.nodes(':selected').map(function(n){
+////            var temp = {};
+////            temp.name = n.data().name;
+////            temp.id = n.data().id;
+////            temp.type = 'node';
+////            temp.encoding = nodeencoding;
+////            temp.results = {};
+////            selecnodeattrs.forEach(function(k){
+////                temp.results[k] = n.style()[k];
+////            });
+////            temp.positions = n.position();
+////            temp.selected = 1;
+////            console.log(temp);
+////            tempdat.push(temp);
+////        });
+////
+////        cy.nodes(':unselected').map(function(n){
+////            var temp = {};
+////            temp.name = n.data().name;
+////            temp.id = n.data().id;
+////            temp.type = 'node';
+////            temp.encoding = nodeencoding;
+////            temp.results = {};
+////            selecnodeattrs.forEach(function(k){
+////                temp.results[k] = n.style()[k];
+////            });
+////            temp.positions = n.position();
+////            temp.selected = 0;
+////            console.log(temp);
+////            tempdat.push(temp);
+////        });
+//
+//        //record edge data
+////        cy.edges(':selected').map(function(n){
+////            var temp = {};
+////            temp.id = n.data().id;
+////            temp.source = n.data().source;
+////            temp.target = n.data().target;
+////            temp.type = 'edge';
+////            temp.encoding = edgeencoding;
+////            temp.results = {};
+////            selecedgeattrs.forEach(function(k){
+////                temp.results[k] = n.style()[k];
+////            });
+////            temp.selected = 1;
+////            console.log(temp);
+////            tempdat.push(temp);
+////        });
+//
+////        cy.edges(':unselected').map(function(n){
+////            var temp = {};
+////            temp.id = n.data().id;
+////            temp.source = n.data().source;
+////            temp.target = n.data().target;
+////            temp.type = 'edge';
+////            temp.encoding = edgeencoding;
+////            temp.results = {};
+////            selecedgeattrs.forEach(function(k){
+////                temp.results[k] = n.style()[k];
+////            });
+////            temp.selected = 0;
+////            console.log(temp);
+////            tempdat.push(temp);
+////        });
+//
+////        return tempdat;
+//    }
 
 
 
