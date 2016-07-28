@@ -614,6 +614,13 @@ mod.coef$name
 heatmap(as.matrix(mod.coef$name))
 
 
+# randomly sampling an equal number rows of zero and one selection values
+rsexpd <- expd[c(c(sample(which(expd[,11] == 0), length(which(expd[,11] == 1)))),c(which(expd[,11] == 1))),]
+coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + (1|name) + (1|file), data=rsexpd))
+coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + (1|name) + (1|encoding), data=rsexpd))
+summary(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|encoding), data=rsexpd))
+coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|encoding), data=rsexpd))
+
 #exploring colors
 for (c in levels(expd[which(expd[,1] == "1469475299537.json"),4])) { cat(c, dim(expd[which(expd[,4] == c & expd[,1] == "1469475299537.json"),])[1] / dim(expd[which(expd[,1] == "1469475299537.json"),])[1],'\n') }
 
@@ -668,11 +675,15 @@ var.test(aim2de[,1],aim2de[,2])
 
 
 # Comparing centarlities to user selection
-centrality_vals <- cbind(centralization.closeness(genemania.network.graph)$res, centralization.betweenness(genemania.network.graph)$res, centralization.degree(genemania.network.graph)$res, centralization.evcent(genemania.network.graph)$vector)
-colnames(centrality_vals) <- c("closeness", "betweenness", "degree", "eigenvector")
+centrality_vals <- cbind(centralization.closeness(genemania.network.graph)$res, centralization.betweenness(genemania.network.graph)$res, centralization.degree(genemania.network.graph)$res, centralization.evcent(genemania.network.graph)$vector, coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|encoding), data=rsexpd))$name[,1])
+colnames(centrality_vals) <- c("closeness", "betweenness", "degree", "eigenvector", "lmercoef")
 rownames(centrality_vals) <- V(genemania.network.graph)$name
-
-
+cor(centrality_vals)
+plot(centrality_vals[,1]/max(centrality_vals[,1]), centrality_vals[,5], pch = 1, col=c("black"), xlim=c(0,1), ylim=c(0,1))
+points(centrality_vals[,2]/max(centrality_vals[,2]), centrality_vals[,5], pch = 2, col=c("red"))
+points(centrality_vals[,3]/max(centrality_vals[,3]), centrality_vals[,5], pch = 3, col=c("blue"))
+points(centrality_vals[,4]/max(centrality_vals[,4]), centrality_vals[,5], pch = 4, col=c("purple"))
+# little correlation between any centrality measurement and coefficients from model. Thus, currently centrality methods may not ...
 
 
 

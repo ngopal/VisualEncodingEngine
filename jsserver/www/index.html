@@ -58,11 +58,13 @@
         <!--</fieldset>-->
     <!--</div>-->
 <!--</div>-->
-<button id="layoutRand" onclick="newlayout('random')">Random</button>
-<button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
-<button id="layoutCose" onclick="newlayout('cose')">Cose</button>
-<button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
-<button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
+<div id="layoutButtonSection">
+    <button id="layoutRand" onclick="newlayout('random')">Random</button>
+    <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
+    <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
+    <button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
+    <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
+</div>
 <div id="cy">
 </div>
 <image id="theimage"></image>
@@ -630,6 +632,8 @@
                         data: JSON.stringify(tempdat),
                         success: function (data) {
                             console.log(['user choice submit success', data]);
+                            //re-layout graph (this also takes care of unselection)
+                            plotNetwork('genemania_BRCA');
                         }
                     });
 
@@ -1050,6 +1054,23 @@ window.onkeypress = function(event) {
             }
         });
     });
+
+    function hideExtraneous() {
+        $('#rankTableSection').hide();
+        $('#layoutButtonSection').hide();
+        $('#rankTable').hide();
+    }
+
+    function showExtraneous() {
+        $('#rankTableSection').show();
+        $('#layoutButtonSection').show();
+        $('#rankTable').show();
+    }
+
+    //To record mouse position. Could make it on 'click' instead of 'mouseover'
+//    cy.on('mousemove', function() {
+//        console.log([window.event.clientX, window.event.clientY])
+//    })
 
 //    function submitUserChoice() {
 //        var tosub = recordData();
