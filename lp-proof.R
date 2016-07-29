@@ -589,7 +589,6 @@ c(expd[which(expd[,1] == "1469475299537.json"),8] - mean(expd[which(expd[,1] == 
 c(expd[which(expd[,1] == "1469475299537.json"),9] - mean(expd[which(expd[,1] == "1469475299537.json"),9]))^2
 for (f in levels(expd[,1])) { 
   cat(f,'\n')
-  #   cbind(expd[which(expd[,1] == f),], calcDistanceFromCenterOfNetwork(f))
   expd[which(expd[,1] == f),12] <- calcDistanceFromCenterOfNetwork(f)
 }
 
@@ -599,7 +598,8 @@ calcDistanceFromCenterOfNetwork <- function(file) {
 
 colnames(expd) <- c("file","id", "name", "encoding", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected","distCent")
 
-expd.model1 <- lmer(as.numeric(selected) ~ as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|file), data=expd)
+library(lme4)
+expd.model1 <- lmer(as.numeric(selected) ~ as.numeric(nodeborder) + (1|name) + (1|file), data=expd)
 expd.model2 <- lmer(as.numeric(selected) ~ as.numeric(nodesize) + (1|name) + (1|file), data=expd)
 anova(expd.model1,expd.model2)
 
@@ -684,6 +684,234 @@ points(centrality_vals[,2]/max(centrality_vals[,2]), centrality_vals[,5], pch = 
 points(centrality_vals[,3]/max(centrality_vals[,3]), centrality_vals[,5], pch = 3, col=c("blue"))
 points(centrality_vals[,4]/max(centrality_vals[,4]), centrality_vals[,5], pch = 4, col=c("purple"))
 # little correlation between any centrality measurement and coefficients from model. Thus, currently centrality methods may not ...
+
+
+# Graph density exploration
+rg1 <- random.graph.game(10, 0.05)
+rg2 <- random.graph.game(50, 0.05)
+rg3 <- random.graph.game(100, 0.05)
+rg1 <- random.graph.game(10, 0.5)
+rg2 <- random.graph.game(50, 0.5)
+rg3 <- random.graph.game(100, 0.5)
+
+hist(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res)
+hist(centralization.closeness(rg1, normalized = TRUE)$res)
+hist(centralization.degree(rg1, normalized = TRUE)$res)
+hist(centralization.evcent(rg1, normalized = TRUE)$vector)
+plot(rg1, vertex.size=8, vertex.label=NA)
+
+BlueCols100 <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+RedCols100 <- colorRampPalette(c(brewer.pal(9, "Reds")[1],brewer.pal(9, "Reds")[9]))(100)
+par(mfrow=c(2,2))
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.closeness(rg1, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.degree(rg1, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.evcent(rg1, normalized = TRUE)$vector)])
+dev.off()
+
+par(mfrow=c(2,4))
+hist(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res, main="Betweeness", xlab=NA)
+hist(centralization.closeness(rg1, normalized = TRUE)$res, main="Closeness", xlab=NA)
+hist(centralization.degree(rg1, normalized = TRUE)$res, main="Degree", xlab=NA)
+hist(centralization.evcent(rg1, normalized = TRUE)$vector, main="Eigenvector", xlab=NA)
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.closeness(rg1, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.degree(rg1, normalized = TRUE)$res)])
+plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols100[rank(centralization.evcent(rg1, normalized = TRUE)$vector)])
+dev.off()
+
+plot_histogramXthreeSizes<- function() {
+  par(mfrow=c(3,4))
+  hist(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res, main="Betweeness", xlab=NA)
+  hist(centralization.closeness(rg1, normalized = TRUE)$res, main="Closeness", xlab=NA)
+  hist(centralization.degree(rg1, normalized = TRUE)$res, main="Degree", xlab=NA)
+  hist(centralization.evcent(rg1, normalized = TRUE)$vector, main="Eigenvector", xlab=NA)
+  hist(centralization.betweenness(rg2, directed = FALSE, normalized = TRUE)$res, main="Betweeness", xlab=NA)
+  hist(centralization.closeness(rg2, normalized = TRUE)$res, main="Closeness", xlab=NA)
+  hist(centralization.degree(rg2, normalized = TRUE)$res, main="Degree", xlab=NA)
+  hist(centralization.evcent(rg2, normalized = TRUE)$vector, main="Eigenvector", xlab=NA)
+  hist(centralization.betweenness(rg3, directed = FALSE, normalized = TRUE)$res, main="Betweeness", xlab=NA)
+  hist(centralization.closeness(rg3, normalized = TRUE)$res, main="Closeness", xlab=NA)
+  hist(centralization.degree(rg3, normalized = TRUE)$res, main="Degree", xlab=NA)
+  hist(centralization.evcent(rg3, normalized = TRUE)$vector, main="Eigenvector", xlab=NA)
+}
+
+plot_centralitiesXthreeSizes<- function() {
+  par(mfrow=c(3,4))
+  BlueCols <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(length(V(rg1)))
+  plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.betweenness(rg1, directed = FALSE, normalized = TRUE)$res)])
+  plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.closeness(rg1, normalized = TRUE)$res)])
+  plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.degree(rg1, normalized = TRUE)$res)])
+  plot(rg1, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.evcent(rg1, normalized = TRUE)$vector)])
+  BlueCols <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(length(V(rg2)))
+  plot(rg2, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.betweenness(rg2, directed = FALSE, normalized = TRUE)$res)])
+  plot(rg2, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.closeness(rg2, normalized = TRUE)$res)])
+  plot(rg2, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.degree(rg2, normalized = TRUE)$res)])
+  plot(rg2, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.evcent(rg2, normalized = TRUE)$vector)])
+  BlueCols <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(length(V(rg3)))
+  plot(rg3, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.betweenness(rg3, directed = FALSE, normalized = TRUE)$res)])
+  plot(rg3, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.closeness(rg3, normalized = TRUE)$res)])
+  plot(rg3, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.degree(rg3, normalized = TRUE)$res)])
+  plot(rg3, vertex.size=8, vertex.label=NA, vertex.color=BlueCols[rank(centralization.evcent(rg3, normalized = TRUE)$vector)])
+}
+
+plot_histogramXthreeSizes()
+plot_centralitiesXthreeSizes()
+
+
+
+# Graph density exploration
+rg1 <- random.graph.game(10, 0.05)
+rg2 <- random.graph.game(50, 0.05)
+rg3 <- random.graph.game(100, 0.05)
+rg4 <- random.graph.game(10, 0.1)
+rg5 <- random.graph.game(50, 0.1)
+rg6 <- random.graph.game(100, 0.1)
+rg7 <- random.graph.game(10, 0.15)
+rg8 <- random.graph.game(50, 0.15)
+rg9 <- random.graph.game(100, 0.15)
+par(mfrow=c(3,3))
+plot(rg1, vertex.size=8, vertex.label=NA)
+plot(rg2, vertex.size=8, vertex.label=NA)
+plot(rg3, vertex.size=8, vertex.label=NA)
+plot(rg4, vertex.size=8, vertex.label=NA)
+plot(rg5, vertex.size=8, vertex.label=NA)
+plot(rg6, vertex.size=8, vertex.label=NA)
+plot(rg7, vertex.size=8, vertex.label=NA)
+plot(rg8, vertex.size=8, vertex.label=NA)
+plot(rg9, vertex.size=8, vertex.label=NA)
+dev.off()
+
+
+# Graph density exploration
+plot_densityXsize <- function(dens,size, mar1, mar2) {
+  if (missing(mar1)) {
+    mar1 <- length(dens)
+  }
+  if (missing(mar2)) {
+    mar2 <- length(size)
+  }
+  numer = 1;
+  par(mfrow=c(mar1, mar2))
+  for (d in dens) {
+    for (s in size) {
+      cat(paste("rg",numer," <- random.graph.game(",s,",",d,")",sep=''), '\n')
+      assign(paste("rg",numer,sep=''),eval(parse(text=paste("random.graph.game(",s,",",d,")",sep=''))), envir = .GlobalEnv)
+      plot(random.graph.game(s, d), vertex.size=8, vertex.label=NA, vertex.color="black")
+      numer = numer + 1;
+    }
+  }
+}
+
+plot_hist <- function(dens,size,func,title) {
+  numer = 1;
+  par(mfrow=c(length(dens), length(size)))
+  for (d in dens) {
+    for (s in size) { 
+      if (title == "eigenvec") {
+        hist(func(eval(parse(text=paste("rg",numer,sep=''))), normalized = TRUE)$vector, main=paste(title,"\ns:",s," d:",d,sep=''), xlab=NA)
+        numer = numer + 1;
+      }
+      else {
+        hist(func(eval(parse(text=paste("rg",numer,sep=''))), normalized = TRUE)$res, main=paste(title,"\ns:",s," d:",d,sep=''), xlab=NA)
+        numer = numer + 1;
+      }
+    }
+  }
+}
+
+pdf(file="/Users/nikhilgopal/Code/graph_sizing/p_vs_size.pdf")
+plot_densityXsize(c(0.01, 0.05, 0.1, 0.15), c(10,25,50,75,100))
+plot_hist(c(0.01, 0.05, 0.1, 0.15), c(10,25,50,75,100), centralization.betweenness, "betweenness")
+plot_hist(c(0.01, 0.05, 0.1, 0.15), c(10,25,50,75,100), centralization.closeness, "closeness")
+plot_hist(c(0.01, 0.05, 0.1, 0.15), c(10,25,50,75,100), centralization.degree, "degree")
+plot_hist(c(0.01, 0.05, 0.1, 0.15), c(10,25,50,75,100), centralization.evcent, "eigenvec")
+dev.off()
+
+
+#pdf(file="/Users/nikhilgopal/Code/graph_sizing/brca_net.pdf")
+pdf(file="/Users/nikhilgopal/Code/graph_sizing/app_net.pdf")
+BlueCols100 <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(length(V(genemania.network.graph)))
+genemania.network.graph.layout <- layout.spring(genemania.network.graph)
+par(mfrow=c(2,4))
+hist(centralization.betweenness(genemania.network.graph, directed = FALSE, normalized = TRUE)$res, main="Betweeness", xlab=NA)
+hist(centralization.closeness(genemania.network.graph, normalized = TRUE)$res, main="Closeness", xlab=NA)
+hist(centralization.degree(genemania.network.graph, normalized = TRUE)$res, main="Degree", xlab=NA)
+hist(centralization.evcent(genemania.network.graph, normalized = TRUE)$vector, main="Eigenvector", xlab=NA)
+plot(genemania.network.graph, vertex.size=rank(centralization.betweenness(genemania.network.graph, directed = FALSE, normalized = TRUE)$res), 
+     vertex.label=NA, vertex.color=BlueCols100[rank(centralization.betweenness(genemania.network.graph, directed = FALSE, normalized = TRUE)$res)],
+     layout = genemania.network.graph.layout)
+plot(genemania.network.graph, vertex.size=rank(centralization.closeness(genemania.network.graph, normalized = TRUE)$res), 
+     vertex.label=NA, vertex.color=BlueCols100[rank(centralization.closeness(genemania.network.graph, normalized = TRUE)$res)],
+     layout = genemania.network.graph.layout)
+plot(genemania.network.graph, vertex.size=rank(centralization.degree(genemania.network.graph, normalized = TRUE)$res), 
+     vertex.label=NA, vertex.color=BlueCols100[rank(centralization.degree(genemania.network.graph, normalized = TRUE)$res)],
+     layout = genemania.network.graph.layout)
+plot(genemania.network.graph, vertex.size=rank(centralization.evcent(genemania.network.graph, normalized = TRUE)$vector), 
+     vertex.label=NA, vertex.color=BlueCols100[rank(centralization.evcent(genemania.network.graph, normalized = TRUE)$vector)],
+     layout = genemania.network.graph.layout)
+
+gmng.df <- data.frame(cbind(rank(centralization.betweenness(genemania.network.graph, directed = FALSE, normalized = TRUE)$res),
+                 rank(centralization.closeness(genemania.network.graph, normalized = TRUE)$res),
+                 rank(centralization.degree(genemania.network.graph, normalized = TRUE)$res),
+                 rank(centralization.evcent(genemania.network.graph, normalized = TRUE)$vector)))
+rownames(gmng.df) <- V(genemania.network.graph)$name
+colnames(gmng.df) <- c("Betweenness", "Closeness", "Degree", "Eigenvector")
+heatmap(as.matrix(gmng.df), Colv=as.dendrogram(hclust(dist(cor(gmng.df)))), Rowv=as.dendrogram(hclust(dist(gmng.df))), margins = c(13,5),
+        col = BlueCols100)
+dev.off()
+
+
+rm(list=ls()[grep("rg\\d+", ls())])
+plot_densityXsize(c(0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3), c(length(V(genemania.network.graph))), 3, 3)
+
+
+compare_net_to_models <- function(func) {  
+  par(mfrow=c(2,4))
+  hist(func(genemania.network.graph, normalized = TRUE)$res, main="Custom", xlab=NA)
+  hist(func(rg1, normalized = TRUE)$res, main="rg1", xlab=NA)
+  hist(func(rg2, normalized = TRUE)$res, main="rg2", xlab=NA)
+  hist(func(rg3, normalized = TRUE)$res, main="rg3", xlab=NA)
+  hist(func(rg4, normalized = TRUE)$res, main="rg4", xlab=NA)
+  hist(func(rg5, normalized = TRUE)$res, main="rg5", xlab=NA)
+  hist(func(rg6, normalized = TRUE)$res, main="rg6", xlab=NA)
+  hist(func(rg7, normalized = TRUE)$res, main="rg7", xlab=NA)
+}
+
+
+compare_net_to_models(centralization.closeness)
+
+compare_models <- function(func, custom, modnum) {
+  records <- c()
+  for (i in 1:modnum) {
+    tt <- wilcox.test(func(custom, normalized = TRUE)$res, func(eval(parse(text=paste("rg",i,sep=''))), normalized = TRUE)$res, paired = FALSE)
+    records <- append(records, c(i, tt$p.value))
+  }
+  return(records)
+}
+
+compare_models(centralization.closeness, genemania.network.graph, 7)
+compare_models(centralization.degree, genemania.network.graph, 7)
+compare_models(centralization.betweenness, genemania.network.graph, 7)
+
+# Sampling nodes from a network weighted by degree centrality of a given model network
+k <- hist(centralization.degree(genemania.network.graph, normalized = T)$res, freq = FALSE)
+sample(1:length(rep(k$density*10, k$counts)), 5, replace = F, prob = rep(k$density*10, k$counts))
+
+V(genemania.network.graph)[sample(1:length(rep(k$density*10, k$counts)), 5, replace = F, prob = rep(k$density*10, k$counts))]
+
+mdeg <- hist(centralization.degree(genemania.network.graph, normalized = T)$res, freq = FALSE)
+mclo <- hist(centralization.closeness(genemania.network.graph, normalized = T)$res, freq = FALSE)
+meig <- hist(centralization.evcent(genemania.network.graph, normalized = T)$vector, freq = FALSE)
+mbet <- hist(centralization.betweenness(genemania.network.graph, normalized = T)$res, freq = FALSE)
+
+mdeg$density*mclo$density*meig$density*mbet$density
+barplot(c(
+  sample(1:length(rep(mdeg$density*10, mdeg$counts)), 5, replace = F, prob = rep(mdeg$density*10, mdeg$counts)),
+  sample(1:length(rep(mclo$density*10, mclo$counts)), 5, replace = F, prob = rep(mclo$density*10, mclo$counts)),
+  sample(1:length(rep(meig$density*10, meig$counts)), 5, replace = F, prob = rep(meig$density*10, meig$counts)),
+  sample(1:length(rep(mbet$density*10, mbet$counts)), 5, replace = F, prob = rep(mbet$density*10, mbet$counts))
+))
 
 
 
