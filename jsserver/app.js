@@ -25,6 +25,10 @@ app.get('/', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
 });
 
+app.get('/participant', function (req, res) {
+    res.sendfile("/www/participantview.html", {root: __dirname});
+});
+
 app.get('/sfunction', function (req, res) {
     exec('Rscript r/silly.r this is a test', function(error, stdout, stderr) {
         if (error) {

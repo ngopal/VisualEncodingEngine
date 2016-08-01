@@ -590,7 +590,8 @@ loadResultsDoubleEnc <- function(path) {
     jdat <- fromJSON(paste(path,f,sep=''))
     for (l in 1:length(jdat)) {
       if(jdat[[l]]$type == "node") {
-        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
+        #jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
+        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected, jdat[[l]]$clickX, jdat[[l]]$clickY, jdat[[l]]$windowheight, jdat[[l]]$windowwidth))
       }
     }
   }
@@ -598,13 +599,27 @@ loadResultsDoubleEnc <- function(path) {
 }
 
 expd <- loadResultsDoubleEnc('~/Code/VisualEncodingEngine/jsserver/savedData/')
-expd <- data.frame(t(matrix(expd, 12, length(expd)/12)))
-colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
+# expd <- data.frame(t(matrix(expd, 12, length(expd)/12)))
+expd <- data.frame(t(matrix(expd, 16, length(expd)/16))) # + 4 on top of 12
+# colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
+colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected", "clickX", "clickY", "windowHeight", "windowWidth")
 expd[,8] <- as.numeric(gsub('px','',expd[,8]))
 expd[,9] <- as.numeric(gsub('px','',expd[,9]))
 expd[,10] <- as.numeric(as.character(expd[,10]))
 expd[,11] <- as.numeric(as.character(expd[,11]))
 expd[,12] <- as.numeric(as.character(expd[,12]))
+
+
+clickmap <- function() {
+  #plot(as.numeric(as.character(expd$clickX)) / as.numeric(as.character(expd$windowWidth)), as.numeric(as.character(expd$clickY)) / as.numeric(as.character(expd$windowHeight)))
+  plot(as.numeric(as.character(expd$xpos[which(expd$selected == 0)])) / as.numeric(as.character(expd$windowWidth[which(expd$selected == 0)])), as.numeric(as.character(expd$ypos[which(expd$selected == 0)])) / as.numeric(as.character(expd$windowHeight[which(expd$selected == 0)])), col="gray",
+       xlab="Normalized X Coordinate Position",
+       ylab="Normalized Y Coordinate Position",
+       main="Click Map of Selected Nodes Versus Unselected")
+  points(as.numeric(as.character(expd$xpos[which(expd$selected == 1)])) / as.numeric(as.character(expd$windowWidth[which(expd$selected == 1)])), as.numeric(as.character(expd$ypos[which(expd$selected == 1)])) / as.numeric(as.character(expd$windowHeight[which(expd$selected == 1)])), col="red", pch=2)
+}
+
+clickmap()
 
 
 #euclidian distance from center
@@ -618,9 +633,17 @@ calcDistanceFromCenterOfNetworkDoubleEnc <- function(file) {
   return(  c(expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),11]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),11]))^2  )
 }
 
-# calcDistanceFromCenterOfNetwork <- function(file) {
-#   return(  c(expd[which(expd[,1] == file),9] - mean(expd[which(expd[,1] == file),9]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),10]))^2  )
-# }
+
+# Add centrality data to data frame
+expdwcent <- expd
+expdwcent <- data.frame(cbind(expdwcent,
+                   rep(centralization.betweenness(genemania.network.graph)$res, dim(expd)[1]),
+                   rep(centralization.closeness(genemania.network.graph)$res, dim(expd)[1]),
+                   rep(centralization.degree(genemania.network.graph)$res, dim(expd)[1]),
+                   rep(centralization.evcent(genemania.network.graph)$vector, dim(expd)[1])
+))
+colnames(expdwcent) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected", "clickX", "clickY", "windowHeight", "windowWidth", "betweenness", "closeness", "degree", "eigenvector")
+
 
 colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected","distCent")
 expd[,13] <- as.numeric(as.character(expd[,13]))
@@ -639,9 +662,9 @@ coef(expd.model1)
 summary(lm(as.numeric(selected) ~ as.numeric(nodeborder) + log10(distCent) + as.numeric(nodesize) + name, data=expd))
 
 
-mod.coef <- coef(lmer(as.numeric(selected) ~ as.numeric(nodeborder) + as.numeric(nodesize) + nodecolor + as.numeric(xpos) + as.numeric(ypos) + (1|name) + (1|file) + (1|encoding), data=expd))
+mod.coef <- coef(lmer(as.numeric(selected) ~ as.numeric(nodeborder) + as.numeric(nodesize) + nodecolor + as.numeric(xpos) + as.numeric(ypos) + (1|name) + (1|file) + (1|encoding1) + (1|encoding2), data=expd))
 mod.coef$name
-heatmap(as.matrix(mod.coef$name))
+heatmap(as.matrix(mod.coef$name), margins = c(10,10))
 
 
 # randomly sampling an equal number rows of zero and one selection values
@@ -654,7 +677,7 @@ coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) +
 
 # Let's use an RF
 library(randomForest)
-expd.mod <- expd[,c(3,6:13)]
+expd.mod <- expd[,c(1,3,6:12)] #until 13 if I want to include distCent
 #rf1 <- randomForest(as.numeric(selected) ~ ., data=expd, importance=TRUE, proximity=TRUE)
 rf1 <- randomForest(as.numeric(selected) ~ ., data=expd.mod, importance=TRUE, proximity=TRUE)
 print(rf1)
@@ -674,8 +697,8 @@ for (i in 1:dim(expd)[1]) {
 mycolors <- t(matrix(voodoo, 3, length(voodoo)/3))
 #r, g, b cols
 
-expd.mod <- data.frame(cbind(expd[,3],mycolors[,1:3],expd[,7:13]))
-colnames(expd.mod) <- c("name", "R", "G", "B", colnames(expd)[7:13])
+expd.mod <- data.frame(cbind(expd[,3],mycolors[,1:3],expd[,7:12])) #until 13 if I want distCent
+colnames(expd.mod) <- c("name", "R", "G", "B", colnames(expd)[7:12])
 rf2 <- randomForest(as.numeric(selected) ~ ., data=expd.mod, importance=TRUE, proximity=TRUE, do.trace = TRUE)
 print(rf2)
 rf2$importance
@@ -1036,5 +1059,26 @@ barplot(c(
 ))
 
 
+# Experimental design thoughts
+library(combinat)
+combn(c("node color", "node shape", "node border", "node size"), m=2)
+combn(c('node color (seq)', 
+        'node color (div)',
+        'node color (cat)',
+        'node shape (cat)',
+        'node border (quant)',
+        'node border (bin)',
+        'node size (quant)',
+        'node size (bin)'), m=2)
 
+# Manually counted 24 combinations to try if measuring every combination
+# for nodes.
+
+'edge width (quant)',
+'edge width (bin)',
+'edge color (seq)',
+'edge color (div)',
+'edge color (cat)',
+'edge pattern (cat)',
+'edge arrow (cat)'
 
