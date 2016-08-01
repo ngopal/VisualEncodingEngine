@@ -582,21 +582,51 @@ expd[,10] <- as.numeric(as.character(expd[,10]))
 expd[,11] <- as.numeric(as.character(expd[,11]))
 expd[sample(dim(expd)[1], 11, replace = F),11] <- 1
 
+loadResultsDoubleEnc <- function(path) {
+  files = list.files(path)
+  jnode <- c()
+  for (f in files) {
+    cat(paste(path,f,sep=''), '\n')
+    jdat <- fromJSON(paste(path,f,sep=''))
+    for (l in 1:length(jdat)) {
+      if(jdat[[l]]$type == "node") {
+        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
+      }
+    }
+  }
+  return(jnode)
+}
+
+expd <- loadResultsDoubleEnc('~/Code/VisualEncodingEngine/jsserver/savedData/')
+expd <- data.frame(t(matrix(expd, 12, length(expd)/12)))
+colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
+expd[,8] <- as.numeric(gsub('px','',expd[,8]))
+expd[,9] <- as.numeric(gsub('px','',expd[,9]))
+expd[,10] <- as.numeric(as.character(expd[,10]))
+expd[,11] <- as.numeric(as.character(expd[,11]))
+expd[,12] <- as.numeric(as.character(expd[,12]))
+
+
 #euclidian distance from center
-mean(expd[which(expd[,1] == "1469475299537.json"),8])
-mean(expd[which(expd[,1] == "1469475299537.json"),9])
-c(expd[which(expd[,1] == "1469475299537.json"),8] - mean(expd[which(expd[,1] == "1469475299537.json"),8]))^2
-c(expd[which(expd[,1] == "1469475299537.json"),9] - mean(expd[which(expd[,1] == "1469475299537.json"),9]))^2
 for (f in levels(expd[,1])) { 
   cat(f,'\n')
-  expd[which(expd[,1] == f),12] <- calcDistanceFromCenterOfNetwork(f)
+  #expd[which(expd[,1] == f),12] <- calcDistanceFromCenterOfNetwork(f)
+  expd[which(expd[,1] == f),13] <- calcDistanceFromCenterOfNetworkDoubleEnc(f)
 }
 
-calcDistanceFromCenterOfNetwork <- function(file) {
-  return(  c(expd[which(expd[,1] == file),9] - mean(expd[which(expd[,1] == file),9]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),10]))^2  )
+calcDistanceFromCenterOfNetworkDoubleEnc <- function(file) {
+  return(  c(expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),11]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),11]))^2  )
 }
 
-colnames(expd) <- c("file","id", "name", "encoding", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected","distCent")
+# calcDistanceFromCenterOfNetwork <- function(file) {
+#   return(  c(expd[which(expd[,1] == file),9] - mean(expd[which(expd[,1] == file),9]) + expd[which(expd[,1] == file),10] - mean(expd[which(expd[,1] == file),10]))^2  )
+# }
+
+colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected","distCent")
+expd[,13] <- as.numeric(as.character(expd[,13]))
+expd <- as.data.frame(cbind(expd[,1:11],expd[,13],expd[,12]))
+colnames(expd) <- c(colnames(expd)[1:11],"distCent","selected")
+
 
 library(lme4)
 expd.model1 <- lmer(as.numeric(selected) ~ as.numeric(nodeborder) + (1|name) + (1|file), data=expd)
@@ -621,10 +651,102 @@ coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + (1|name) + (1|encoding),
 summary(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|encoding), data=rsexpd))
 coef(lmer(as.numeric(selected) ~ as.numeric(nodesize) + as.numeric(nodeborder) + log10(distCent) + (1|name) + (1|encoding), data=rsexpd))
 
-#exploring colors
-for (c in levels(expd[which(expd[,1] == "1469475299537.json"),4])) { cat(c, dim(expd[which(expd[,4] == c & expd[,1] == "1469475299537.json"),])[1] / dim(expd[which(expd[,1] == "1469475299537.json"),])[1],'\n') }
+
+# Let's use an RF
+library(randomForest)
+expd.mod <- expd[,c(3,6:13)]
+#rf1 <- randomForest(as.numeric(selected) ~ ., data=expd, importance=TRUE, proximity=TRUE)
+rf1 <- randomForest(as.numeric(selected) ~ ., data=expd.mod, importance=TRUE, proximity=TRUE)
+print(rf1)
+rf1$importance
+varImpPlot(rf1,type=2)
 
 
+voodoo <- c()
+for (i in 1:dim(expd)[1]) {
+  if (expd[i,6] == "#999") {
+    voodoo <- append(voodoo, t(col2rgb("#999999")))
+  }
+  else {
+    voodoo <- append(voodoo, t(col2rgb(expd[i,6])))
+  }
+}
+mycolors <- t(matrix(voodoo, 3, length(voodoo)/3))
+#r, g, b cols
+
+expd.mod <- data.frame(cbind(expd[,3],mycolors[,1:3],expd[,7:13]))
+colnames(expd.mod) <- c("name", "R", "G", "B", colnames(expd)[7:13])
+rf2 <- randomForest(as.numeric(selected) ~ ., data=expd.mod, importance=TRUE, proximity=TRUE, do.trace = TRUE)
+print(rf2)
+rf2$importance
+varImpPlot(rf2,type=2)
+
+# unsupervised
+expd.urf <- randomForest(expd.mod[, -11])
+MDSplot(expd.urf, expd$selected)
+
+#regression
+predict(rf2, expd.mod[sample(which(expd.mod[,11] == 1), 1),-11])
+predict(rf2, expd.mod[sample(which(expd.mod[,11] == 0), 1),-11])
+
+plot(rf2$predicted)
+
+# optimizing mtry
+tuneRF(x = expd.mod[,-11], y = expd.mod[,11], plot = T, doBest = T)
+
+
+#trying to balance classes for RF
+expd.mod.bal <- expd.mod[c(c(sample(which(expd.mod[,11] == 0), length(which(expd.mod[,11] == 1)))),c(which(expd.mod[,11] == 1))),]
+tuneRF(x = expd.mod.bal[,-11], y = expd.mod.bal[,11], plot = T, doBest = T)
+rf3 <- randomForest(as.numeric(selected) ~ ., data=expd.mod.bal, importance=TRUE, proximity=TRUE, do.trace = F, mtry=2)
+print(rf3)
+rf3$importance
+varImpPlot(rf3,type=2)
+rf4 <- randomForest(selected ~ ., data=expd.mod, importance=TRUE, proximity=TRUE, do.trace = F, mtry=2, strata = selected, sampsize = sum(expd.mod[,11] == 1))
+print(rf4)
+rf4$importance
+varImpPlot(rf3,type=2)
+
+#compare balanced vs unbalanced
+library(ROCR)
+
+rf3.perf = performance(  prediction(labels = expd.mod.bal$selected, predictions = rf3$predicted)  ,"tpr","fpr")
+rf4.perf = performance(  prediction(labels = expd.mod$selected, predictions = rf4$predicted)  ,"tpr","fpr")
+
+#plot the curve
+plot(rf4.perf,main="ROC Curve for Random Forest",col=2,lwd=2)
+lines(unlist(rf3.perf@x.values),unlist(rf3.perf@y.values), col=4, lwd=2)
+abline(a=0,b=1,lwd=2,lty=2,col="gray")
+
+#compute area under curve
+
+auc.rf3 <- performance(    prediction(labels = expd.mod.bal$selected, predictions = rf3$predicted)   ,"auc")
+auc.rf4 <- performance(    prediction(labels = expd.mod$selected, predictions = rf4$predicted)   ,"auc")
+
+auc.rf3 <- unlist(slot(auc.rf3, "y.values"))
+auc.rf4 <- unlist(slot(auc.rf4, "y.values"))
+
+minauc<-min(round(auc.rf3, digits = 2))
+maxauc<-max(round(auc.rf3, digits = 2))
+minauct <- paste(c("min(AUC) = "),minauc,sep="")
+maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
+minauct
+maxauct
+
+minauc<-min(round(auc.rf4, digits = 2))
+maxauc<-max(round(auc.rf4, digits = 2))
+minauct <- paste(c("min(AUC) = "),minauc,sep="")
+maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
+minauct
+maxauct
+
+
+
+
+
+
+
+# Aim 2 paper
 
 aim2d <- matrix(rbind(
   c(2,	5),

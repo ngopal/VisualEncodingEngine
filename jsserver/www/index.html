@@ -102,7 +102,7 @@
     var taskWithDims = [];
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
-    var dims = ['dim1', 'dim2'];
+    var dims = ['dim1', 'dim2', 'dim2-2'];
 //    var dims = ['dim1'];
     var encs = ['node color (seq)',
         'node color (div)',
@@ -166,7 +166,8 @@
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:0 },
 //        'dim2 task1' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:1 },
-        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:1 }
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:1 },
+        'dim2-2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:2 }
 //        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:2 },
 //        'dim2 task2' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:3 }
     };
@@ -359,6 +360,8 @@
                         });
             }
 
+            return 0;
+
             function generateArrayofBinaryValues(nrows) {
                 var arr = [];
                 d3.range(1, nrows + 1).forEach(function (k) {
@@ -504,6 +507,7 @@
                             .attr('bgcolor', "#F3F315");
                 }
             }
+            return 0;
         }
 
         function getNumberOfAssignments() {
@@ -563,8 +567,8 @@
                     var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
                     var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
                     var tempdat = [];
-                    var nodeencoding;
-                    var edgeencoding;
+                    var nodeencoding = [];
+                    var edgeencoding = [];
 
                     //record the highlighted encodings
                     d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
@@ -575,10 +579,10 @@
                         var encText = d3.selectAll('.enc'+rowNum).text();
                         // This is hacky, and should be properly done when I have time
                         if (rowNum > 9) {
-                            edgeencoding = encText;
+                            edgeencoding.push(encText);
                         }
                         else {
-                            nodeencoding = encText;
+                            nodeencoding.push(encText);
                         }
                     });
 
@@ -587,7 +591,8 @@
                         temp.name = n.data().name;
                         temp.id = n.data().id;
                         temp.type = 'node';
-                        temp.encoding = nodeencoding;
+                        temp.encoding1 = nodeencoding[0];
+                        temp.encoding2 = nodeencoding[1];
                         temp.results = {};
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
@@ -609,6 +614,7 @@
                         temp.source = n.data().source;
                         temp.target = n.data().target;
                         temp.type = 'edge';
+                        //only one encoding for now
                         temp.encoding = edgeencoding;
                         temp.results = {};
                         selecedgeattrs.forEach(function(k){
@@ -767,8 +773,8 @@
 
 
     var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: colorbrewer.Reds, incompatability:[1,2,9,10,11,12,13,14,15]},
-        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.RdBu, incompatability:[0,2,9,10,11,12,13,14,15]},
+        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2,9,10,11,12,13,14,15]},
+        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2,9,10,11,12,13,14,15]},
         {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1,9,10,11,12,13,14,15]},
         {
             encname: 'node shape (cat)',
@@ -1065,6 +1071,57 @@ window.onkeypress = function(event) {
         $('#rankTableSection').show();
         $('#layoutButtonSection').show();
         $('#rankTable').show();
+    }
+
+    function wholeWorkflow() {
+
+            function randRanksAndSendToR() {
+                // sendToR function
+                d3.selectAll(  (function () {
+                    // randomRanks function
+                    if (randomRanks() === 0) {
+                        return '.rankedcell'
+                    }
+                    else {
+                        console.log('Problem with randomrank generator');
+                    }
+                })()  ).attr('bgcolor', null);
+
+
+                highlightImproperEncodings();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'lp',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({table: rankTableToJSON(), toAssign: getNumberOfAssignments()}),
+                    success: function (data, statusText, xhrObj) {
+                        console.log("SUCCESS");
+                        Robj = data;
+                        highlightAssignedCells();
+                        console.log(data);
+                    },
+                    complete: function() {
+//                        return reviseViz();
+                        return (function() {
+                            try {
+                                cy.style(reviseViz());
+                                //make sure that the node width is symmetrical to height
+                                cy.nodes().style('width', function(n){return n.height();});
+                            } catch(err) {
+                                console.log(err);
+                                cy.style(reviseViz().reverse());
+                                //make sure that the node width is symmetrical to height
+                                cy.nodes().style('width', function(n){return n.height();});
+                            }
+                        })();
+                    }
+                });
+            };
+
+        return randRanksAndSendToR();
+
     }
 
     //To record mouse position. Could make it on 'click' instead of 'mouseover'
