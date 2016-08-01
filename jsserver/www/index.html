@@ -272,8 +272,8 @@
         }
 
         function updateTableDimensions() {
-            numberOfEncodings = parseInt($("#numEncodings").val());
-            numberOfTasks = parseInt($("#numTasks").val());
+            numberOfEncodings = parseInt($("#numEncodings").val()) || encs.length;
+            numberOfTasks = parseInt($("#numTasks").val()) || 1;
 //        numberOfEncodings = parseInt(d3.select('#numEncodings')[0][0].value);
 //        numberOfTasks = parseInt(d3.select('#numTasks')[0][0].value);
             console.log(numberOfEncodings);
@@ -630,18 +630,19 @@
                         tempdat.push(temp);
                     });
 
-                    $.ajax({
-                        type: 'POST',
-                        url: '/submitdata',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: JSON.stringify(tempdat),
-                        success: function (data) {
-                            console.log(['user choice submit success', data]);
-                            //re-layout graph (this also takes care of unselection)
-                            plotNetwork('genemania_BRCA');
-                        }
-                    });
+//                    $.ajax({
+//                        type: 'POST',
+//                        url: '/submitdata',
+//                        contentType: "application/json; charset=utf-8",
+//                        dataType: "json",
+//                        data: JSON.stringify(tempdat),
+//                        success: function (data) {
+//                            console.log(['user choice submit success', data]);
+//                            //re-layout graph (this also takes care of unselection)
+//                            plotNetwork('genemania_BRCA');
+//                        }
+//                    });
+                    wholeWorkflow();
 
 //                    return tempdat;
                 });
@@ -959,7 +960,7 @@ window.onkeypress = function(event) {
     }
     else if (event.keyCode == 97) {
         // load ranks
-        generateBaselineRank(taskNames[parseInt($('#taskChoice').val())]);
+        generateBaselineRank(taskNames[parseInt($('#taskChoice').val()) || 3]);
     }
     else if (event.keyCode == 119) {
         // send table
@@ -1054,6 +1055,10 @@ window.onkeypress = function(event) {
                 });
                 baselineValues = data;
                 taskNames = Object.keys(baselineValues[0]);
+
+                // To initialize app on loadig page
+                updateTableDimensions();
+                wholeWorkflow();
             }
             else {
                 console.log('This is embarassing!')
@@ -1100,10 +1105,10 @@ window.onkeypress = function(event) {
                         console.log("SUCCESS");
                         Robj = data;
                         highlightAssignedCells();
+                        plotNetwork('genemania_BRCA');
                         console.log(data);
                     },
                     complete: function() {
-//                        return reviseViz();
                         return (function() {
                             try {
                                 cy.style(reviseViz());
