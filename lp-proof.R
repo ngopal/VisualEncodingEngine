@@ -1103,7 +1103,7 @@ samplingMarkov <- function(options, weights) {
 }
 
 sampled <- c()
-for (i in 1:20) {
+for (i in 1:35) {
   sampled <- append(sampled, samplingMarkov(c("B->B","B->R","R->B","R->R"), c(0.25,0.25,0.25,0.25)))
 }
 table(sampled)
@@ -1129,7 +1129,8 @@ sampledPlot <- c()
 sampledTab <- matrix(0,1,4)
 colnames(sampledTab) <- c("B->B","B->R","R->B","R->R")
 sampledTab <- rbind(sampledTab, checkAdd(c("B->B","B->R","R->B","R->R"), c(0.25,0.25,0.25,0.25)))
-for (i in 1:20) {
+#sampledTab <- sampledTab[2,]
+for (i in 1:35) {
   newWeights <- 1-apply(sampledTab, FUN=mean, MARGIN=2)
   sampledTab <- rbind(sampledTab, checkAdd(c("B->B","B->R","R->B","R->R"), newWeights ))
   sampledPlot <- rbind(sampledPlot,c(i,newWeights))
@@ -1144,5 +1145,31 @@ lines(sampledPlot[,1], sampledPlot[,5], col="red")
 1-table(sampled)/sum(table(sampled))
 1-apply(sampledTab, FUN=mean, MARGIN=2)
 
+table(sampled)/sum(table(sampled))
+apply(sampledTab, FUN=mean, MARGIN=2)
 
+
+
+sampledPlot <- c()
+sampledTab <- matrix(0,1,24)
+colnames(sampledTab) <- c(1:24)
+sampledTab <- rbind(sampledTab, checkAdd(c(1:24), rep(1/24, 24)))
+#sampledTab <- sampledTab[2,]
+for (i in 1:(24*100)) {
+  newWeights <- 1-apply(sampledTab, FUN=mean, MARGIN=2)
+  sampedVec <- matrix(0,1,24)
+  sampedVec[samplingMarkov(c(1:24), newWeights)] <- 1
+  sampledTab <- rbind(sampledTab, sampedVec)
+  sampledPlot <- rbind(sampledPlot,c(i,newWeights))
+}
+
+apply(sampledTab, FUN=sum, MARGIN=2)
+barplot(apply(sampledTab, FUN=sum, MARGIN=2))
+
+sampled <- c()
+for (i in 1:(24*100)) {
+  sampled <- append(sampled, samplingMarkov(c(1:24), rep(1/24, 24)))
+}
+table(sampled)
+barplot(table(sampled))
 

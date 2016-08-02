@@ -132,6 +132,8 @@
     var Robj;
     var taskWithDims = [];
     var baseOrRand = "Random";
+    thissession(0);
+    var nodeconfigs = nodetableconfig(); //need to edit this functions contents if I change encs below.
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
     var dims = ['dim1', 'dim2', 'dim2-2'];
@@ -393,47 +395,74 @@
             }
 
             return 0;
+        }
 
-            function generateArrayofBinaryValues(nrows) {
-                var arr = [];
-                d3.range(1, nrows + 1).forEach(function (k) {
-                    arr.push(getRandomIntInclusive(0, 1));
-                });
-                return shuffle(arr);
-            }
-
-
-            function generateArrayofValues(nrows) {
-                var arr = [];
-                d3.range(1, nrows + 1).forEach(function (k) {
-                    arr.push(getRandomIntInclusive(1, nrows));
-                });
-                return shuffle(arr);
-            }
-
-            function getRandomIntInclusive(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
-
-            function shuffle(array) {
-                var currentIndex = array.length, temporaryValue, randomIndex;
-
-                // While there remain elements to shuffle...
-                while (0 !== currentIndex) {
-
-                    // Pick a remaining element...
-                    randomIndex = Math.floor(Math.random() * currentIndex);
-                    currentIndex -= 1;
-
-                    // And swap it with the current element.
-                    temporaryValue = array[currentIndex];
-                    array[currentIndex] = array[randomIndex];
-                    array[randomIndex] = temporaryValue;
+        function loadCombinatorialRanks(configindex,relevanttasks) {
+            d3.selectAll('.rankedcell').attr('bgcolor', null);
+            for (var i = 1; i < tasks.length + 1; i++) {
+                if (relevanttasks.indexOf(tasks[i - 1]) !== -1) {
+                    console.log(numberOfEncodings);
+                    var ranks = nodeconfigs[configindex][tasks[i-1]];
+                    console.log(ranks);
+                    d3.selectAll(".col" + i)
+                            .data(ranks)
+                            .text(function (d) {
+                                return d;
+                            });
                 }
-
-                return array;
+                else {
+                    console.log(numberOfEncodings);
+                    var ranks = generateArrayofValues(numberOfEncodings);
+                    console.log(ranks);
+                    d3.selectAll(".col" + i)
+                            .data(ranks)
+                            .text(function (d) {
+                                return d;
+                            });
+                }
             }
 
+            return 0;
+        }
+
+        function generateArrayofBinaryValues(nrows) {
+            var arr = [];
+            d3.range(1, nrows + 1).forEach(function (k) {
+                arr.push(getRandomIntInclusive(0, 1));
+            });
+            return shuffle(arr);
+        }
+
+
+        function generateArrayofValues(nrows) {
+            var arr = [];
+            d3.range(1, nrows + 1).forEach(function (k) {
+                arr.push(getRandomIntInclusive(1, nrows));
+            });
+            return shuffle(arr);
+        }
+
+        function getRandomIntInclusive(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+
+            return array;
         }
 
         function generateBaselineRank(taskname) {
@@ -1237,7 +1266,29 @@ function randompageonclick() {
     return location.href+togoto[getRandomIntInclusive(1,togoto.length)-1];
 }
 
-thissession(0);
+
+
+function nodetableconfig() {
+    var nodeconfigs = [];
+    for (var i = 0; i < 9; i++) {
+        for (var k = i; k < 9; k++) {
+            if (k === i) {
+                continue
+            }
+            var t1 = d3.range(9).map(function(n){return 0});
+            var t2 = d3.range(9).map(function(n){return 0});
+            t1[i] = 10;
+            t2[k] = 10;
+//            console.log(t1);
+//            console.log(t2);
+//            console.log('--------');
+            nodeconfigs.push({
+                'dim2 task1':t1.concat(d3.range(7).map(function(n){return 0})),
+                'dim2-2 task1':t2.concat(d3.range(7).map(function(n){return 0}))  });
+        }
+    }
+    return nodeconfigs;
+}
 
 //var pages = d3.range(1,36).map(function(n){return location.href+n});
 //function thissession() {
