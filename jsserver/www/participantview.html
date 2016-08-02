@@ -24,14 +24,20 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            /*top: 500px;*/
-            /*left: 0px;*/
-            /*top: 0px;*/
-            /*left: 600px;*/
             display: none;
             float: right;
         }
     </style>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-55811705-2', 'auto');
+        ga('send', 'pageview');
+
+    </script>
 </head>
 <div id="rankTableSection">
     <input id="numEncodings" placeholder="Number of Encodings">
@@ -121,6 +127,7 @@
     var encodings;
     var Robj;
     var taskWithDims = [];
+    var baseOrRand = (function() { if (Math.random() <= 0.5) { return "Baseline" } else { return "Random"; } })();
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
     var dims = ['dim1', 'dim2', 'dim2-2'];
@@ -590,6 +597,10 @@
                     var tempdat = [];
                     var nodeencoding = [];
                     var edgeencoding = [];
+                    var clickcoords = [window.event.clientX, window.event.clientY];
+                    var windowheight = window.innerHeight;
+                    var windowwidth = window.innerWidth;
+                    var brow = whichBrowser();
 
                     //record the highlighted encodings
                     d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
@@ -625,6 +636,12 @@
                         else {
                             temp.selected = 0;
                         }
+                        temp.clickX = clickcoords[0];
+                        temp.clickY = clickcoords[1];
+                        temp.windowheight = windowheight;
+                        temp.windowwidth = windowwidth;
+                        temp.browser = brow;
+                        temp.group = baseOrRand;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -647,9 +664,17 @@
                         else {
                             temp.selected = 0;
                         }
+                        temp.clickX = clickcoords[0];
+                        temp.clickY = clickcoords[1];
+                        temp.windowheight = windowheight;
+                        temp.windowwidth = windowwidth;
+                        temp.browser = brow;
+                        temp.group = baseOrRand;
                         console.log(temp);
                         tempdat.push(temp);
                     });
+
+//                    tempdat.push({type:'meta', browser: whichBrowser() });
 
                     $.ajax({
                         type: 'POST',
@@ -666,6 +691,7 @@
                             wholeWorkflow();
                         }
                     });
+
 
                 });
 
@@ -1155,6 +1181,23 @@ window.onkeypress = function(event) {
         return randRanksAndSendToR();
 
     }
+
+
+function whichBrowser() {
+    var ua= navigator.userAgent, tem,
+            M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if(/trident/i.test(M[1])){
+        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+        return 'IE '+(tem[1] || '');
+    }
+    if(M[1]=== 'Chrome'){
+        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+    }
+    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+    return M.join(' ');
+};
 
     //To record mouse position. Could make it on 'click' instead of 'mouseover'
 //    cy.on('mousemove', function() {

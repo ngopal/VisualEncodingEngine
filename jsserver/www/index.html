@@ -131,6 +131,7 @@
     var encodings;
     var Robj;
     var taskWithDims = [];
+    var baseOrRand = "Random";
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
     var dims = ['dim1', 'dim2', 'dim2-2'];
@@ -644,6 +645,7 @@
                         temp.windowheight = windowheight;
                         temp.windowwidth = windowwidth;
                         temp.browser = brow;
+                        temp.group = baseOrRand;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -671,6 +673,7 @@
                         temp.windowheight = windowheight;
                         temp.windowwidth = windowwidth;
                         temp.browser = brow;
+                        temp.group = baseOrRand;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -1198,6 +1201,58 @@ function whichBrowser() {
     if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
     return M.join(' ');
 };
+
+
+function thissession(n) {
+    if (sessionStorage.hasOwnProperty('beento') === false) {
+        sessionStorage.setItem('beento', []);
+        sessionStorage.setItem('togoto', d3.range(1,6)); // 1, 36
+        sessionStorage.setItem('tlength', 5);
+        sessionStorage.setItem('blength', 0);
+        sessionStorage.setItem('status', 'incomplete');
+    }
+    else if ( sessionStorage.getItem('status') === "complete" ) {
+        alert('load next page');
+    }
+    else {
+        var pageval = (location.href+n).split(location.href)[1];
+        var beento = JSON.parse('['+sessionStorage.getItem('beento')+']');
+        var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
+        beento.push(pageval);
+        togoto.splice(togoto.indexOf(parseInt(pageval)), 1);
+        sessionStorage.setItem('beento', beento);
+        sessionStorage.removeItem('togoto');
+        sessionStorage.setItem('togoto', togoto);
+        sessionStorage.setItem('tlength', togoto.length);
+        sessionStorage.setItem('blength', beento.length);
+        if (togoto.length === 0) {
+            sessionStorage.setItem('status', 'complete');
+            //sessionStorage.clear(); clear storage on exit page;
+        }
+    }
+};
+
+function randompageonclick() {
+    var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
+    return location.href+togoto[getRandomIntInclusive(1,togoto.length)-1];
+}
+
+thissession(0);
+
+//var pages = d3.range(1,36).map(function(n){return location.href+n});
+//function thissession() {
+//    pages.map(function(n) {
+//        sessionStorage.setItem(n, "false");
+//        return 0;
+//    });
+//
+//    //set current session
+//    sessionStorage.setItem(location.href+3, "true")
+//
+//    Object.keys(sessionStorage).map(function(n) {
+//        return sessionStorage.getItem(n);
+//    }).filter(function(n) { return "false"})
+//}
 
     //To record mouse position. Could make it on 'click' instead of 'mouseover'
 //    cy.on('mousemove', function() {

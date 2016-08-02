@@ -29,6 +29,18 @@ app.get('/participant', function (req, res) {
     res.sendfile("/www/participantview.html", {root: __dirname});
 });
 
+app.get('/rand', function (req, res) {
+    var weight_hash = {'random':0.5, 'baseline':0.5};
+    var rand = (function() {
+        if (Math.random() <= weight_hash.baseline) {
+            return "Baseline";
+        } else {
+            return "Random";
+        }
+    })();
+    res.send(JSON.stringify({'randomGroup': rand}));
+});
+
 app.get('/sfunction', function (req, res) {
     exec('Rscript r/silly.r this is a test', function(error, stdout, stderr) {
         if (error) {

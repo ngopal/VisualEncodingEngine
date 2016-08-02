@@ -591,7 +591,7 @@ loadResultsDoubleEnc <- function(path) {
     for (l in 1:length(jdat)) {
       if(jdat[[l]]$type == "node") {
         #jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected))
-        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected, jdat[[l]]$clickX, jdat[[l]]$clickY, jdat[[l]]$windowheight, jdat[[l]]$windowwidth))
+        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$encoding1, jdat[[l]]$encoding2, jdat[[l]]$results, jdat[[l]]$positions, jdat[[l]]$selected, jdat[[l]]$clickX, jdat[[l]]$clickY, jdat[[l]]$windowheight, jdat[[l]]$windowwidth, jdat[[l]]$browser, jdat[[l]]$group))
       }
     }
   }
@@ -600,14 +600,16 @@ loadResultsDoubleEnc <- function(path) {
 
 expd <- loadResultsDoubleEnc('~/Code/VisualEncodingEngine/jsserver/savedData/')
 # expd <- data.frame(t(matrix(expd, 12, length(expd)/12)))
-expd <- data.frame(t(matrix(expd, 16, length(expd)/16))) # + 4 on top of 12
+expd <- data.frame(t(matrix(expd, 18, length(expd)/18))) 
 # colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
-colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected", "clickX", "clickY", "windowHeight", "windowWidth")
+colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected", "clickX", "clickY", "windowHeight", "windowWidth", "Browser", "Group")
 expd[,8] <- as.numeric(gsub('px','',expd[,8]))
 expd[,9] <- as.numeric(gsub('px','',expd[,9]))
 expd[,10] <- as.numeric(as.character(expd[,10]))
 expd[,11] <- as.numeric(as.character(expd[,11]))
 expd[,12] <- as.numeric(as.character(expd[,12]))
+
+expd$nodecolor <- revalue(expd$nodecolor, c("#999"="#999999"))
 
 
 clickmap <- function() {
@@ -619,7 +621,17 @@ clickmap <- function() {
   points(as.numeric(as.character(expd$xpos[which(expd$selected == 1)])) / as.numeric(as.character(expd$windowWidth[which(expd$selected == 1)])), as.numeric(as.character(expd$ypos[which(expd$selected == 1)])) / as.numeric(as.character(expd$windowHeight[which(expd$selected == 1)])), col="red", pch=2)
 }
 
+# Basic Visualizations
 clickmap()
+
+barplot(table(expd[which(expd$selected == 1),3]), horiz = T, las=1)
+barplot(table(paste(expd[which(expd$selected == 1),4],expd[which(expd$selected == 1),5])), horiz=T, las=1)
+tpch <- rep(1,dim(expd)[1])
+tpch[which(expd.mod$selected == 1)] <- 1
+ts <- rep(1,dim(expd)[1])
+ts[which(expd.mod$selected == 1)] <- 1
+pairs(expd.mod[,2:4], col=as.character(expd$nodecolor), pch=tpch, cex=ts)
+pairs(expd.mod[,2:4], col=ifelse(expd.mod$selected == 1, as.character(expd$nodecolor), "gray"), pch=tpch, cex=ts)
 
 
 #euclidian distance from center
@@ -649,7 +661,6 @@ colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", 
 expd[,13] <- as.numeric(as.character(expd[,13]))
 expd <- as.data.frame(cbind(expd[,1:11],expd[,13],expd[,12]))
 colnames(expd) <- c(colnames(expd)[1:11],"distCent","selected")
-
 
 library(lme4)
 expd.model1 <- lmer(as.numeric(selected) ~ as.numeric(nodeborder) + (1|name) + (1|file), data=expd)
@@ -697,8 +708,8 @@ for (i in 1:dim(expd)[1]) {
 mycolors <- t(matrix(voodoo, 3, length(voodoo)/3))
 #r, g, b cols
 
-expd.mod <- data.frame(cbind(expd[,3],mycolors[,1:3],expd[,7:12])) #until 13 if I want distCent
-colnames(expd.mod) <- c("name", "R", "G", "B", colnames(expd)[7:12])
+expd.mod <- data.frame(cbind(expd[,3],mycolors[,1:3],expd[,7:18])) #until 13 if I want distCent
+colnames(expd.mod) <- c("name", "R", "G", "B", colnames(expd)[7:18])
 rf2 <- randomForest(as.numeric(selected) ~ ., data=expd.mod, importance=TRUE, proximity=TRUE, do.trace = TRUE)
 print(rf2)
 rf2$importance
@@ -1074,11 +1085,64 @@ combn(c('node color (seq)',
 # Manually counted 24 combinations to try if measuring every combination
 # for nodes.
 
-'edge width (quant)',
+combn(c('edge width (quant)',
 'edge width (bin)',
 'edge color (seq)',
 'edge color (div)',
 'edge color (cat)',
 'edge pattern (cat)',
-'edge arrow (cat)'
+'edge arrow (cat)'), m=2)
+
+# Manually counted 11 combinations to try if measuring every combination
+# for edges
+
+# This makes 35 observations in total for users.
+
+samplingMarkov <- function(options, weights) {
+  return( sample(options, size = 1, prob = weights) )
+}
+
+sampled <- c()
+for (i in 1:20) {
+  sampled <- append(sampled, samplingMarkov(c("B->B","B->R","R->B","R->R"), c(0.25,0.25,0.25,0.25)))
+}
+table(sampled)
+
+
+checkAdd <- function(options, weights) {
+  samped <- sample(options, size = 1, prob = weights)
+  if(samped == "B->B") { return( c(1,0,0,0) ) }
+  else if (samped == "B->R") { return( c(0,1,0,0) ) }
+  else if (samped == "R->B") { return( c(0,0,1,0) ) }
+  else if (samped == "R->R") { return( c(0,0,0,1) )}
+  else {
+    cat('ERROR\n')
+  }
+}
+
+sampledTab <- rbind(sampledTab, checkAdd(c("B->B","B->R","R->B","R->R"), c(0.25,0.25,0.25,0.25)))
+#sampledTab <- sampledTab[2,]
+apply(sampledTab, FUN=mean, MARGIN=2)
+1-apply(sampledTab, FUN=mean, MARGIN=2)
+
+sampledPlot <- c()
+sampledTab <- matrix(0,1,4)
+colnames(sampledTab) <- c("B->B","B->R","R->B","R->R")
+sampledTab <- rbind(sampledTab, checkAdd(c("B->B","B->R","R->B","R->R"), c(0.25,0.25,0.25,0.25)))
+for (i in 1:20) {
+  newWeights <- 1-apply(sampledTab, FUN=mean, MARGIN=2)
+  sampledTab <- rbind(sampledTab, checkAdd(c("B->B","B->R","R->B","R->R"), newWeights ))
+  sampledPlot <- rbind(sampledPlot,c(i,newWeights))
+}
+
+plot(sampledPlot[,1], sampledPlot[,2], type = "l", col="purple",
+     xlab="iteration", ylab="weight", main="Markov Chain Sampling")
+lines(sampledPlot[,1], sampledPlot[,3], col="blue")
+lines(sampledPlot[,1], sampledPlot[,4], col="green")
+lines(sampledPlot[,1], sampledPlot[,5], col="red")
+
+1-table(sampled)/sum(table(sampled))
+1-apply(sampledTab, FUN=mean, MARGIN=2)
+
+
 
