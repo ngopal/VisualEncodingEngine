@@ -116,45 +116,13 @@ app.post('/lp', function (req, res) {
     });
 });
 
-
-//app.post('/convert', function (req, res) {
-//    var rdata = req.body;
-//    var jfile = 'savedinput/'+Date.now()+'.json';
-//    var jfileout = 'savedoutput/'+Date.now()+'.json';
-//    jsonfile.writeFile(jfile, rdata, function (err, success) {
-//        if(err) {
-//            console.log(err);
-//        }
-//        else {
-//
-//
-//            exec('Rscript r/readAndConvert.r '+jfile+' '+jfileout, function(error, stdout, stderr) {
-//                if (error) {
-//                    console.log(error);
-//                    res.send(error);
-//                }
-//                else if (stderr) {
-//                    console.log(stderr);
-//                    res.send(stderr);
-//                }
-//                else if (stdout) {
-//                    console.log("RAN SUCCESSFULLY");
-//
-//                    jsonfile.readFile(jfileout, function(jrerr, jsoncontents) {
-//                        if(jrerr) { console.log(jrerr); }
-//                        else {
-//                            res.setHeader('Content-Type', 'application/json');
-//                            res.jsonp(jsoncontents);
-//                        }
-//                    });
-//
-//                }
-//            });
-//
-//
-//        }
-//    });
-//});
+// Serving each combination page individually
+[1,2,3,4,5,6,7,8,9,10].map(function(i) {
+    return app.get('/page' + i, function (req, res) {
+        //res.sendfile("/www/page"+i+".html", {root: __dirname});
+        res.send(JSON.stringify({'page': i}));
+    });
+});
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
