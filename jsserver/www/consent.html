@@ -1,20 +1,48 @@
 <html>
+<head>
+    <link href="bootstrap.css" rel="stylesheet">
+    <script src="jquery.js"></script>
+    <script src="bootstrap.js"></script>
+</head>
 <body>
-Hello! Thank you for considering participating in this data visualization study! It should take less than 5 minutes to complete!
-
-As required by law, to participate in my experiment I must briefly explain its purpose and what data I’m collecting.
-
-Purpose:
-I am trying to understand which visual representations are most prominent in network visualizations. In this experiment, I will present a network and I would like you to click on the most visually noticeable item. Once you click, another visualization will automatically be loaded. Your responses are not timed, but please do not take more than 5 seconds to make a decision—the point of this experiment is to see how visual representations affects attention.
-
-What Data I Will Be Collecting:
+<!--<div id="introduction">-->
+    <!--Hello! Thank you for considering participating in this data visualization study! It should take less than 5 minutes to complete!-->
+    <!--<br><br>-->
+    <!--Let me briefly explain the purpose of the experiment and what data I’m collecting.-->
+<!--</div>-->
+<div class="page-header" style="padding-left: 30px;padding-right: 30px;">
+    <h1>Hello! Thank you for considering participating in this data visualization study!</h1>
+    <h3>It should take less than 5 minutes to complete! Here is what you need to know:</h3>
+</div>
+<div id="purpose" class="well well-lg">
+<b>Purpose:</b>
+I am trying to understand which visual representations are most prominent in network visualizations. In this experiment, I will present a network and I would like you to click on the most visually noticeable part. Once you click, another visualization will automatically be loaded. Your responses are not timed, but please do not take more than 5 seconds to make a decision—I would like to see how visual representations affects attention.
+</div>
+<div id="data" class="well well-lg">
+<b>Collected Data:</b>
 Since this is an online experiment, I will be recording the following information:
 
-- Click coordinates
-- Attributes of the presented networks
+<ul>
+    <li>Click coordinates</li>
+    <li>Attributes of the presented visualization</li>
+    <li>Some demographic information (at the end)</li>
+</ul>
 
-I am also using Google Analytics, although user tracking has been turned off to keep these sessions anonymous. In the spirit of open and reproducible science, I plan to publicly share the collected data (which again, is anonymous). If you understand, please click on the “I consent” button below.
-
-Again, thank you so much for helping with my experiment! If you have any questions, please feel free to email me at ngopal [at ] uw [dot] edu with the word “study42” in the title.
+I am also using Google Analytics to measure web traffic, although user tracking has been turned off to keep these sessions anonymous. In the spirit of open and reproducible science, I plan to publicly share the collected data (which again, is anonymous). If you understand, please click on the “I consent” button below.
+</div>
+<div id="requirements" class="well well-lg">
+<b>Requirements:</b>
+    This experiment absolutely needs to be taken from a desktop or laptop computer. Unfortunately mobile and tablet devices are not supported at this time. If you are on an unsupported device, you may provide your email so that I may send you one reminder to participate. I will not share your email with anyone outside of the experiment team (as required by law). This experiment makes heavy use of javascript, so javascript must be enabled. This experiment also makes use of the browser cache to keep track of your session.
+</div>
+<div id="consent" class="well well-lg">
+Again, thank you so much for helping with my experiment! If you have any questions, please feel free to email me at <u>ngopal [at ] uw [dot] edu</u> with the word “<u>study42</u>” in the title.
+<br><br>
+    <center>
+    <button type="button" class="btn btn-success btn-lg" onclick="location.href='/tutorial';">I Consent! Let's Get Started!</button>
+    <button type="button" class="btn btn-failure btn-lg" onclick="location.href='/tutorial';">I've changed my mind</button>
+    </center>
+</div>
+<br><br>
+<!--<button id="consentbutton" onclick="window.location.href='/tutorial'">I Would Like To Participate!</button>-->
 </body>
 </html>

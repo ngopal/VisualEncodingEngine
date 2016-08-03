@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.1",
+    "bootstrap": "^3.3.7",
     "cola": "^0.1.7",
     "colorbrewer": "^1.0.0",
     "cytoscape": "^2.7.2",

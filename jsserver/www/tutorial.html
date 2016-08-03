@@ -1,14 +1,99 @@
 <html>
+<head>
+    <link href="bootstrap.css" rel="stylesheet">
+    <script src="jquery.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="cytoscape.js"></script>
+    <style>
+        #cy {
+            width: 100%;
+            height: 50%;
+            position: absolute;
+            /*top: 500px;*/
+            /*left: 0px;*/
+            /*display: none;*/
+            float: right;
+        }
+    </style>
+</head>
 <body>
-This page provides a very brief tutorial about the visualization system.
+<div class="page-header" style="padding-left: 30px;padding-right: 30px;">
+    <h1>A Brief Tutorial</h1>
+    <h3>Let's get oriented with some key terms</h3>
+</div>
+<div id="explanation" style="padding-left: 30px;padding-right: 30px;">
+    <h4>
+<p>What we see above is a network. Networks are made of two types of elements: <b>nodes and edges</b>.</p>
+        <p>Nodes are the circle elements in the visualization. Nodes commonly denote anything that can be a “noun".</p>
+        <p>Edges are the line elements in the visualization, and they connect nodes. Edges commonly denote anything that can be a “verb”.</p>
+    </h4>
+</div>
+<div id="interactNode" style="padding-left: 30px;padding-right: 30px;">
+    <h4>The visualization presented below is interactive (as are the rest in the study).</h4>
+    <h3 id="nodeseek" style="display:inline">Please click on a <b><u>node</u></b> to continue.</h3>
+    <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
+    <h3 id="ready" style="display:none">You're a natural! Click the button below when you are ready to start! As a reminder, please do not take more than 5 seconds on each visualization.</h3>
+    <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="location.href='/';" style="display:none">Start the experiment!</button>
+<div id="cy"></div>
+</div>
 
-What we see below is a network. Networks are made of two types of elements: nodes and edges. Nodes are the circle elements in the visualization. Nodes commonly denote anything that can be a “noun". Edges are the line elements in the visualization, and they connect nodes. Edges commonly denote anything that can be a “verb”.
 
-The visualization below is interactive (as are the rest in the study). Please click on a node to continue.
+<script>
+    var cy = cytoscape({
 
-Awesome!
-Please click on an edge to continue.
+        container: document.getElementById('cy'), // container to render in
 
-Wonderful! You’re a natural! Let’s get started!
-</body
+        elements: [ // list of graph elements to start with
+            { // node a
+                data: { id: 'a' }
+            },
+            { // node b
+                data: { id: 'b' }
+            },
+            { // edge ab
+                data: { id: 'ab', source: 'a', target: 'b' }
+            }
+        ],
+
+        style: [ // the stylesheet for the graph
+            {
+                selector: 'node',
+                style: {
+                    'background-color': '#666',
+                    'label': 'data(id)'
+                }
+            },
+
+            {
+                selector: 'edge',
+                style: {
+                    'width': 3,
+                    'line-color': '#ccc',
+                    'target-arrow-color': '#ccc',
+                    'target-arrow-shape': 'triangle'
+                }
+            }
+        ],
+
+        layout: {
+            name: 'cose',
+            rows: 1
+        }
+
+    });
+
+    cy.on('click', 'node', function() {
+        $('#nodeseek').hide();
+        $('#edgeseek').show();
+    })
+
+    cy.on('click', 'edge', function() {
+        $('#edgeseek').hide();
+        $('#cy').hide();
+        $('#ready').show();
+        $('#readybtn').show();
+    })
+
+</script>
+</body>
 </html>

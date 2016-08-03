@@ -16,8 +16,8 @@ app.use('/networkgenerator.js', express.static(__dirname + '/networkgenerator.js
 app.use('/cytoscape-cola.js', express.static(__dirname + '/node_modules/cytoscape-cola/cytoscape-cola.js'));
 app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));
 app.use('/ranktable.csv', express.static(__dirname + '/ranktable.csv'));
-app.use('/reimg.js', express.static(__dirname + '/node_modules/reimg/reimg.js'));
-
+app.use('/bootstrap.js', express.static(__dirname + '/node_modules/bootstrap/dist/js/bootstrap.min.js'));
+app.use('/bootstrap.css', express.static(__dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'));
 
 app.get('/', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
