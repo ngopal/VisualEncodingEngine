@@ -17,9 +17,7 @@ app.use('/cytoscape-cola.js', express.static(__dirname + '/node_modules/cytoscap
 app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));
 app.use('/ranktable.csv', express.static(__dirname + '/ranktable.csv'));
 app.use('/reimg.js', express.static(__dirname + '/node_modules/reimg/reimg.js'));
-//app.use('/cola.js', express.static(__dirname + '/node_modules/cola/cola.js'));
-//app.use('/require.js', express.static(__dirname + '/node_modules/requirejs/require.js'));
-//app.use('/main.js', express.static(__dirname + '/main.js'));
+
 
 app.get('/', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
@@ -27,6 +25,26 @@ app.get('/', function (req, res) {
 
 app.get('/participant', function (req, res) {
     res.sendfile("/www/participantview.html", {root: __dirname});
+});
+
+app.get('/tutorial', function (req, res) {
+    res.sendfile("/www/tutorial.html", {root: __dirname});
+});
+
+app.get('/onmobile', function (req, res) {
+    res.sendfile("/www/redirectmobile.html", {root: __dirname});
+});
+
+app.get('/thanks', function (req, res) {
+    res.sendfile("/www/thankyou.html", {root: __dirname});
+});
+
+app.get('/demographic', function (req, res) {
+    res.sendfile("/www/demographic.html", {root: __dirname});
+});
+
+app.get('/consent', function (req, res) {
+    res.sendfile("/www/consent.html", {root: __dirname});
 });
 
 app.get('/rand', function (req, res) {
