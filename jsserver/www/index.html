@@ -637,6 +637,7 @@ window.mobileAndTabletcheck = function() {
 
                 cy.on('select', 'node,edge', function(ev) {
                     console.log(ev);
+//                    var fillin = prompt("Why did you click on this?");
                     var selectedElement = ev.cyTarget;
                     console.log(["CLICKERED", selectedElement.data()]);
 
