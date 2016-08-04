@@ -144,6 +144,7 @@ window.mobileAndTabletcheck = function() {
     var baseOrRand = "Random";
     var nodeconfigs = nodetableconfig(); //need to edit this functions contents if I change encs below.
     var pageval = getPageVal();
+    var timer = {start: (function() {return new Date();})()};
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
     var dims = ['dim1', 'dim2', 'dim2-2'];
@@ -672,6 +673,8 @@ window.mobileAndTabletcheck = function() {
                     var clickcoords = [window.event.clientX, window.event.clientY];
                     var windowheight = window.innerHeight;
                     var windowwidth = window.innerWidth;
+                    var time2 = new Date();
+                    var timetook = (time2-timer.start)/1000;
                     var brow = whichBrowser();
 
                     //record the highlighted encodings
@@ -713,7 +716,7 @@ window.mobileAndTabletcheck = function() {
                         temp.windowheight = windowheight;
                         temp.windowwidth = windowwidth;
                         temp.browser = brow;
-                        temp.group = baseOrRand;
+                        temp.time = timetook;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -741,7 +744,7 @@ window.mobileAndTabletcheck = function() {
                         temp.windowheight = windowheight;
                         temp.windowwidth = windowwidth;
                         temp.browser = brow;
-//                        temp.group = baseOrRand;
+                        temp.time = timetook;
                         console.log(temp);
                         tempdat.push(temp);
                     });
