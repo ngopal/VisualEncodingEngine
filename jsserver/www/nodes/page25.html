@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Visual Encoding App</title>
     <script src="d3.js"></script>
     <script src="cache.js"></script>
@@ -27,7 +28,7 @@
             /*top: 500px;*/
             /*left: 0px;*/
             top: 0px;
-            left: 600px;
+            left: 550px;
             display: none;
             float: right;
         }
@@ -142,7 +143,6 @@ window.mobileAndTabletcheck = function() {
     var Robj;
     var taskWithDims = [];
     var baseOrRand = "Random";
-    var nodeconfigs = nodetableconfig(); //need to edit this functions contents if I change encs below.
     var pageval = getPageVal();
     var timer = {start: (function() {return new Date();})()};
 
@@ -156,7 +156,7 @@ window.mobileAndTabletcheck = function() {
         'node shape (cat)',
         'node border (quant)',
         'node border (bin)',
-        'node border (cat)', //patterns
+//        'node border (cat)', //patterns
         'node size (quant)',
         'node size (bin)',
         'edge width (quant)',
@@ -164,8 +164,8 @@ window.mobileAndTabletcheck = function() {
         'edge color (seq)',
         'edge color (div)',
         'edge color (cat)',
-        'edge pattern (cat)',
-        'edge arrow (cat)'
+        'edge pattern (cat)'
+//        'edge arrow (cat)'
     ];
 
 
@@ -252,7 +252,7 @@ window.mobileAndTabletcheck = function() {
             'node shape (cat)': ['categorical'],
             'node border (quant)': ['numeric'],
             'node border (bin)': ['numeric'],
-            'node border (cat)': ['categorical'], //patterns
+//            'node border (cat)': ['categorical'], //patterns
             'node size (quant)' : ['numeric'],
             'node size (bin)' : ['numeric'],
             'edge width (quant)': ['numeric'],
@@ -260,8 +260,8 @@ window.mobileAndTabletcheck = function() {
             'edge color (seq)': ['numeric'],
             'edge color (div)': ['numeric'],
             'edge color (cat)': ['categorical'],
-            'edge pattern (cat)': ['categorical'],
-            'edge arrow (cat)': ['categorical']
+            'edge pattern (cat)': ['categorical']
+//            'edge arrow (cat)': ['categorical']
         };
 
 
@@ -272,7 +272,7 @@ window.mobileAndTabletcheck = function() {
             'node shape (cat)':    {func:nodeshape_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:3},
             'node border (quant)': {func:nodeborder_quant,intype:['numeric'], outtype:['numeric'], element:'node', ind:4},
             'node border (bin)':   {func:nodeborder_bin,intype:['numeric'], outtype:['categorical'], element:'node', ind:5},
-            'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:6},
+//            'node border (cat)':   {func:nodeborder_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'node', ind:6},
             'node size (quant)': {func:nodesize_quant, intype:['numeric'], outtype:['numeric'], element:'node', ind:7},
             'node size (bin)':   {func:nodesize_bin, intype:['numeric'], outtype:['categorical'], element:'node', ind:8},
             'edge width (quant)':  {func:edgewidth_quant,intype:['numeric'], outtype:['numeric'], element:'edge', ind:9},
@@ -280,8 +280,8 @@ window.mobileAndTabletcheck = function() {
             'edge color (seq)':    {func:edgecolor_seq,intype:['numeric'], outtype:['categorical'], element:'edge', ind:11},
             'edge color (div)':    {func:edgecolor_div,intype:['numeric'], outtype:['categorical'], element:'edge', ind:12},
             'edge color (cat)':    {func:edgecolor_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:13},
-            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:14},
-            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:15}
+            'edge pattern (cat)':  {func:edgepattern_cat,intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:14}
+//            'edge arrow (cat)':    {func:edgearrow_cat, intype:['numeric', 'categorical'], outtype:['categorical'], element:'edge', ind:15}
         };
 
 
@@ -663,7 +663,13 @@ window.mobileAndTabletcheck = function() {
 
                 cy.on('select', 'node,edge', function(ev) {
                     console.log(ev);
-//                    var fillin = prompt("Why did you click on this?");
+                    var fillin;
+                    if ( parseInt(sessionStorage.getItem('popquestions')) === pageval  ) {
+                        fillin = prompt("Why did you click on this?");
+                    }
+                    else {
+                        fillin = 'NA';
+                    }
                     var selectedElement = ev.cyTarget;
                     console.log(["CLICKERED", selectedElement.data()]);
 
@@ -756,6 +762,7 @@ window.mobileAndTabletcheck = function() {
                     });
 
 //                    tempdat.push({type:'meta', browser: whichBrowser() });
+                    tempdat.push({type:'meta', browser:brow, participantResponse:fillin});
 
                     $.ajax({
                         type: 'POST',
@@ -930,7 +937,7 @@ window.mobileAndTabletcheck = function() {
         },
         {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5,6,9,10,11,12,13,14,15]},
         {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,6,9,10,11,12,13,14,15]},
-        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
+//        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
         {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[8,9,10,11,12,13,14,15]},
         {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7,9,10,11,12,13,14,15]},
         {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,10]},
@@ -945,16 +952,18 @@ window.mobileAndTabletcheck = function() {
             type: 'edge',
             range: ["solid", "dotted", "dashed"],
             incompatability:[0,1,2,3,4,5,6,7,8]
-        },
-        {
-            encname: 'edge arrow (cat)',
-            func: edgearrow_cat,
-            style: 'line-style',
-            type: 'edge',
-            range: ["solid", "dotted", "dashed"],
-            incompatability:[0,1,2,3,4,5,6,7,8]
         }
+//        {
+//            encname: 'edge arrow (cat)',
+//            func: edgearrow_cat,
+//            style: 'line-style',
+//            type: 'edge',
+//            range: ["solid", "dotted", "dashed"],
+//            incompatability:[0,1,2,3,4,5,6,7,8]
+//        }
     ];
+
+    var nodeconfigs = nodetableconfig(thing); //need to edit this functions contents if I change encs below.
 
     function rez(predomain,e) {
         if (Array.isArray(thing[e].range)) {
@@ -1303,23 +1312,27 @@ function randompageonclick() {
 
 
 
-function nodetableconfig() {
+function nodetableconfig(thing) {
     var nodeconfigs = [];
-    for (var i = 0; i < 9; i++) {
-        for (var k = i; k < 9; k++) {
+    var numNodeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="node"}).length;
+    var numEdgeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="edge"}).length;
+    var numNodeEncs = 8;
+    var numEdgeEncs = 6;
+    for (var i = 0; i < numNodeEncs; i++) {
+        for (var k = i; k < numNodeEncs; k++) {
             if (k === i) {
                 continue
             }
-            var t1 = d3.range(9).map(function(n){return 0});
-            var t2 = d3.range(9).map(function(n){return 0});
+            var t1 = d3.range(numNodeEncs).map(function(n){return 0});
+            var t2 = d3.range(numNodeEncs).map(function(n){return 0});
             t1[i] = 10;
             t2[k] = 10;
 //            console.log(t1);
 //            console.log(t2);
 //            console.log('--------');
             nodeconfigs.push({
-                'dim2 task1':t1.concat(d3.range(7).map(function(n){return 0})),
-                'dim2-2 task1':t2.concat(d3.range(7).map(function(n){return 0}))  });
+                'dim2 task1':t1.concat(d3.range(numEdgeEncs).map(function(n){return 0})),
+                'dim2-2 task1':t2.concat(d3.range(numEdgeEncs).map(function(n){return 0}))  });
         }
     }
     return nodeconfigs;

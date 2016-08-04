@@ -1,20 +1,26 @@
 function initializeCache() {
     if (sessionStorage.hasOwnProperty('beento') === false) {
 
-        var invalidPages = [1,2,9,27,31,36]; // node pages currently, need to add edge pages
+        var invalidPages = [1, 2, 8, 23, 28]; // node pages currently, need to add edge pages
+        var acceptablePages = d3.range(1,29).filter(function(n) {
+            return invalidPages.indexOf(n) === -1
+        });
 
         sessionStorage.setItem('beento', []);
-        sessionStorage.setItem('togoto', d3.range(1,36).filter(function(n) {
-                return invalidPages.indexOf(n) === -1
-            })                     ); // 1, 36
-        sessionStorage.setItem('tlength', 36); //need to add nodeconfig+edgeconfig length when ready
+        sessionStorage.setItem('togoto', acceptablePages ); // 1, 29
+        sessionStorage.setItem('tlength', 29); //need to add nodeconfig+edgeconfig length when ready
         sessionStorage.setItem('blength', 0);
         sessionStorage.setItem('status', 'incomplete');
         sessionStorage.setItem('consent', 'incomplete');
         sessionStorage.setItem('tutorial', 'incomplete');
+        sessionStorage.setItem('popquestions', acceptablePages[getRandomIntInclusive(0,acceptablePages.length-1)] );
         sessionStorage.setItem('demographic', 'incomplete');
         sessionStorage.setItem('thanks', 'incomplete');
         sessionStorage.setItem('GUID', guid());
+
+        if (window.location.href !== '/consent') {
+            window.location.href = '/consent';
+        }
     }
     else {
         if ( window.location.href.split('/')[3] !== "consent" && sessionStorage.getItem('consent') === 'incomplete' ) {

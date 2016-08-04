@@ -86,7 +86,7 @@ app.get('/sfunction', function (req, res) {
 
 app.post('/submitdata', function(req, res) {
     var dataObject = req.body.data;
-    var jfile = 'savedData/' + req.body.user + '-' + req.body.page + '.json';
+    var jfile = 'savedData/' + req.body.user + '-' + Date.now() + '-' + req.body.page + '.json';
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
             console.log(err);
@@ -101,7 +101,7 @@ app.post('/submitdata', function(req, res) {
 
 app.post('/submitsurveydata', function(req, res) {
     var dataObject = req.body.data;
-    var jfile = 'savedData/' + req.body.user + '-' + req.body.page + '.json';
+    var jfile = 'savedData/' + req.body.user + '-' + Date.now() + '-' + req.body.page + '.json';
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
             console.log(err);
