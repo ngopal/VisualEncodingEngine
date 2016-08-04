@@ -458,9 +458,7 @@ window.mobileAndTabletcheck = function() {
             return shuffle(arr);
         }
 
-        function getRandomIntInclusive(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+
 
         function shuffle(array) {
             var currentIndex = array.length, temporaryValue, randomIndex;
@@ -738,6 +736,7 @@ window.mobileAndTabletcheck = function() {
 //                            plotNetwork('genemania_BRCA');
                         },
                         complete: function() {
+                            thissession(getPageVal());
 //                            wholeWorkflow();
                             window.location.href=nextRandomPage();
                         }
@@ -1158,8 +1157,7 @@ window.onkeypress = function(event) {
                 baselineValues = data;
                 taskNames = Object.keys(baselineValues[0]);
 
-                // To initialize app on loadig page
-                thissession(getPageVal());
+                // To initialize app on loading page
                 updateTableDimensions();
                 wholeWorkflow();
             }
@@ -1182,16 +1180,7 @@ window.onkeypress = function(event) {
         $('#rankTable').show();
     }
 
-    function getPageVal() {
-        var pageval;
-        if (window.location.href.split('/page')[1] === undefined) {
-            pageval = 1;
-        }
-        else {
-            pageval = parseInt(window.location.href.split('/page')[1]);
-        }
-        return pageval;
-    }
+
 
     function loadSpecificCombinatorialRanks() {
         var pageval = getPageVal();
@@ -1202,6 +1191,10 @@ window.onkeypress = function(event) {
 
         // Clearing the interval for when user clicks and time does not run out
 //        clearInterval(newtime)
+
+        //Adding page to session
+//        thissession(getPageVal());
+//        console.log("REGISTERED "+getPageVal());
 
             function randRanksAndSendToR() {
                 // sendToR function
@@ -1272,44 +1265,6 @@ function whichBrowser() {
 };
 
 
-//function thissession(n) {
-//    if (sessionStorage.hasOwnProperty('beento') === false) {
-//        sessionStorage.setItem('beento', []);
-//        sessionStorage.setItem('togoto', d3.range(1,37)); // 1, 36
-//        sessionStorage.setItem('tlength', nodeconfigs.length); //need to add edgeconfig length when ready
-//        sessionStorage.setItem('blength', 0);
-//        sessionStorage.setItem('status', 'incomplete');
-//    }
-//
-//    if ( sessionStorage.getItem('status') === "complete" ) {
-//        alert('load next page');
-//    }
-//
-//
-//    var pageval = n;
-//    var beento = JSON.parse('['+sessionStorage.getItem('beento')+']');
-//    var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
-//    beento.push(pageval);
-//    togoto.splice(togoto.indexOf(parseInt(pageval)), 1);
-//    sessionStorage.setItem('beento', beento);
-//    sessionStorage.removeItem('togoto');
-//    sessionStorage.setItem('togoto', togoto);
-//    sessionStorage.setItem('tlength', togoto.length);
-//    sessionStorage.setItem('blength', beento.length);
-//    if (togoto.length === 0) {
-//        sessionStorage.setItem('status', 'complete');
-//        //sessionStorage.clear(); clear storage on exit page;
-//    }
-//};
-
-function nextRandomPage() {
-    var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
-    if (togoto.length === 0) {
-        return '/demographic';
-    }
-    var randsel = getRandomIntInclusive(0,togoto.length);
-    return '/page'+randsel;
-}
 
 function randompageonclick() {
     var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
@@ -1345,20 +1300,7 @@ function nodetableconfig() {
 
 
 
-//var pages = d3.range(1,36).map(function(n){return location.href+n});
-//function thissession() {
-//    pages.map(function(n) {
-//        sessionStorage.setItem(n, "false");
-//        return 0;
-//    });
-//
-//    //set current session
-//    sessionStorage.setItem(location.href+3, "true")
-//
-//    Object.keys(sessionStorage).map(function(n) {
-//        return sessionStorage.getItem(n);
-//    }).filter(function(n) { return "false"})
-//}
+
 
     //To record mouse position. Could make it on 'click' instead of 'mouseover'
 //    cy.on('mousemove', function() {

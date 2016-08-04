@@ -3,6 +3,8 @@
     <link href="bootstrap.css" rel="stylesheet">
     <script src="jquery.js"></script>
     <script src="bootstrap.js"></script>
+    <script src="d3.js"></script>
+    <script src="cache.js"></script>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -13,11 +15,14 @@
         ga('send', 'pageview');
 
     </script>
+    <script>
+        initializeCache();
+    </script>
 </head>
 <body>
 <div class="page-header" style="padding-left: 30px;padding-right: 30px;">
     <h1>Almost done!</h1>
-    <h3>Please complete the embedded survey below</h3>
+    <h3>Please complete the 4 question survey embedded below</h3>
     <h4>Once you hit the 'Submit responses' button in the embedded survey, click the 'Finish Session' button below the survey</h4>
 </div>
 
@@ -25,7 +30,7 @@
     <iframe src="https://catalyst.uw.edu/webq/survey/ngopal/310262" style="width:100%; height:100%;"></iframe>
 <!--<script>(function(e,t,s,n){var o,c,r;e.SMCX=e.SMCX||[],t.getElementById(n)||(o=t.getElementsByTagName(s),c=o[o.length-1],r=t.createElement(s),r.type="text/javascript",r.async=!0,r.id=n,r.src=["https:"===location.protocol?"https://":"http://","widget.surveymonkey.com/collect/website/js/sTYBXsdbZZA62hJb2ZPXS_2B4GkCXLWErOza9FyYTNLPxEzPEL4qx4rzOW7deIRrZm.js"].join(""),c.parentNode.insertBefore(r,c))})(window,document,"script","smcx-sdk");</script><a style="font: 12px Helvetica, sans-serif; color: #999; text-decoration: none;" href=https://www.surveymonkey.com/mp/customer-satisfaction-surveys/> Create your own user feedback survey </a>-->
     <br><br>
-    <button type="button" class="btn btn-success btn-lg" onclick="location.href='/thanks';">Finish Session!</button>
+    <button type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('demographic', 'complete'); location.href='/thanks'; })()">Finish Session!</button>
     <br><br>
 </center>
 <script>

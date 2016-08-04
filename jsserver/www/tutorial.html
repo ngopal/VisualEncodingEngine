@@ -48,7 +48,7 @@
     <h3 id="nodeseek" style="display:inline">Please click on a <b><u>node</u></b> to continue.</h3>
     <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
     <h3 id="ready" style="display:none">You're a natural! Click the button below when you are ready to start! As a reminder, please do not take more than 5 seconds on each visualization.</h3>
-    <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href='/'; })()" style="display:none">Start the experiment!</button>
+    <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href=nextRandomPage(); })()" style="display:none">Start the experiment!</button>
 <div id="cy"></div>
 </div>
 
@@ -100,7 +100,8 @@
     cy.on('click', 'node', function() {
         $('#nodeseek').hide();
         $('#edgeseek').show();
-    })
+    });
+
 
     cy.on('click', 'edge', function() {
         $('#edgeseek').hide();
