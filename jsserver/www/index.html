@@ -410,11 +410,12 @@ window.mobileAndTabletcheck = function() {
             return 0;
         }
 
+        //I might need to specify node/edge here to get the column 0's correct.
         function loadCombinatorialRanks(configindex,relevanttasks) {
             //could use location.href number to set configindex
             //start area that can be taken out
             configindex = configindex || parseInt($("#combinNumber").val()) || 10;
-            relevanttasks = relevanttasks || [tasks[1],tasks[2]];
+            relevanttasks = relevanttasks || [tasks[2],tasks[3]];
             // If nodes, relevant tasks are 1 and 2
             // If edges, relevant tasks are 0
             // end area that can be taken out
@@ -963,7 +964,8 @@ window.mobileAndTabletcheck = function() {
 //        }
     ];
 
-    var nodeconfigs = nodetableconfig(thing); //need to edit this functions contents if I change encs below.
+    var nodeconfigs = nodetableconfig(thing);
+    var edgeconfigs = edgetableconfig(thing);
 
     function rez(predomain,e) {
         if (Array.isArray(thing[e].range)) {
@@ -1316,8 +1318,8 @@ function nodetableconfig(thing) {
     var nodeconfigs = [];
     var numNodeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="node"}).length;
     var numEdgeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="edge"}).length;
-    var numNodeEncs = 8;
-    var numEdgeEncs = 6;
+//    var numNodeEncs = 8;
+//    var numEdgeEncs = 6;
     for (var i = 0; i < numNodeEncs; i++) {
         for (var k = i; k < numNodeEncs; k++) {
             if (k === i) {
@@ -1336,6 +1338,30 @@ function nodetableconfig(thing) {
         }
     }
     return nodeconfigs;
+}
+
+function edgetableconfig(thing) {
+    var edgeconfigs = [];
+    var numNodeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="node"}).length;
+    var numEdgeEncs = thing.map(function(n){ return n.type}).filter(function(n){ return n==="edge"}).length;
+    for (var i = 0; i < numEdgeEncs; i++) {
+        for (var k = i; k < numEdgeEncs; k++) {
+            if (k === i) {
+                continue
+            }
+            var t1 = d3.range(numEdgeEncs).map(function(n){return 0});
+            var t2 = d3.range(numEdgeEncs).map(function(n){return 0});
+            t1[i] = 10;
+            t2[k] = 10;
+//            console.log(t1);
+//            console.log(t2);
+//            console.log('--------');
+            edgeconfigs.push({
+                'dim1 task1':d3.range(numNodeEncs).map(function(n){return 0}).concat(t1),
+                'dim1-2 task1':d3.range(numNodeEncs).map(function(n){return 0}).concat(t2)  });
+        }
+    }
+    return edgeconfigs;
 }
 
 
