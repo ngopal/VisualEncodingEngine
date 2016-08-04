@@ -4,6 +4,8 @@
     <script src="jquery.js"></script>
     <script src="bootstrap.js"></script>
     <script src="cytoscape.js"></script>
+    <script src="d3.js"></script>
+    <script src="cache.js"></script>
     <style>
         #cy {
             width: 100%;
@@ -15,6 +17,19 @@
             float: right;
         }
     </style>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-55811705-2', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+    <script>
+        initializeCache();
+    </script>
 </head>
 <body>
 <div class="page-header" style="padding-left: 30px;padding-right: 30px;">
@@ -33,7 +48,7 @@
     <h3 id="nodeseek" style="display:inline">Please click on a <b><u>node</u></b> to continue.</h3>
     <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
     <h3 id="ready" style="display:none">You're a natural! Click the button below when you are ready to start! As a reminder, please do not take more than 5 seconds on each visualization.</h3>
-    <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="location.href='/';" style="display:none">Start the experiment!</button>
+    <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href='/'; })()" style="display:none">Start the experiment!</button>
 <div id="cy"></div>
 </div>
 

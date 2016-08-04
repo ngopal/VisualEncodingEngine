@@ -3,6 +3,7 @@ var app = express();
 var exec = require('child_process').exec;
 var bodyParser = require('body-parser');
 var jsonfile = require('jsonfile');
+var d3 = require('d3');
 
 
 app.use(bodyParser.json()); // support json encoded bodies
@@ -12,6 +13,7 @@ app.use('/d3.js', express.static(__dirname + '/node_modules/d3/d3.min.js'));
 app.use('/jquery.js', express.static(__dirname + '/node_modules/jquery/dist/jquery.min.js'));
 app.use('/colorbrewer.js', express.static(__dirname + '/node_modules/colorbrewer/colorbrewer.js'));
 app.use('/fcns.js', express.static(__dirname + '/fcns.js'));
+app.use('/cache.js', express.static(__dirname + '/cache.js'));
 app.use('/networkgenerator.js', express.static(__dirname + '/networkgenerator.js'));
 app.use('/cytoscape-cola.js', express.static(__dirname + '/node_modules/cytoscape-cola/cytoscape-cola.js'));
 app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));
@@ -135,12 +137,19 @@ app.post('/lp', function (req, res) {
 });
 
 // Serving each combination page individually
-[1,2,3,4,5,6,7,8,9,10].map(function(i) {
+d3.range(1,37).map(function(i) {
     return app.get('/page' + i, function (req, res) {
-        //res.sendfile("/www/page"+i+".html", {root: __dirname});
-        res.send(JSON.stringify({'page': i}));
+        res.sendfile("/www/nodes/page"+i+".html", {root: __dirname});
+        //res.send(JSON.stringify({'page': i}));
     });
 });
+
+//app.get('/nodes/page/:confignumber', function (req, res) {
+//    var configure = req.params.confignumber;
+//    console.log("FOUND THIS PARAMETER "+configure);
+//    //res.send(JSON.stringify({'page': configure}));
+//    res.send("Oh, hello, "+configure);
+//});
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
