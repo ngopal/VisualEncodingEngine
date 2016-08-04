@@ -1,11 +1,16 @@
 <html>
 <head>
     <link href="bootstrap.css" rel="stylesheet">
+    <!--<link href="dialog.css" rel="stylesheet">-->
     <script src="jquery.js"></script>
+    <!--<script src="jqueryui.js"></script>-->
     <script src="bootstrap.js"></script>
     <script src="cytoscape.js"></script>
     <script src="d3.js"></script>
     <script src="cache.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+
     <style>
         #cy {
             width: 100%;
@@ -45,8 +50,10 @@
 </div>
 <div id="interactNode" style="padding-left: 30px;padding-right: 30px;">
     <h4>The visualization presented below is interactive (as are the rest in the study).</h4>
-    <h3 id="nodeseek" style="display:inline">Please click on a <b><u>node</u></b> to continue.</h3>
-    <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
+    <h3 id="nodeseek" style="display:block">Please click on a <b><u>node</u></b> to continue.</h3>
+    <h3 id="errNode" style="display:none;color:darkred;" title="That's a node" hidden="hidden">Uh-oh, that's a node you just clicked on! Remember, the lines are edges</h3>
+    <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue. It is sometimes easy to miss clicking on an edge. Try to get a feel for it.</h3>
+    <h3 id="errEdge" style="display:none;color:darkred;" title="That's an edge" hidden="hidden">Uh-oh, that's an edge you just clicked on! Remember, the circles are nodes!</h3>
     <h3 id="ready" style="display:none">You're a natural! Click the button below when you are ready to start! As a reminder, please do not take more than 5 seconds on each visualization.</h3>
     <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href=nextRandomPage(); })()" style="display:none">Start the experiment!</button>
 <div id="cy"></div>
@@ -93,21 +100,56 @@
         layout: {
             name: 'cose',
             rows: 1
-        }
+        },
+
+        fit: true, // whether to fit to viewport
+        padding: 30, // fit padding
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        minZoom: 1e-50,
+        maxZoom: 1e50,
+        zoomingEnabled: true,
+        userZoomingEnabled: false,
+        panningEnabled: true,
+        userPanningEnabled: false,
+        boxSelectionEnabled: false,
+        selectionType: 'additive',
+        touchTapThreshold: 8,
+        desktopTapThreshold: 4,
+        autolock: false,
+        autoungrabify: false,
+        autounselectify: false
 
     });
 
     cy.on('click', 'node', function() {
-        $('#nodeseek').hide();
-        $('#edgeseek').show();
+        if (  $('#nodeseek').css('display') !== "block"  ) {
+            $('#errNode').dialog();
+        }
+        else {
+            $('#nodeseek').hide();
+            $('#edgeseek').show();
+            $('#errNode').hide();
+        }
     });
 
 
+
     cy.on('click', 'edge', function() {
-        $('#edgeseek').hide();
-        $('#cy').hide();
-        $('#ready').show();
-        $('#readybtn').show();
+        if (  $('#edgeseek').css('display') !== "block"  ) {
+            $('#errEdge').dialog();
+        }
+        else {
+            $('#errEdge').hide();
+            $('#edgeseek').hide();
+            $('#cy').hide();
+            $('#ready').show();
+            $('#readybtn').show();
+        }
     })
 
 </script>

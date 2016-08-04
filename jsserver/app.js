@@ -23,6 +23,8 @@ app.use('/bootstrap.css', express.static(__dirname + '/node_modules/bootstrap/di
 app.use('/survey.css', express.static(__dirname + '/surveyjs/survey.css'));
 app.use('/survey.js', express.static(__dirname + '/surveyjs/survey.js'));
 app.use('/knockout.js', express.static(__dirname + '/node_modules/knockout/build/output/knockout-latest.js'));
+app.use('/jqueryui.js', express.static(__dirname + '/node_modules/jquery-ui/ui/jquery-1-7.js'));
+app.use('/dialog.css', express.static(__dirname + '/node_modules/jquery-ui/themes/base/dialog.css'));
 
 
 app.get('/', function (req, res) {
