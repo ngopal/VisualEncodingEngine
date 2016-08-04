@@ -79,8 +79,9 @@ app.get('/sfunction', function (req, res) {
 });
 
 app.post('/submitdata', function(req, res) {
-    var dataObject = req.body;
-    var jfile = 'savedData/' + Date.now() + '.json';
+    var dataObject = req.body.data;
+    //var jfile = 'savedData/' + Date.now() + '.json';
+    var jfile = 'savedData/' + req.body.user + '-' + req.body.page + '.json';
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
             console.log(err);

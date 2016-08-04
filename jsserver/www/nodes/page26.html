@@ -143,6 +143,7 @@ window.mobileAndTabletcheck = function() {
     var taskWithDims = [];
     var baseOrRand = "Random";
     var nodeconfigs = nodetableconfig(); //need to edit this functions contents if I change encs below.
+    var pageval = getPageVal();
 
 //    var dims = ['dim1', 'dim2', 'dim3'];
     var dims = ['dim1', 'dim2', 'dim2-2'];
@@ -740,7 +741,7 @@ window.mobileAndTabletcheck = function() {
                         temp.windowheight = windowheight;
                         temp.windowwidth = windowwidth;
                         temp.browser = brow;
-                        temp.group = baseOrRand;
+//                        temp.group = baseOrRand;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -752,7 +753,7 @@ window.mobileAndTabletcheck = function() {
                         url: '/submitdata',
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
-                        data: JSON.stringify(tempdat),
+                        data: JSON.stringify({data:tempdat, user:sessionStorage.getItem('GUID'), page: pageval }),
                         success: function (data) {
                             console.log(['user choice submit success', data]);
                             //re-layout graph (this also takes care of unselection)
@@ -1206,7 +1207,7 @@ window.onkeypress = function(event) {
 
 
     function loadSpecificCombinatorialRanks() {
-        var pageval = getPageVal();
+//        var pageval = getPageVal();
         return loadCombinatorialRanks(pageval, [tasks[1],tasks[2]]);
     };
 

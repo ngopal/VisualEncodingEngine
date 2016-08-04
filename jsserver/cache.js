@@ -14,6 +14,7 @@ function initializeCache() {
         sessionStorage.setItem('tutorial', 'incomplete');
         sessionStorage.setItem('demographic', 'incomplete');
         sessionStorage.setItem('thanks', 'incomplete');
+        sessionStorage.setItem('GUID', guid());
     }
     else {
         if ( window.location.href.split('/')[3] !== "consent" && sessionStorage.getItem('consent') === 'incomplete' ) {
@@ -117,4 +118,14 @@ function getPageVal() {
         pageval = parseInt(window.location.href.split('/page')[1]);
     }
     return pageval;
+}
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
 }
