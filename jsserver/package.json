@@ -21,6 +21,7 @@
     "express": "^4.13.4",
     "jquery": "^2.2.4",
     "jsonfile": "^2.3.1",
+    "knockout": "^3.4.0",
     "requirejs": "^2.2.0",
     "vis": "^4.16.1",
     "webcola": "^3.1.3"

@@ -1,10 +1,13 @@
 <html>
 <head>
     <link href="bootstrap.css" rel="stylesheet">
+    <link href="survey.css" rel="stylesheet">
     <script src="jquery.js"></script>
     <script src="bootstrap.js"></script>
     <script src="d3.js"></script>
     <script src="cache.js"></script>
+    <script src="knockout.js"></script>
+    <script src="survey.js"></script>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -26,18 +29,179 @@
     <h4>Once you hit the 'Submit responses' button in the embedded survey, click the 'Finish Session' button below the survey</h4>
 </div>
 
+<div id="surveyContainer" style="padding-left: 30px;padding-right: 30px;"></div>
+
 <center>
-    <iframe src="https://catalyst.uw.edu/webq/survey/ngopal/310262" style="width:100%; height:100%;"></iframe>
+    <!--<iframe src="https://catalyst.uw.edu/webq/survey/ngopal/310262" style="width:100%; height:100%;"></iframe>-->
 <!--<script>(function(e,t,s,n){var o,c,r;e.SMCX=e.SMCX||[],t.getElementById(n)||(o=t.getElementsByTagName(s),c=o[o.length-1],r=t.createElement(s),r.type="text/javascript",r.async=!0,r.id=n,r.src=["https:"===location.protocol?"https://":"http://","widget.surveymonkey.com/collect/website/js/sTYBXsdbZZA62hJb2ZPXS_2B4GkCXLWErOza9FyYTNLPxEzPEL4qx4rzOW7deIRrZm.js"].join(""),c.parentNode.insertBefore(r,c))})(window,document,"script","smcx-sdk");</script><a style="font: 12px Helvetica, sans-serif; color: #999; text-decoration: none;" href=https://www.surveymonkey.com/mp/customer-satisfaction-surveys/> Create your own user feedback survey </a>-->
     <br><br>
-    <button type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('demographic', 'complete'); location.href='/thanks'; })()">Finish Session!</button>
+    <!--<button type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('demographic', 'complete'); location.href='/thanks'; })()">Finish Session!</button>-->
     <br><br>
 </center>
 <script>
-//    $().ready(function() {
-//        var surveyUrl = "https://catalyst.uw.edu/webq/survey/ngopal/310262";
-//        newwindow = window.open(surveyUrl, "surveydemograph");
-//    });
+    function sendDataToServer(survey) {
+        var resultAsString = JSON.stringify(survey.data);
+        $.ajax({
+            type: 'POST',
+            url: '/submitsurveydata',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({data:resultAsString, user:sessionStorage.getItem('GUID'), page: 'survey' }),
+            success: function () {
+                console.log(resultAsString);
+            },
+            complete: function() {
+                (function() { sessionStorage.setItem('demographic', 'complete'); location.href='/thanks'; })();
+            }
+        });
+    }
+//    var surveyJSON = { title: "Tell us, what technologies do you use?", pages: [
+//        { name:"page1", questions: [
+//            { type: "radiogroup", choices: [ "Yes", "No" ], isRequired: true, name: "frameworkUsing",title: "Do you use any front-end framework like Bootstrap?" },
+//            { type: "checkbox", choices: ["Bootstrap","Foundation"], hasOther: true, isRequired: true, name: "framework", title: "What front-end framework do you use?", visible: false }
+//        ]},
+//        { name: "page2", questions: [
+//            { type: "radiogroup", choices: ["Yes","No"], isRequired: true, name: "mvvmUsing", title: "Do you use any MVVM framework?" },
+//            { type: "checkbox", choices: [ "AngularJS", "KnockoutJS", "React" ], hasOther: true, isRequired: true, name: "mvvm", title: "What MVVM framework do you use?", visible: false } ] },
+//        { name: "page3",questions: [
+//            { type: "comment", name: "about", title: "Please tell us about your main requirements for Survey library" } ] }
+//    ],
+//        triggers: [
+//            { type: "visible", operator: "equal", value: "Yes", name: "frameworkUsing", questions: ["framework"]},
+//            { type: "visible", operator: "equal", value: "Yes", name: "mvvmUsing", questions: ["mvvm"]}
+//        ]
+//    };
+
+    var surveyJSON = {
+        pages: [
+            {
+                name: "page1",
+                questions: [
+                    {
+                        type: "dropdown",
+                        choices: [
+                            {
+                                value: "shs",
+                                text: "Some High School"
+                            },
+                            {
+                                value: "chs",
+                                text: "Completed High School"
+                            },
+                            {
+                                value: "sc",
+                                text: "Some College or University"
+                            },
+                            {
+                                value: "cc",
+                                text: "Completed College or University"
+                            },
+                            {
+                                value: "sgs",
+                                text: "Some Graduate or Professional School"
+                            },
+                            {
+                                value: "cgs",
+                                text: "Completed Graduate or Professional School"
+                            }
+                        ],
+                        name: "question1",
+                        title: "What is the highest level of education you have attained?"
+                    },
+                    {
+                        type: "dropdown",
+                        choices: [
+                            {
+                                value: "one",
+                                text: "18-24 years old"
+                            },
+                            {
+                                value: "two",
+                                text: "25-34 years old"
+                            },
+                            {
+                                value: "three",
+                                text: "35-44 years old"
+                            },
+                            {
+                                value: "four",
+                                text: "45-54 years old"
+                            },
+                            {
+                                value: "five",
+                                text: "55-64 years old"
+                            },
+                            {
+                                value: "six",
+                                text: "65-74 years old"
+                            },
+                            {
+                                value: "seven",
+                                text: "75 years old"
+                            }
+                        ],
+                        name: "question2",
+                        title: "What age range are you in?"
+                    },
+                    {
+                        type: "radiogroup",
+                        choices: [
+                            {
+                                value: "one",
+                                text: "Yes"
+                            },
+                            {
+                                value: "two",
+                                text: "No"
+                            }
+                        ],
+                        name: "question3",
+                        title: "Is English your first language?"
+                    },
+                    {
+                        type: "radiogroup",
+                        choices: [
+                            {
+                                value: "one",
+                                text: "Yes"
+                            },
+                            {
+                                value: "two",
+                                text: "No"
+                            }
+                        ],
+                        name: "question4",
+                        title: "Have you seen or analyzed a network before this experiment?"
+                    },
+                    {
+                        type: "radiogroup",
+                        choices: [
+                            {
+                                value: "one",
+                                text: "Yes"
+                            },
+                            {
+                                value: "two",
+                                text: "No"
+                            }
+                        ],
+                        name: "question5",
+                        title: "Do you know what degree centrality is (without having to look it up)?"
+                    },
+                    {
+                        type: "text",
+                        name: "question6",
+                        title: "What is your occupation or field?"
+                    }
+                ]
+            }
+        ]
+    };
+
+    var survey = new Survey.Survey(surveyJSON, "surveyContainer");
+
+    //Use onComplete event to save the data
+    survey.onComplete.add(sendDataToServer);
 </script>
 </body>
 </html>

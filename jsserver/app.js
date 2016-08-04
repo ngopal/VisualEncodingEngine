@@ -20,6 +20,10 @@ app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));
 app.use('/ranktable.csv', express.static(__dirname + '/ranktable.csv'));
 app.use('/bootstrap.js', express.static(__dirname + '/node_modules/bootstrap/dist/js/bootstrap.min.js'));
 app.use('/bootstrap.css', express.static(__dirname + '/node_modules/bootstrap/dist/css/bootstrap.min.css'));
+app.use('/survey.css', express.static(__dirname + '/surveyjs/survey.css'));
+app.use('/survey.js', express.static(__dirname + '/surveyjs/survey.js'));
+app.use('/knockout.js', express.static(__dirname + '/node_modules/knockout/build/output/knockout-latest.js'));
+
 
 app.get('/', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
@@ -80,7 +84,21 @@ app.get('/sfunction', function (req, res) {
 
 app.post('/submitdata', function(req, res) {
     var dataObject = req.body.data;
-    //var jfile = 'savedData/' + Date.now() + '.json';
+    var jfile = 'savedData/' + req.body.user + '-' + req.body.page + '.json';
+    jsonfile.writeFile(jfile, dataObject, function(err, success) {
+        if(err) {
+            console.log(err);
+        }
+        else {
+            console.log(success);
+            res.setHeader('Content-Type', 'application/json');
+            res.jsonp({'response':'success'});
+        }
+    });
+});
+
+app.post('/submitsurveydata', function(req, res) {
+    var dataObject = req.body.data;
     var jfile = 'savedData/' + req.body.user + '-' + req.body.page + '.json';
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
