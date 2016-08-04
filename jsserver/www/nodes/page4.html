@@ -146,9 +146,10 @@ window.mobileAndTabletcheck = function() {
     var pageval = getPageVal();
     var timer = {start: (function() {return new Date();})()};
 
-//    var dims = ['dim1', 'dim2', 'dim3'];
-    var dims = ['dim1', 'dim2', 'dim2-2'];
-//    var dims = ['dim1'];
+
+    var dims = ['dim1','dim1-1', 'dim2', 'dim2-2']; // Also need to edit loadCombinatorialRanks, manifest, and tempdat
+
+
     var encs = ['node color (seq)',
         'node color (div)',
         'node color (cat)',
@@ -210,9 +211,10 @@ window.mobileAndTabletcheck = function() {
 
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:0 },
+        'dim1-1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:1 },
 //        'dim2 task1' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:1 },
-        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:1 },
-        'dim2-2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:2 }
+        'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:2 },
+        'dim2-2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:3 }
 //        'dim1 task2' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:2 },
 //        'dim2 task2' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:3 }
     };
@@ -698,8 +700,10 @@ window.mobileAndTabletcheck = function() {
                         temp.name = n.data().name;
                         temp.id = n.data().id;
                         temp.type = 'node';
-                        temp.encoding1 = nodeencoding[0];
-                        temp.encoding2 = nodeencoding[1];
+                        temp.Nencoding1 = nodeencoding[0];
+                        temp.Nencoding2 = nodeencoding[1];
+                        temp.Eencoding1 = edgeencoding[0];
+                        temp.Eencoding2 = edgeencoding[1];
                         temp.results = {};
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
@@ -727,8 +731,10 @@ window.mobileAndTabletcheck = function() {
                         temp.source = n.data().source;
                         temp.target = n.data().target;
                         temp.type = 'edge';
-                        //only one encoding for now
-                        temp.encoding = edgeencoding;
+                        temp.Nencoding1 = nodeencoding[0];
+                        temp.Nencoding2 = nodeencoding[1];
+                        temp.Eencoding1 = edgeencoding[0];
+                        temp.Eencoding2 = edgeencoding[1];
                         temp.results = {};
                         selecedgeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
@@ -1211,7 +1217,7 @@ window.onkeypress = function(event) {
 
     function loadSpecificCombinatorialRanks() {
 //        var pageval = getPageVal();
-        return loadCombinatorialRanks(pageval, [tasks[1],tasks[2]]);
+        return loadCombinatorialRanks(pageval, [tasks[2],tasks[3]]);
     };
 
     function wholeWorkflow() {
