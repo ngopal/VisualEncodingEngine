@@ -736,7 +736,7 @@ window.mobileAndTabletcheck = function() {
 //                            plotNetwork('genemania_BRCA');
                         },
                         complete: function() {
-                            thissession(getPageVal());
+//                            thissession(getPageVal()); // TURN THIS OFF FOR DEBUGGING PAGES MANUALLY
 //                            wholeWorkflow();
                             window.location.href=nextRandomPage();
                         }
@@ -1192,9 +1192,6 @@ window.onkeypress = function(event) {
         // Clearing the interval for when user clicks and time does not run out
 //        clearInterval(newtime)
 
-        //Adding page to session
-//        thissession(getPageVal());
-//        console.log("REGISTERED "+getPageVal());
 
             function randRanksAndSendToR() {
                 // sendToR function
