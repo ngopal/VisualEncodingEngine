@@ -612,10 +612,10 @@ window.mobileAndTabletcheck = function() {
                 stop: undefined, // callback on layoutstop
                 minZoom: 1e-50,
                 maxZoom: 1e50,
-                zoomingEnabled: true,
-                userZoomingEnabled: true,
-                panningEnabled: true,
-                userPanningEnabled: true,
+                zoomingEnabled: false,
+                userZoomingEnabled: false,
+                panningEnabled: false,
+                userPanningEnabled: false,
                 boxSelectionEnabled: false,
                 selectionType: 'additive',
                 touchTapThreshold: 8,
@@ -630,8 +630,31 @@ window.mobileAndTabletcheck = function() {
                 cy = cytoscape({
                     container: document.getElementById('cy'),
                     elements: genemania_BRCA,
-                    style: editStyle(generateStyle(), whichHighlight())
-//                    selectionType: 'additive'
+                    style: editStyle(generateStyle(), whichHighlight()),
+
+                    //options
+//                    layout : 'cose',
+                    fit: true, // whether to fit to viewport
+                    padding: 30, // fit padding
+                    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+                    animate: false, // whether to transition the node positions
+                    animationDuration: 500, // duration of animation in ms if enabled
+                    animationEasing: undefined, // easing of animation if enabled
+                    ready: undefined, // callback on layoutready
+                    stop: undefined, // callback on layoutstop
+                    minZoom: 1e-50,
+                    maxZoom: 1e50,
+                    zoomingEnabled: true,
+                    userZoomingEnabled: false,
+                    panningEnabled: true,
+                    userPanningEnabled: false,
+                    boxSelectionEnabled: false,
+                    selectionType: 'additive',
+                    touchTapThreshold: 8,
+                    desktopTapThreshold: 4,
+                    autolock: false,
+                    autoungrabify: false,
+                    autounselectify: false
                 });
 
                 cy.on('select', 'node,edge', function(ev) {
