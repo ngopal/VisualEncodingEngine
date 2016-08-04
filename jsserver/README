@@ -1,0 +1,8 @@
+to build app, I need to run:
+
+edit the appropriate lines in index.html
+create a participantview.html version
+run the following scripts to generate static pages
+sh makeNodePages.sh
+sh makeEdgePages.sh
+deploy
