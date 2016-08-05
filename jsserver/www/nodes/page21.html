@@ -22,13 +22,9 @@
             /*display: none;*/
         /*}*/
         #cy {
-            width: 50%;
+            width: 100%;
             height: 100%;
             position: absolute;
-            /*top: 500px;*/
-            /*left: 0px;*/
-            top: 0px;
-            left: 550px;
             display: none;
             float: right;
         }
@@ -44,42 +40,44 @@
 
     </script>
 </head>
-<div id="rankTableSection">
-    <input id="numEncodings" placeholder="Number of Encodings">
-    <input id="numTasks" placeholder="Number of Dim*Tasks">
-    <input id="numAssignments" placeholder="Number of Assignments">
-    <input id="taskChoice" placeholder="Index of Task">
-    <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
-    <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
-    <button id="rankvalues" onclick="generateBaselineRank(taskNames[parseInt($('#taskChoice').val())])">load ranks</button>
-    <button id="sendranktable" onclick="sendToR()">send table</button>
-    <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
-    <input id="numNodes" placeholder="Number of Nodes">
-    <input id="numEdges" placeholder="Number of Edges">
-    <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
-    <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
-    <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
-    <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
-    <span id="time"></span>
-</div>
-<!--<div id="uploadGraphSection">-->
-    <!--<div id="dvImportSegments" class="fileupload">-->
-        <!--<fieldset>-->
-            <!--<legend>Upload your Network File</legend>-->
-            <!--<input type="file" name="File Upload" id="txtFileUpload" />-->
-        <!--</fieldset>-->
+<div id="dashboard" style="display:none">
+    <div id="rankTableSection">
+        <input id="numEncodings" placeholder="Number of Encodings">
+        <input id="numTasks" placeholder="Number of Dim*Tasks">
+        <input id="numAssignments" placeholder="Number of Assignments">
+        <input id="taskChoice" placeholder="Index of Task">
+        <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
+        <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
+        <button id="rankvalues" onclick="generateBaselineRank(taskNames[parseInt($('#taskChoice').val())])">load ranks</button>
+        <button id="sendranktable" onclick="sendToR()">send table</button>
+        <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
+        <input id="numNodes" placeholder="Number of Nodes">
+        <input id="numEdges" placeholder="Number of Edges">
+        <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
+        <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
+        <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
+        <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
+        <span id="time"></span>
+    </div>
+    <!--<div id="uploadGraphSection">-->
+        <!--<div id="dvImportSegments" class="fileupload">-->
+            <!--<fieldset>-->
+                <!--<legend>Upload your Network File</legend>-->
+                <!--<input type="file" name="File Upload" id="txtFileUpload" />-->
+            <!--</fieldset>-->
+        <!--</div>-->
     <!--</div>-->
-<!--</div>-->
-<div id="layoutButtonSection">
-    <button id="layoutRand" onclick="newlayout('random')">Random</button>
-    <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
-    <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
-    <button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
-    <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
-</div>
-<div id="loadcombinatorials">
-    <input id="combinNumber" placeholder="Which combinatorial?">
-    <button id="combinatorialValues" onclick="loadCombinatorialRanks()">load combinatorial ranks</button>
+    <div id="layoutButtonSection">
+        <button id="layoutRand" onclick="newlayout('random')">Random</button>
+        <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
+        <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
+        <button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
+        <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
+    </div>
+    <div id="loadcombinatorials">
+        <input id="combinNumber" placeholder="Which combinatorial?">
+        <button id="combinatorialValues" onclick="loadCombinatorialRanks()">load combinatorial ranks</button>
+    </div>
 </div>
 <div id="cy">
 </div>
@@ -1253,6 +1251,7 @@ window.onkeypress = function(event) {
 
                 // To initialize app on loading page
                 updateTableDimensions();
+                hideExtraneous();
                 wholeWorkflow();
             }
             else {
@@ -1265,6 +1264,7 @@ window.onkeypress = function(event) {
     function hideExtraneous() {
         $('#rankTableSection').hide();
         $('#layoutButtonSection').hide();
+        $('#loadcombinatorials').hide();
         $('#rankTable').hide();
     }
 
