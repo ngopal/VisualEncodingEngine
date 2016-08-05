@@ -158,10 +158,15 @@ app.post('/lp', function (req, res) {
 });
 
 // Serving each combination page individually
-d3.range(1,37).map(function(i) {
+d3.range(1,29).map(function(i) {
     return app.get('/page' + i, function (req, res) {
         res.sendfile("/www/nodes/page"+i+".html", {root: __dirname});
-        //res.send(JSON.stringify({'page': i}));
+    });
+});
+
+d3.range(1,16).map(function(i) {
+    return app.get('/page' + (i+28), function (req, res) {
+        res.sendfile("/www/edges/page"+i+".html", {root: __dirname});
     });
 });
 

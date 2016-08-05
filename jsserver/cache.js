@@ -1,13 +1,17 @@
 function initializeCache() {
     if (sessionStorage.hasOwnProperty('beento') === false) {
 
-        var invalidPages = [1, 2, 8, 23, 28]; // node pages currently, need to add edge pages
-        var acceptablePages = d3.range(1,29).filter(function(n) {
-            return invalidPages.indexOf(n) === -1
+        var invalidNodePages = [1, 2, 8, 23, 28];
+        var invalidEdgePages = [29, 38, 39, 41];
+        var acceptableNodePages = d3.range(1,29).filter(function(n) {
+            return invalidNodePages.indexOf(n) === -1
+        });
+        var acceptableEdgePages = d3.range(1,29).filter(function(n) {
+            return invalidEdgePages.indexOf(n) === -1
         });
 
         sessionStorage.setItem('beento', []);
-        sessionStorage.setItem('togoto', acceptablePages ); // 1, 29
+        sessionStorage.setItem('togoto', acceptableNodePages ); // 1, 29
         sessionStorage.setItem('tlength', 29); //need to add nodeconfig+edgeconfig length when ready
         sessionStorage.setItem('blength', 0);
         sessionStorage.setItem('status', 'incomplete');

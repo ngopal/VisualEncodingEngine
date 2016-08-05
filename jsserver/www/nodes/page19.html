@@ -144,10 +144,11 @@ window.mobileAndTabletcheck = function() {
     var taskWithDims = [];
     var baseOrRand = "Random";
     var pageval = getPageVal();
+//    var nodePages = 28;
     var timer = {start: (function() {return new Date();})()};
 
 
-    var dims = ['dim1','dim1-1', 'dim2', 'dim2-2']; // Also need to edit loadCombinatorialRanks, manifest, and tempdat
+    var dims = ['dim1','dim1-2', 'dim2', 'dim2-2']; // Also need to edit loadCombinatorialRanks, manifest, and tempdat
 
 
     var encs = ['node color (seq)',
@@ -211,7 +212,7 @@ window.mobileAndTabletcheck = function() {
 
     var manifest = {
         'dim1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:0 },
-        'dim1-1 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:1 },
+        'dim1-2 task1' : {type: 'numeric', usage: ['numeric'], name: 'weight', element: 'edge', ind:1 },
 //        'dim2 task1' : {type: 'categorical', usage: ['categorical'], name: 'group', element: 'edge', ind:1 },
         'dim2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:2 },
         'dim2-2 task1' : {type: 'numeric', usage: ['numeric'], name: 'area', element: 'node', ind:3 }
@@ -411,11 +412,17 @@ window.mobileAndTabletcheck = function() {
         }
 
         //I might need to specify node/edge here to get the column 0's correct.
-        function loadCombinatorialRanks(configindex,relevanttasks) {
+        function loadCombinatorialRanks(configindex,relevanttasks,type) {
             //could use location.href number to set configindex
             //start area that can be taken out
+            type = type || "node";
             configindex = configindex || parseInt($("#combinNumber").val()) || 10;
-            relevanttasks = relevanttasks || [tasks[2],tasks[3]];
+            if (type === "node") {
+                relevanttasks = relevanttasks || [tasks[2],tasks[3]];
+            }
+            else {
+                relevanttasks = relevanttasks || [tasks[0],tasks[1]];
+            }
             // If nodes, relevant tasks are 1 and 2
             // If edges, relevant tasks are 0
             // end area that can be taken out
@@ -423,7 +430,13 @@ window.mobileAndTabletcheck = function() {
             for (var i = 1; i < tasks.length + 1; i++) {
                 if (relevanttasks.indexOf(tasks[i - 1]) !== -1) {
                     console.log(numberOfEncodings);
-                    var ranks = nodeconfigs[configindex-1][tasks[i-1]];
+                    var ranks;
+                    if (type === "node") {
+                        ranks = nodeconfigs[configindex-1][tasks[i-1]];
+                    }
+                    else {
+                        ranks = edgeconfigs[configindex-1][tasks[i-1]];
+                    }
                     console.log(ranks);
                     d3.selectAll(".col" + i)
                             .data(ranks)
@@ -966,6 +979,7 @@ window.mobileAndTabletcheck = function() {
 
     var nodeconfigs = nodetableconfig(thing);
     var edgeconfigs = edgetableconfig(thing);
+    var nodePages = nodeconfigs.length;
 
     function rez(predomain,e) {
         if (Array.isArray(thing[e].range)) {
@@ -1227,8 +1241,15 @@ window.onkeypress = function(event) {
 
 
     function loadSpecificCombinatorialRanks() {
-//        var pageval = getPageVal();
-        return loadCombinatorialRanks(pageval, [tasks[2],tasks[3]]);
+//        var nodePages = 28;
+        if (pageval > nodePages) {
+            //edges
+            return loadCombinatorialRanks( (pageval-nodePages), [tasks[0],tasks[1]], "edge");
+        }
+        else {
+            //nodes
+            return loadCombinatorialRanks(pageval, [tasks[2],tasks[3]], "node");
+        }
     };
 
     function wholeWorkflow() {
