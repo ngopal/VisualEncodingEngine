@@ -8,7 +8,7 @@ var d3 = require('d3');
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use('/cytoscape.js', express.static(__dirname + '/cytoscape.js/dist/cytoscape.min.js'));
+app.use('/cytoscape.js', express.static(__dirname + '/cytoscape.min.js'));
 app.use('/d3.js', express.static(__dirname + '/node_modules/d3/d3.min.js'));
 app.use('/jquery.js', express.static(__dirname + '/node_modules/jquery/dist/jquery.min.js'));
 app.use('/colorbrewer.js', express.static(__dirname + '/node_modules/colorbrewer/colorbrewer.js'));
