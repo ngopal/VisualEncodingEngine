@@ -1,23 +1,28 @@
 function initializeCache() {
-    if (sessionStorage.hasOwnProperty('beento') === false) {
+    if (sessionStorage.hasOwnProperty('N_beento') === false) {
 
         var invalidNodePages = [1, 2, 8, 23, 28];
         var invalidEdgePages = [29, 38, 39, 41];
         var acceptableNodePages = d3.range(1,29).filter(function(n) {
             return invalidNodePages.indexOf(n) === -1
         });
-        var acceptableEdgePages = d3.range(1,29).filter(function(n) {
+        var acceptableEdgePages = d3.range(29,44).filter(function(n) {
             return invalidEdgePages.indexOf(n) === -1
         });
 
-        sessionStorage.setItem('beento', []);
-        sessionStorage.setItem('togoto', acceptableNodePages ); // 1, 29
-        sessionStorage.setItem('tlength', 29); //need to add nodeconfig+edgeconfig length when ready
-        sessionStorage.setItem('blength', 0);
+        sessionStorage.setItem('N_beento', []);
+        sessionStorage.setItem('N_togoto', acceptableNodePages ); // 1, 28
+        sessionStorage.setItem('E_beento', []);
+        sessionStorage.setItem('E_togoto', acceptableEdgePages ); // 29, 43
+        sessionStorage.setItem('N_status', 'incomplete');
+        sessionStorage.setItem('E_status', 'incomplete');
         sessionStorage.setItem('status', 'incomplete');
         sessionStorage.setItem('consent', 'incomplete');
+        sessionStorage.setItem('nodeprompt', 'incomplete');
+        sessionStorage.setItem('edgeprompt', 'incomplete');
         sessionStorage.setItem('tutorial', 'incomplete');
-        sessionStorage.setItem('popquestions', acceptablePages[getRandomIntInclusive(0,acceptablePages.length-1)] );
+        sessionStorage.setItem('popquestions', [acceptableNodePages[getRandomIntInclusive(0,acceptableNodePages.length-1)],
+                                                acceptableEdgePages[getRandomIntInclusive(0,acceptableEdgePages.length-1)]  ]);
         sessionStorage.setItem('demographic', 'incomplete');
         sessionStorage.setItem('thanks', 'incomplete');
         sessionStorage.setItem('GUID', guid());
@@ -44,7 +49,7 @@ function initializeCache() {
                 console.log("Need to complete tutorial");
             }
             else if ( window.location.href.split('/')[3] === "tutorial" && sessionStorage.getItem('tutorial') === 'complete' ) {
-                window.location.href=nextRandomPage();
+                window.location.href=nextRandomNodePage(); //Presuming we start with nodes first
             }
             else {
                 if ( sessionStorage.getItem('status') === 'incomplete' ) {
@@ -52,11 +57,22 @@ function initializeCache() {
                     console.log("experiment in progress");
                     //check beento here
                     var currentPageVal = getPageVal();
-                    var beento = JSON.parse('['+sessionStorage.getItem('beento')+']');
-                    if (beento.indexOf(currentPageVal) !== -1) {
-                        var nextpage = nextRandomPage();
-                        console.log("SENT TO  "+nextpage);
-                        window.location.href = nextpage;
+                    var beento;
+                    if (currentPageVal > 28) {
+                        beento = JSON.parse('['+sessionStorage.getItem('E_beento')+']');
+                        if (beento.indexOf(currentPageVal) !== -1) {
+                            var nextpage = nextRandomEdgePage();
+                            console.log("SENT TO  "+nextpage);
+                            window.location.href = nextpage;
+                        }
+                    }
+                    else {
+                        beento = JSON.parse('['+sessionStorage.getItem('N_beento')+']');
+                        if (beento.indexOf(currentPageVal) !== -1) {
+                            var nextpage = nextRandomNodePage();
+                            console.log("SENT TO  "+nextpage);
+                            window.location.href = nextpage;
+                        }
                     }
                 }
                 else {
@@ -86,23 +102,40 @@ function initializeCache() {
 function thissession(n) {
     //initializeCache();
 
-    if ( sessionStorage.getItem('status') === "complete" ) {
+    if ( sessionStorage.getItem('E_status') === "complete" ) {
         window.location.href='/demographic';
     }
 
     var pageval = n;
-    var beento = JSON.parse('['+sessionStorage.getItem('beento')+']');
-    var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
-    beento.push(pageval);
-    togoto.splice(togoto.indexOf(parseInt(pageval)), 1);
-    sessionStorage.setItem('beento', beento);
-    sessionStorage.removeItem('togoto');
-    sessionStorage.setItem('togoto', togoto);
-    sessionStorage.setItem('tlength', togoto.length);
-    sessionStorage.setItem('blength', beento.length);
-    if (togoto.length === 0) {
-        sessionStorage.setItem('status', 'complete');
-        //sessionStorage.clear(); clear storage on exit page;
+    if (pageval > 28) {
+        //edge
+        var beento = JSON.parse('['+sessionStorage.getItem('E_beento')+']');
+        var togoto = JSON.parse('['+sessionStorage.getItem('E_togoto')+']');
+        beento.push(pageval);
+        togoto.splice(togoto.indexOf(parseInt(pageval)), 1);
+        sessionStorage.setItem('E_beento', beento);
+        sessionStorage.removeItem('E_togoto');
+        sessionStorage.setItem('E_togoto', togoto);
+        if (togoto.length === 0) {
+            sessionStorage.setItem('E_status', 'complete');
+            sessionStorage.setItem('status', 'complete');
+            //sessionStorage.clear(); clear storage on exit page;
+        }
+    }
+    else {
+        //node
+        var beento = JSON.parse('['+sessionStorage.getItem('N_beento')+']');
+        var togoto = JSON.parse('['+sessionStorage.getItem('N_togoto')+']');
+        beento.push(pageval);
+        togoto.splice(togoto.indexOf(parseInt(pageval)), 1);
+        sessionStorage.setItem('N_beento', beento);
+        sessionStorage.removeItem('N_togoto');
+        sessionStorage.setItem('N_togoto', togoto);
+        if (togoto.length === 0) {
+            sessionStorage.setItem('N_status', 'complete');
+            window.location.href='/edgeprompt';
+            //sessionStorage.clear(); clear storage on exit page;
+        }
     }
 };
 
@@ -110,8 +143,17 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function nextRandomPage() {
-    var togoto = JSON.parse('['+sessionStorage.getItem('togoto')+']');
+function nextRandomNodePage() {
+    var togoto = JSON.parse('['+sessionStorage.getItem('N_togoto')+']');
+    if (togoto.length === 0) {
+        return '/edgeprompt';
+    }
+    var randsel = togoto[getRandomIntInclusive(0,togoto.length-1)];
+    return '/page'+randsel;
+}
+
+function nextRandomEdgePage() {
+    var togoto = JSON.parse('['+sessionStorage.getItem('E_togoto')+']');
     if (togoto.length === 0) {
         return '/demographic';
     }

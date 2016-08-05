@@ -678,7 +678,7 @@ window.mobileAndTabletcheck = function() {
                 cy.on('select', 'node,edge', function(ev) {
                     console.log(ev);
                     var fillin;
-                    if ( parseInt(sessionStorage.getItem('popquestions')) === pageval  ) {
+                    if ( JSON.parse('['+sessionStorage.getItem('popquestions')+']').indexOf(pageval) !== -1  ) {
                         fillin = prompt("Why did you click on this?");
                     }
                     else {
@@ -715,11 +715,72 @@ window.mobileAndTabletcheck = function() {
                         }
                     });
 
-                    cy.nodes().map(function(n){
+//                    cy.nodes().map(function(n){
+//                        var temp = {};
+//                        temp.name = n.data().name;
+//                        temp.id = n.data().id;
+//                        temp.type = 'node';
+//                        temp.Nencoding1 = nodeencoding[0];
+//                        temp.Nencoding2 = nodeencoding[1];
+//                        temp.Eencoding1 = edgeencoding[0];
+//                        temp.Eencoding2 = edgeencoding[1];
+//                        temp.results = {};
+//                        selecnodeattrs.forEach(function(k){
+//                            temp.results[k] = n.style()[k];
+//                        });
+//                        temp.positions = n.position();
+//                        if (selectedElement.data().id === n.data().id) {
+//                            temp.selected = 1;
+//                        }
+//                        else {
+//                            temp.selected = 0;
+//                        }
+//                        temp.clickX = clickcoords[0];
+//                        temp.clickY = clickcoords[1];
+//                        temp.windowheight = windowheight;
+//                        temp.windowwidth = windowwidth;
+//                        temp.browser = brow;
+//                        temp.time = timetook;
+//                        console.log(temp);
+//                        tempdat.push(temp);
+//                    });
+
+//                    cy.edges().map(function(n){
+//                        var temp = {};
+//                        temp.id = n.data().id;
+//                        temp.source = n.data().source;
+//                        temp.target = n.data().target;
+//                        temp.type = 'edge';
+//                        temp.Nencoding1 = nodeencoding[0];
+//                        temp.Nencoding2 = nodeencoding[1];
+//                        temp.Eencoding1 = edgeencoding[0];
+//                        temp.Eencoding2 = edgeencoding[1];
+//                        temp.results = {};
+//                        selecedgeattrs.forEach(function(k){
+//                            temp.results[k] = n.style()[k];
+//                        });
+//                        if (selectedElement.data().id === n.data().id) {
+//                            temp.selected = 1;
+//                        }
+//                        else {
+//                            temp.selected = 0;
+//                        }
+//                        temp.clickX = clickcoords[0];
+//                        temp.clickY = clickcoords[1];
+//                        temp.windowheight = windowheight;
+//                        temp.windowwidth = windowwidth;
+//                        temp.browser = brow;
+//                        temp.time = timetook;
+//                        console.log(temp);
+//                        tempdat.push(temp);
+//                    });
+
+                    cy.elements().map(function(n){
                         var temp = {};
-                        temp.name = n.data().name;
+//                        temp.name = n.data().name;
+                        temp.name = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.data().name}})();
                         temp.id = n.data().id;
-                        temp.type = 'node';
+                        temp.type = (function() { if (n.data().hasOwnProperty('target') ) { return 'edge' } else {return 'node'}})();
                         temp.Nencoding1 = nodeencoding[0];
                         temp.Nencoding2 = nodeencoding[1];
                         temp.Eencoding1 = edgeencoding[0];
@@ -745,37 +806,6 @@ window.mobileAndTabletcheck = function() {
                         tempdat.push(temp);
                     });
 
-                    cy.edges().map(function(n){
-                        var temp = {};
-                        temp.id = n.data().id;
-                        temp.source = n.data().source;
-                        temp.target = n.data().target;
-                        temp.type = 'edge';
-                        temp.Nencoding1 = nodeencoding[0];
-                        temp.Nencoding2 = nodeencoding[1];
-                        temp.Eencoding1 = edgeencoding[0];
-                        temp.Eencoding2 = edgeencoding[1];
-                        temp.results = {};
-                        selecedgeattrs.forEach(function(k){
-                            temp.results[k] = n.style()[k];
-                        });
-                        if (selectedElement.data().id === n.data().id) {
-                            temp.selected = 1;
-                        }
-                        else {
-                            temp.selected = 0;
-                        }
-                        temp.clickX = clickcoords[0];
-                        temp.clickY = clickcoords[1];
-                        temp.windowheight = windowheight;
-                        temp.windowwidth = windowwidth;
-                        temp.browser = brow;
-                        temp.time = timetook;
-                        console.log(temp);
-                        tempdat.push(temp);
-                    });
-
-//                    tempdat.push({type:'meta', browser: whichBrowser() });
                     tempdat.push({type:'meta', browser:brow, participantResponse:fillin});
 
                     $.ajax({
@@ -790,9 +820,15 @@ window.mobileAndTabletcheck = function() {
 //                            plotNetwork('genemania_BRCA');
                         },
                         complete: function() {
-//                            thissession(getPageVal()); // TURN THIS OFF FOR DEBUGGING PAGES MANUALLY
+                            thissession(getPageVal()); // TURN THIS OFF FOR DEBUGGING PAGES MANUALLY
 //                            wholeWorkflow();
-                            window.location.href=nextRandomPage();
+//                            window.location.href=nextRandomPage();
+                            if (pageval > nodePages) {
+                                window.location.href=nextRandomEdgePage();
+                            }
+                            else {
+                                window.location.href=nextRandomNodePage();
+                            }
                         }
                     });
 

@@ -55,6 +55,14 @@ app.get('/consent', function (req, res) {
     res.sendfile("/www/consent.html", {root: __dirname});
 });
 
+app.get('/nodeprompt', function (req, res) {
+    res.sendfile("/www/nodeprompt.html", {root: __dirname});
+});
+
+app.get('/edgeprompt', function (req, res) {
+    res.sendfile("/www/edgeprompt.html", {root: __dirname});
+});
+
 app.get('/rand', function (req, res) {
     var weight_hash = {'random':0.5, 'baseline':0.5};
     var rand = (function() {
