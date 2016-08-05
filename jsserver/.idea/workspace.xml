@@ -34,17 +34,27 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-379.2">
-              <caret line="1267" column="40" selection-start-line="1267" selection-start-column="40" selection-end-line="1267" selection-end-column="40" />
+            <state vertical-scroll-proportion="-0.9">
+              <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="89" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="edgeprompt.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="consent.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/www/consent.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.046875">
+              <caret line="2" column="70" selection-start-line="2" selection-start-column="70" selection-end-line="2" selection-end-column="70" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="edgeprompt.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/edgeprompt.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.71875">
+            <state vertical-scroll-proportion="-20.0">
               <caret line="42" column="178" selection-start-line="42" selection-start-column="158" selection-end-line="42" selection-end-column="178" />
               <folding />
             </state>
@@ -100,7 +110,6 @@
         <option value="$PROJECT_DIR$/www/datafiles.js" />
         <option value="$PROJECT_DIR$/r/silly.r" />
         <option value="$PROJECT_DIR$/datafiles.js" />
-        <option value="$PROJECT_DIR$/www/consent.html" />
         <option value="$PROJECT_DIR$/www/thankyou.html" />
         <option value="$PROJECT_DIR$/www/demographic.html" />
         <option value="$PROJECT_DIR$/www/tutorial.html" />
@@ -110,6 +119,7 @@
         <option value="$PROJECT_DIR$/www/participantview.html" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/www/edgeprompt.html" />
+        <option value="$PROJECT_DIR$/www/consent.html" />
       </list>
     </option>
   </component>
@@ -580,14 +590,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/consent.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6796875">
-          <caret line="76" column="158" selection-start-line="76" selection-start-column="66" selection-end-line="76" selection-end-column="158" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/surveyjs/survey.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="39.25926">
@@ -659,14 +661,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-379.2">
-          <caret line="1267" column="40" selection-start-line="1267" selection-start-column="40" selection-end-line="1267" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/participantview.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.7">
@@ -695,8 +689,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/edgeprompt.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.71875">
+        <state vertical-scroll-proportion="-20.0">
           <caret line="42" column="178" selection-start-line="42" selection-start-column="158" selection-end-line="42" selection-end-column="178" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.9">
+          <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="89" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/consent.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.046875">
+          <caret line="2" column="70" selection-start-line="2" selection-start-column="70" selection-end-line="2" selection-end-column="70" />
           <folding />
         </state>
       </provider>
