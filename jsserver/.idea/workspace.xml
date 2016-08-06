@@ -31,10 +31,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.88">
+            <state vertical-scroll-proportion="0.33278957">
               <caret line="677" column="21" selection-start-line="677" selection-start-column="16" selection-end-line="677" selection-end-column="21" />
               <folding />
             </state>
@@ -51,10 +51,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tutorial.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tutorial.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/tutorial.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.375">
+            <state vertical-scroll-proportion="-10.434783">
               <caret line="140" column="9" selection-start-line="140" selection-start-column="9" selection-end-line="140" selection-end-column="9" />
               <folding>
                 <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -97,8 +97,6 @@
         <option value="$PROJECT_DIR$/r/silly.r" />
         <option value="$PROJECT_DIR$/datafiles.js" />
         <option value="$PROJECT_DIR$/cache.js" />
-        <option value="$PROJECT_DIR$/www/index.html" />
-        <option value="$PROJECT_DIR$/www/participantview.html" />
         <option value="$PROJECT_DIR$/www/consent.html" />
         <option value="$PROJECT_DIR$/www/demographic.html" />
         <option value="$PROJECT_DIR$/www/edgeprompt.html" />
@@ -106,6 +104,8 @@
         <option value="$PROJECT_DIR$/www/thankyou.html" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/www/tutorial.html" />
+        <option value="$PROJECT_DIR$/www/index.html" />
+        <option value="$PROJECT_DIR$/www/participantview.html" />
       </list>
     </option>
   </component>
@@ -636,16 +636,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/participantview.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.70962477">
-          <caret line="29" column="9" selection-start-line="29" selection-start-column="9" selection-end-line="29" selection-end-column="9" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/thankyou.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.046875">
@@ -670,17 +660,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.88">
-          <caret line="677" column="21" selection-start-line="677" selection-start-column="16" selection-end-line="677" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/tutorial.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.375">
+        <state vertical-scroll-proportion="-10.434783">
           <caret line="140" column="9" selection-start-line="140" selection-start-column="9" selection-end-line="140" selection-end-column="9" />
           <folding>
             <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -691,6 +673,22 @@
             <element signature="n#style#0;n#h3#4;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#h3#5;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/participantview.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.112561174">
+          <caret line="1251" column="33" selection-start-line="1251" selection-start-column="33" selection-end-line="1251" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33278957">
+          <caret line="677" column="21" selection-start-line="677" selection-start-column="16" selection-end-line="677" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>

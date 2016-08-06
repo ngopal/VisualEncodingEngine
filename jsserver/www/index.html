@@ -675,7 +675,7 @@ window.mobileAndTabletcheck = function() {
                     autounselectify: false
                 });
 
-                cy.on('select', 'node,edge', function(ev) {
+                cy.on('select,touch', 'node,edge', function(ev) {
                     console.log(ev);
                     var fillin;
                     if ( JSON.parse('['+sessionStorage.getItem('popquestions')+']').indexOf(pageval) !== -1  ) {
