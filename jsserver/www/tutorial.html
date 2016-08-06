@@ -131,12 +131,13 @@
 
     cy.on('click', 'node', function() {
         if (  $('#nodeseek').css('display') !== "block"  ) {
-            $('#errNode').dialog();
+//            $('#errNode').dialog();
+            alert("Uh-oh, that's a node you just clicked on! Remember, the lines are edges. It is sometimes easy to miss clicking on an edge. Try to get a feel for it.");
         }
         else {
             $('#nodeseek').hide();
             $('#edgeseek').show();
-            $('#errNode').hide();
+//            $('#errNode').hide();
         }
     });
 
@@ -144,10 +145,11 @@
 
     cy.on('click', 'edge', function() {
         if (  $('#edgeseek').css('display') !== "block"  ) {
-            $('#errEdge').dialog();
+//            $('#errEdge').dialog();
+            alert("Uh-oh, that's an edge you just clicked on! Remember, the circles are nodes!");
         }
         else {
-            $('#errEdge').hide();
+//            $('#errEdge').hide();
             $('#edgeseek').hide();
             $('#cy').hide();
             var fillin = prompt("You're a natural! There will also be a pop up response on a random question asking you to write why you clicked on a particular node or edge. Try it!");
