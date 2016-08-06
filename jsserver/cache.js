@@ -69,6 +69,9 @@ function initializeCache() {
                     else {
                         beento = JSON.parse('['+sessionStorage.getItem('N_beento')+']');
                         if (beento.indexOf(currentPageVal) !== -1) {
+                            //if (sessionStorage.getItem("N_status") === "complete") {
+                            //    window.location.href='/edgeprompt';
+                            //}
                             var nextpage = nextRandomNodePage();
                             console.log("SENT TO  "+nextpage);
                             window.location.href = nextpage;
