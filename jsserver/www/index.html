@@ -58,6 +58,7 @@
     <input id="numEdges" placeholder="Number of Edges">
     <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
     <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
+    <button id="visualizeGeneMANIA_BRCA_small" onclick="plotNetwork('genemania_BRCA_small')">visualize BRCAsmall</button>
     <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
     <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
     <span id="time"></span>
@@ -643,11 +644,11 @@ window.mobileAndTabletcheck = function() {
                 autounselectify: false
             };
 
-            if (desireddata === 'genemania_BRCA') {
+            if (desireddata === 'genemania_BRCA_small') { //used to be genemania_BRCA
                 options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
-                    elements: genemania_BRCA,
+                    elements: genemania_BRCA_small, //used to be genemania_BRCA
                     style: editStyle(generateStyle(), whichHighlight()),
 
                     //options
@@ -1322,7 +1323,7 @@ window.onkeypress = function(event) {
                         console.log("SUCCESS");
                         Robj = data;
                         highlightAssignedCells();
-                        plotNetwork('genemania_BRCA');
+                        plotNetwork('genemania_BRCA_small'); //used to be genemania_BRCA
                         console.log(data);
                     },
                     complete: function() {
