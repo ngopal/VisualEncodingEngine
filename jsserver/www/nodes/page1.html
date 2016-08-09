@@ -143,6 +143,8 @@ window.mobileAndTabletcheck = function() {
     var taskWithDims = [];
     var baseOrRand = "Random";
     var pageval = getPageVal();
+//    var randNetwork = 'rn'+pageval;
+    var randNetwork = sessionStorage.getItem('netToServe');
 //    var nodePages = 28;
     var timer = {start: (function() {return new Date();})()};
 
@@ -476,27 +478,6 @@ window.mobileAndTabletcheck = function() {
             return shuffle(arr);
         }
 
-
-
-        function shuffle(array) {
-            var currentIndex = array.length, temporaryValue, randomIndex;
-
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
-            }
-
-            return array;
-        }
-
         function generateBaselineRank(taskname) {
             var taskItem = taskname || 'Task_Topology_Find_Clusters';
             var baselineranksdata = {};
@@ -643,11 +624,11 @@ window.mobileAndTabletcheck = function() {
                 autounselectify: false
             };
 
-            if (desireddata === 'genemania_BRCA_small') { //used to be genemania_BRCA
+            if (desireddata === randNetwork) { //used to be genemania_BRCA
                 options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
-                    elements: genemania_BRCA_small, //used to be genemania_BRCA
+                    elements: window[randNetwork], //used to be genemania_BRCA
                     style: editStyle(generateStyle(), whichHighlight()),
 
                     //options
@@ -730,10 +711,9 @@ window.mobileAndTabletcheck = function() {
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        selecedgeattrs.forEach(function(k){
+                        selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-//                        temp.positions = n.position();
                         temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
                         if (selectedElement.data().id === n.data().id) {
                             temp.selected = 1;
@@ -742,12 +722,6 @@ window.mobileAndTabletcheck = function() {
                             temp.selected = 0;
                         }
                         temp.participantResponse = fillin;
-//                        temp.clickX = clickcoords[0];
-//                        temp.clickY = clickcoords[1];
-//                        temp.windowheight = windowheight;
-//                        temp.windowwidth = windowwidth;
-//                        temp.browser = brow;
-//                        temp.time = timetook;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -911,49 +885,53 @@ window.mobileAndTabletcheck = function() {
         }
     }
 
+var whichNodes = encs.map(function(n,i){ if(n.match(/node/)){return i} }).filter(function(n){return n !== undefined;})
 
-    var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2,9,10,11,12,13,14,15]},
-        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2,9,10,11,12,13,14,15]},
-        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1,9,10,11,12,13,14,15]},
-        {
-            encname: 'node shape (cat)',
-            func: nodeshape_cat,
-            style: 'shape',
-            type: 'node',
-            range: { 1: ["rectangle"],
-                2: ["rectangle", "roundrectangle"],
-                3: ["rectangle", "roundrectangle", "ellipse"],
-                4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
-                5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
-                6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
-                7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
-                8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
-                9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
-                10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
-                11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
-                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
-            },
-            incompatability:[9,10,11,12,13,14,15]
+var whichEdges = encs.map(function(n,i){ if(n.match(/edge/)){return i} }).filter(function(n){return n !== undefined;})
+
+
+var thing = [
+    {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2].concat(whichEdges)},
+    {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2].concat(whichEdges)},
+    {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1].concat(whichEdges)},
+    {
+        encname: 'node shape (cat)',
+        func: nodeshape_cat,
+        style: 'shape',
+        type: 'node',
+        range: { 1: ["rectangle"],
+            2: ["rectangle", "roundrectangle"],
+            3: ["rectangle", "roundrectangle", "ellipse"],
+            4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+            5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+            6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+            7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+            8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+            9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+            10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+            11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+            12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
         },
-        {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5,6,9,10,11,12,13,14,15]},
-        {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,6,9,10,11,12,13,14,15]},
+        incompatability: whichEdges
+    },
+    {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5].concat(whichEdges)},
+    {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4].concat(whichEdges)},               //5
 //        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
-        {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[8,9,10,11,12,13,14,15]},
-        {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7,9,10,11,12,13,14,15]},
-        {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,10]},
-        {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:[0,1,2,3,4,5,6,7,8,9]},
-        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Greens, incompatability:[0,1,2,3,4,5,6,7,8,12,13]},
-        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:[0,1,2,3,4,5,6,7,8,11,13]},
-        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:[0,1,2,3,4,5,6,7,8,11,12]},
-        {
-            encname: 'edge pattern (cat)',
-            func: edgepattern_cat,
-            style: 'line-style',
-            type: 'edge',
-            range: ["solid", "dotted", "dashed"],
-            incompatability:[0,1,2,3,4,5,6,7,8]
-        }
+    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7].concat(whichEdges)},                               //6
+    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[6].concat(whichEdges)},
+    {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
+    {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
+    {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Greens, incompatability:whichNodes.concat([11,12])},
+    {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:whichNodes.concat([10,12])},
+    {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:whichNodes.concat([10,11])},
+    {
+        encname: 'edge pattern (cat)',
+        func: edgepattern_cat,
+        style: 'line-style',
+        type: 'edge',
+        range: ["solid", "dotted", "dashed"],
+        incompatability:whichNodes
+    }
 //        {
 //            encname: 'edge arrow (cat)',
 //            func: edgearrow_cat,
@@ -962,7 +940,7 @@ window.mobileAndTabletcheck = function() {
 //            range: ["solid", "dotted", "dashed"],
 //            incompatability:[0,1,2,3,4,5,6,7,8]
 //        }
-    ];
+];
 
     var nodeconfigs = nodetableconfig(thing);
     var edgeconfigs = edgetableconfig(thing);
@@ -1273,7 +1251,7 @@ window.onkeypress = function(event) {
                         console.log("SUCCESS");
                         Robj = data;
                         highlightAssignedCells();
-                        plotNetwork('genemania_BRCA_small'); //used to be genemania_BRCA
+                        plotNetwork(randNetwork); //used to be genemania_BRCA
                         console.log(data);
                     },
                     complete: function() {

@@ -63,7 +63,8 @@ function nodecolor_cat(domain,range) {
 
 function nodesize_quant(domain,range) {
     return d3.scale.linear()
-        .domain(d3.extent(domain.map(function(r){return radius(r)})))
+        //.domain(d3.extent(domain.map(function(r){return radius(r)})))
+        .domain(d3.extent(domain.map(function(r){return r})))
         .range(range);
 };
 function nodesize_bin(domain,range) {
@@ -71,7 +72,8 @@ function nodesize_bin(domain,range) {
     // since this only takes numeric input, I could write a function to actually bin the data
     // rather than just create a domain of unique values.
     return d3.scale.ordinal()
-        .domain(domain.getUnique().map(function(r){return radius(r)}))
+        //.domain(domain.getUnique().map(function(r){return radius(r)}))
+        .domain(domain.getUnique().map(function(r){return r}))
         .range(range);
 };
 
