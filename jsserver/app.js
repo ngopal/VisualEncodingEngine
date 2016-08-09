@@ -9,7 +9,7 @@ var MongoClient = require('mongodb').MongoClient
 
 
 // MongoDB functions and parameter definitions
-var mongourl = 'mongodb://localhost:27017/';
+var mongourl = 'mongodb://localhost:27017/pilot';
 function insertOneItem(database, user, page, time, dataObject) {
     var collection = database.collection('evaldata');
     var user = user;
