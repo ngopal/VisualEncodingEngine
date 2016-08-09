@@ -45,7 +45,7 @@ var url = 'mongodb://localhost:27017/';
 
 
 function insertOneItem(database, user, page, time, dataObject) {
-  var collection = database.collection('documents');
+  var collection = database.collection('evaldata');
   var user = user;
   var page = page;
   collection.insertOne({user : user, page : page, time : time, dataObj : dataObject}, function(insertErr, insertResult) {
@@ -56,25 +56,33 @@ function insertOneItem(database, user, page, time, dataObject) {
 }
 
 function findAll(database, callback) {
-  var collection = database.collection('documents');
+  var collection = database.collection('evaldata');
   collection.find({}).toArray(function(err, docs) {
     assert.equal(err, null);
     console.log("Found following:")
-    console.log(docs);
+    //console.log(docs);
+    // For more depth and detail, uncomment below
+    var numDocs = docs.length;
+    for (var i = 0; i < numDocs; i++) {
+      var numObj = docs[0].dataObj.length;
+      for (var j = 0; j < numObj; j++) {
+        console.log(docs[i].dataObj[j]);
+      }
+    }
   })
 }
 
 function findOneItemOnPage(database, page) {
-  var collection = database.collection('documents');
+  var collection = database.collection('evaldata');
   collection.find({page:page}).toArray(function(err, docs) {
     assert.equal(err, null);
-    console.log("Found following:")
+    console.log("Found following:");
     console.log(docs);
   })
 }
 
 function findOneItemOnTime(database, time) {
-  var collection = database.collection('documents');
+  var collection = database.collection('evaldata');
   collection.find({time:time}).toArray(function(err, docs) {
     assert.equal(err, null);
     console.log("Found following:")
@@ -86,8 +94,8 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected succesfully to server");
 
-  insertOneItem(db, 'kaskdjaslkd', '30', Date.now(), {color:'red'});
+  //insertOneItem(db, 'kaskdjaslkd', '30', Date.now(), {color:'red'});
   //findOneItemOnPage(db, '30');
-  findOneItemOnTime(db, 1470684744110);
-  db.close()
+  findAll(db);
+  db.close();
 });

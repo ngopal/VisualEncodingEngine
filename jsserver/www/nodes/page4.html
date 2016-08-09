@@ -40,43 +40,45 @@
 
     </script>
 </head>
-<div id="rankTableSection">
-    <input id="numEncodings" placeholder="Number of Encodings">
-    <input id="numTasks" placeholder="Number of Dim*Tasks">
-    <input id="numAssignments" placeholder="Number of Assignments">
-    <input id="taskChoice" placeholder="Index of Task">
-    <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
-    <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
-    <button id="rankvalues" onclick="generateBaselineRank(taskNames[parseInt($('#taskChoice').val())])">load ranks</button>
-    <button id="sendranktable" onclick="sendToR()">send table</button>
-    <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
-    <input id="numNodes" placeholder="Number of Nodes">
-    <input id="numEdges" placeholder="Number of Edges">
-    <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
-    <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
-    <button id="visualizeGeneMANIA_BRCA_small" onclick="plotNetwork('genemania_BRCA_small')">visualize BRCAsmall</button>
-    <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
-    <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
-    <span id="time"></span>
-</div>
-<!--<div id="uploadGraphSection">-->
-    <!--<div id="dvImportSegments" class="fileupload">-->
-        <!--<fieldset>-->
-            <!--<legend>Upload your Network File</legend>-->
-            <!--<input type="file" name="File Upload" id="txtFileUpload" />-->
-        <!--</fieldset>-->
+<div id="dashboard" style="display:none">
+    <div id="rankTableSection">
+        <input id="numEncodings" placeholder="Number of Encodings">
+        <input id="numTasks" placeholder="Number of Dim*Tasks">
+        <input id="numAssignments" placeholder="Number of Assignments">
+        <input id="taskChoice" placeholder="Index of Task">
+        <button id="updateTableDim" onclick="updateTableDimensions()">update table</button>
+        <button id="randvalues" onclick="randomRanks()">generate random ranks</button>
+        <button id="rankvalues" onclick="generateBaselineRank(taskNames[parseInt($('#taskChoice').val())])">load ranks</button>
+        <button id="sendranktable" onclick="sendToR()">send table</button>
+        <button id="saveimage" onclick="to_image()">Save as Image</button><br><br>
+        <input id="numNodes" placeholder="Number of Nodes">
+        <input id="numEdges" placeholder="Number of Edges">
+        <button id="visualizeNetwork" onclick="plotNetwork('default')">visualize default</button>
+        <button id="visualizeGeneMANIA_BRCA" onclick="plotNetwork('genemania_BRCA')">visualize BRCA</button>
+        <button id="visualizeGeneMANIA_BRCA_small" onclick="plotNetwork('genemania_BRCA_small')">visualize BRCAsmall</button>
+        <button id="visualizeGeneMANIA_APP" onclick="plotNetwork('genemania_APP')">visualize APP</button>
+        <button id="updateVisualizedNetwork" onclick="internalData()">Dyanmo!</button>
+        <span id="time"></span>
+    </div>
+    <!--<div id="uploadGraphSection">-->
+        <!--<div id="dvImportSegments" class="fileupload">-->
+            <!--<fieldset>-->
+                <!--<legend>Upload your Network File</legend>-->
+                <!--<input type="file" name="File Upload" id="txtFileUpload" />-->
+            <!--</fieldset>-->
+        <!--</div>-->
     <!--</div>-->
-<!--</div>-->
-<div id="layoutButtonSection">
-    <button id="layoutRand" onclick="newlayout('random')">Random</button>
-    <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
-    <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
-    <button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
-    <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
-</div>
-<div id="loadcombinatorials">
-    <input id="combinNumber" placeholder="Which combinatorial?">
-    <button id="combinatorialValues" onclick="loadCombinatorialRanks()">load combinatorial ranks</button>
+    <div id="layoutButtonSection">
+        <button id="layoutRand" onclick="newlayout('random')">Random</button>
+        <button id="layoutCircle" onclick="newlayout('circle')">Circle</button>
+        <button id="layoutCose" onclick="newlayout('cose')">Cose</button>
+        <button id="layoutBf" onclick="newlayout('breadthfirst')">BF</button>
+        <button id="layoutGrid" onclick="newlayout('grid')">Grid</button>
+    </div>
+    <div id="loadcombinatorials">
+        <input id="combinNumber" placeholder="Which combinatorial?">
+        <button id="combinatorialValues" onclick="loadCombinatorialRanks()">load combinatorial ranks</button>
+    </div>
 </div>
 <div id="cy">
 </div>
@@ -347,7 +349,8 @@ window.mobileAndTabletcheck = function() {
 
         function makeTable(nr, nc) {
             var table = body.append("table")
-                    .attr("id", "rankTable");
+                    .attr("id", "rankTable")
+                    .style('display', 'none');
             var trData = [];
 
             d3.range(0, nr + 1).forEach(function (r) {
@@ -695,6 +698,8 @@ window.mobileAndTabletcheck = function() {
                     var time2 = new Date();
                     var timetook = (time2-timer.start)/1000;
                     var brow = whichBrowser();
+                    var clickX = clickcoords[0];
+                    var clickY = clickcoords[1];
 
                     //record the highlighted encodings
                     d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
@@ -704,7 +709,7 @@ window.mobileAndTabletcheck = function() {
                         var rowNum = row.replace('row','')
                         var encText = d3.selectAll('.enc'+rowNum).text();
                         // This is hacky, and should be properly done when I have time
-                        if (rowNum > 9) {
+                        if (rowNum > 8) {
                             edgeencoding.push(encText);
                         }
                         else {
@@ -712,69 +717,8 @@ window.mobileAndTabletcheck = function() {
                         }
                     });
 
-//                    cy.nodes().map(function(n){
-//                        var temp = {};
-//                        temp.name = n.data().name;
-//                        temp.id = n.data().id;
-//                        temp.type = 'node';
-//                        temp.Nencoding1 = nodeencoding[0];
-//                        temp.Nencoding2 = nodeencoding[1];
-//                        temp.Eencoding1 = edgeencoding[0];
-//                        temp.Eencoding2 = edgeencoding[1];
-//                        temp.results = {};
-//                        selecnodeattrs.forEach(function(k){
-//                            temp.results[k] = n.style()[k];
-//                        });
-//                        temp.positions = n.position();
-//                        if (selectedElement.data().id === n.data().id) {
-//                            temp.selected = 1;
-//                        }
-//                        else {
-//                            temp.selected = 0;
-//                        }
-//                        temp.clickX = clickcoords[0];
-//                        temp.clickY = clickcoords[1];
-//                        temp.windowheight = windowheight;
-//                        temp.windowwidth = windowwidth;
-//                        temp.browser = brow;
-//                        temp.time = timetook;
-//                        console.log(temp);
-//                        tempdat.push(temp);
-//                    });
-
-//                    cy.edges().map(function(n){
-//                        var temp = {};
-//                        temp.id = n.data().id;
-//                        temp.source = n.data().source;
-//                        temp.target = n.data().target;
-//                        temp.type = 'edge';
-//                        temp.Nencoding1 = nodeencoding[0];
-//                        temp.Nencoding2 = nodeencoding[1];
-//                        temp.Eencoding1 = edgeencoding[0];
-//                        temp.Eencoding2 = edgeencoding[1];
-//                        temp.results = {};
-//                        selecedgeattrs.forEach(function(k){
-//                            temp.results[k] = n.style()[k];
-//                        });
-//                        if (selectedElement.data().id === n.data().id) {
-//                            temp.selected = 1;
-//                        }
-//                        else {
-//                            temp.selected = 0;
-//                        }
-//                        temp.clickX = clickcoords[0];
-//                        temp.clickY = clickcoords[1];
-//                        temp.windowheight = windowheight;
-//                        temp.windowwidth = windowwidth;
-//                        temp.browser = brow;
-//                        temp.time = timetook;
-//                        console.log(temp);
-//                        tempdat.push(temp);
-//                    });
-
                     cy.elements().map(function(n){
                         var temp = {};
-//                        temp.name = n.data().name;
                         temp.name = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.data().name}})();
                         temp.id = n.data().id;
                         temp.type = (function() { if (n.data().hasOwnProperty('target') ) { return 'edge' } else {return 'node'}})();
@@ -786,24 +730,34 @@ window.mobileAndTabletcheck = function() {
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        temp.positions = n.position();
+                        selecedgeattrs.forEach(function(k){
+                            temp.results[k] = n.style()[k];
+                        });
+//                        temp.positions = n.position();
+                        temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
                         if (selectedElement.data().id === n.data().id) {
                             temp.selected = 1;
                         }
                         else {
                             temp.selected = 0;
                         }
-                        temp.clickX = clickcoords[0];
-                        temp.clickY = clickcoords[1];
-                        temp.windowheight = windowheight;
-                        temp.windowwidth = windowwidth;
-                        temp.browser = brow;
-                        temp.time = timetook;
+                        temp.participantResponse = fillin;
+//                        temp.clickX = clickcoords[0];
+//                        temp.clickY = clickcoords[1];
+//                        temp.windowheight = windowheight;
+//                        temp.windowwidth = windowwidth;
+//                        temp.browser = brow;
+//                        temp.time = timetook;
                         console.log(temp);
                         tempdat.push(temp);
                     });
 
-                    tempdat.push({type:'meta', browser:brow, participantResponse:fillin});
+                    tempdat.push({type:'meta', browser:brow,
+                        clickX:clickX,
+                        clickY:clickY,
+                        windowheight : windowheight,
+                        windowwidth : windowwidth,
+                        time : timetook});
 
                     $.ajax({
                         type: 'POST',
@@ -1250,7 +1204,6 @@ window.onkeypress = function(event) {
 
                 // To initialize app on loading page
                 updateTableDimensions();
-                hideExtraneous();
                 wholeWorkflow();
             }
             else {

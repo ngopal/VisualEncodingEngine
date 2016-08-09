@@ -4,7 +4,23 @@ var exec = require('child_process').exec;
 var bodyParser = require('body-parser');
 var jsonfile = require('jsonfile');
 var d3 = require('d3');
+var MongoClient = require('mongodb').MongoClient
+    , assert = require('assert');
 
+
+// MongoDB functions and parameter definitions
+var mongourl = 'mongodb://localhost:27017/';
+function insertOneItem(database, user, page, time, dataObject) {
+    var collection = database.collection('evaldata');
+    var user = user;
+    var page = page;
+    collection.insertOne({user : user, page : page, time : time, dataObj : dataObject}, function(insertErr, insertResult) {
+        assert.equal(insertErr, null);
+        assert(1, insertResult.result.n);
+        assert(1, insertResult.ops.length);
+    });
+}
+// End MongoDB functions and parameter definitions
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -25,6 +41,7 @@ app.use('/survey.js', express.static(__dirname + '/surveyjs/survey.js'));
 app.use('/knockout.js', express.static(__dirname + '/node_modules/knockout/build/output/knockout-latest.js'));
 app.use('/jqueryui.js', express.static(__dirname + '/node_modules/jquery-ui/ui/jquery-1-7.js'));
 app.use('/dialog.css', express.static(__dirname + '/node_modules/jquery-ui/themes/base/dialog.css'));
+app.use('/randomnetworks.json', express.static(__dirname + '/randomnetworks.json'));
 
 
 app.get('/', function (req, res) {
@@ -98,7 +115,17 @@ app.get('/sfunction', function (req, res) {
 
 app.post('/submitdata', function(req, res) {
     var dataObject = req.body.data;
-    var jfile = 'savedData/' + req.body.user + '-' + Date.now() + '-' + req.body.page + '.json';
+    var dtime = Date.now();
+    var jfile = 'savedData/' + req.body.user + '-' + dtime + '-' + req.body.page + '.json';
+
+    MongoClient.connect(mongourl, function(dberr, db) {
+        assert.equal(null, dberr);
+        console.log("Connected succesfully to server");
+
+        insertOneItem(db, req.body.user, req.body.page, dtime, dataObject);
+        db.close()
+    });
+
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
             console.log(err);
@@ -113,7 +140,18 @@ app.post('/submitdata', function(req, res) {
 
 app.post('/submitsurveydata', function(req, res) {
     var dataObject = req.body.data;
-    var jfile = 'savedData/' + req.body.user + '-' + Date.now() + '-' + req.body.page + '.json';
+    var dtime = Date.now();
+    var jfile = 'savedData/' + req.body.user + '-' + dtime + '-' + req.body.page + '.json';
+
+    MongoClient.connect(mongourl, function(dberr, db) {
+        assert.equal(null, dberr);
+        console.log("Connected succesfully to server");
+
+        insertOneItem(db, req.body.user, 'survey', dtime, dataObject);
+        db.close()
+    });
+
+
     jsonfile.writeFile(jfile, dataObject, function(err, success) {
         if(err) {
             console.log(err);
@@ -132,6 +170,7 @@ app.post('/lp', function (req, res) {
     var assn = req.body.toAssign;
     var jfile = 'savedinput/' + Date.now() + '.json';
     var jfileout = 'savedoutput/' + Date.now() + '.json';
+
     jsonfile.writeFile(jfile, rdata, function (err, success) {
         if (err) {
             console.log(err);

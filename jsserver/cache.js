@@ -16,6 +16,8 @@ function initializeCache() {
         sessionStorage.setItem('E_togoto', acceptableEdgePages ); // 29, 43
         sessionStorage.setItem('N_status', 'incomplete');
         sessionStorage.setItem('E_status', 'incomplete');
+        sessionStorage.setItem('netServe', shuffle(d3.range(1,acceptableNodePages.length+acceptableEdgePages.length+1)));
+        sessionStorage.setItem('netToServe', getRandNetwork());
         sessionStorage.setItem('status', 'incomplete');
         sessionStorage.setItem('consent', 'incomplete');
         sessionStorage.setItem('nodeprompt', 'incomplete');
@@ -119,6 +121,7 @@ function thissession(n) {
         sessionStorage.setItem('E_beento', beento);
         sessionStorage.removeItem('E_togoto');
         sessionStorage.setItem('E_togoto', togoto);
+        sessionStorage.setItem('netToServe', getRandNetwork());
         if (togoto.length === 0) {
             sessionStorage.setItem('E_status', 'complete');
             sessionStorage.setItem('status', 'complete');
@@ -134,6 +137,7 @@ function thissession(n) {
         sessionStorage.setItem('N_beento', beento);
         sessionStorage.removeItem('N_togoto');
         sessionStorage.setItem('N_togoto', togoto);
+        sessionStorage.setItem('netToServe', getRandNetwork());
         if (togoto.length === 0) {
             sessionStorage.setItem('N_status', 'complete');
             window.location.href='/edgeprompt';
@@ -183,4 +187,30 @@ function guid() {
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
+}
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+
+function getRandNetwork() {
+    var netServes = JSON.parse('['+sessionStorage.getItem('netServe')+']');
+    var toreturn = netServes.pop();
+    sessionStorage.setItem('netServe', netServes);
+    return 'rn'+toreturn;
 }
