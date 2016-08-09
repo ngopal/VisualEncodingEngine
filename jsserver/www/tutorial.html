@@ -38,26 +38,27 @@
     </script>
 </head>
 <body>
-<div class="page-header" style="padding-left: 30px;padding-right: 30px;">
+<div id="titlebar" class="page-header" style="padding-left: 30px;padding-right: 30px;">
     <h1>A Brief Tutorial</h1>
     <h3>Let's get oriented with some key terms</h3>
 </div>
 <div id="explanation" style="padding-left: 30px;padding-right: 30px;">
     <h4>
-<p>What we see above is a network. Networks are made of two types of elements: <b>nodes and edges</b>.</p>
-        <p>Nodes are the circle elements in the visualization. Nodes commonly denote anything that can be a “noun".</p>
-        <p>Edges are the line elements in the visualization, and they connect nodes. Edges commonly denote anything that can be a “verb”.</p>
+<p>This experiment involves various representations of networks. An example of a network can be found at the bottom of this page. Networks are made of two types of elements: <b>nodes and edges</b>.</p>
+        <p>Nodes are the circle elements in the visualization. Nodes commonly denote anything that can be a “noun". Edges are the line elements in the visualization, and they connect nodes. Edges commonly denote anything that can be a “verb”. A network may represent two people, and the relationship between them, for example.</p>
     </h4>
 </div>
 <div id="interactNode" style="padding-left: 30px;padding-right: 30px;">
-    <h4>The visualization presented below is interactive (as are the rest in the study).</h4>
-    <h3 id="nodeseek" style="display:block">Please click on a <b><u>node</u></b> to continue.</h3>
-    <h3 id="errNode" style="display:none;color:darkred;" title="That's a node" hidden="hidden">Uh-oh, that's a node you just clicked on! Remember, the lines are edges. It is sometimes easy to miss clicking on an edge. Try to get a feel for it.</h3>
-    <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
-    <h3 id="errEdge" style="display:none;color:darkred;" title="That's an edge" hidden="hidden">Uh-oh, that's an edge you just clicked on! Remember, the circles are nodes!</h3>
+    <div id="interactNetText">
+        <h4>The visualization presented below is interactive (as are the rest in the study).</h4>
+        <h3 id="nodeseek" style="display:block">Please click on a <b><u>node</u></b> to continue.</h3>
+        <h3 id="errNode" style="display:none;color:darkred;" title="That's a node" hidden="hidden">Uh-oh, that's a node you just clicked on! Remember, the lines are edges. It is sometimes easy to miss clicking on an edge.</h3>
+        <h3 id="edgeseek" style="display:none">AWESOME! Please click on an <b><u>edge</u></b> to continue.</h3>
+        <h3 id="errEdge" style="display:none;color:darkred;" title="That's an edge" hidden="hidden">Uh-oh, that's an edge you just clicked on! Remember, the circles are nodes!</h3>
+    </div>
     <!--<h3 id="fillinexplanation" style="display:none">You're a natural! There will also be a pop up response on a randomly selected question where I ask you to write why you clicked on a particular node or edge</h3>-->
-    <h3 id="ready" style="display:none">You're ready! Click the button below when you are ready to start! As a reminder, please do not take more than 5 seconds on each visualization.</h3>
-    <h3 id="ready2" style="display:none">There will be 34 networks to click through in total. The first 23 will be networks where you click on the most prominent node. The other 11 will be networks where you click on the most prominent edge.</h3>
+    <h1 id="ready" style="display:none">You're ready!</h1>
+    <h3 id="ready2" style="display:none">There will be 34 networks to click through in total. The first 23 will be networks where you click on the most prominent node. The other 11 will be networks where you click on the most prominent edge. Click "Start the experiment" below when you are ready to start!</h3>
     <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href='/nodeprompt'; })()" style="display:none">Start the experiment!</button>
 <div id="cy"></div>
 </div>
@@ -152,7 +153,10 @@
 //            $('#errEdge').hide();
             $('#edgeseek').hide();
             $('#cy').hide();
-            var fillin = prompt("You're a natural! There will also be a pop up response on a random question asking you to write why you clicked on a particular node or edge. Try it!");
+            var fillin = prompt("You're a natural! There will also be a pop up response on a random question asking you to write why you clicked on a particular node or edge. Try to type something and hit OK!");
+            $('#titlebar').hide();
+            $('#explanation').hide();
+            $('#interactNetText').hide();
             $('#ready').show();
             $('#ready2').show();
             $('#readybtn').show();

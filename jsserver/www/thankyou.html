@@ -52,7 +52,15 @@
     <!--End mc_embed_signup-->
     </div>
 <div id="law" style="padding-left: 30px;padding-right: 30px;">
-     <h4>As stipulated by our IRB, I cannot and will not share your email!</h4>
+     <h4>I cannot and will not share your email!</h4>
+</div>
+<div id="mtcode" style="padding-left: 30px;padding-right: 30px;">
+    <h3><b>Mechanical Turkers! Here below is your unique code. Please copy and paste the following code into the designated box on the HIT page to obtain credit.</b></h3>
 </div>
 </body>
+<script>
+    d3.select('#mtcode').append('h3').text(function(){
+        return sessionStorage.getItem('GUID');
+    })
+</script>
 </html>
