@@ -1,5 +1,7 @@
 jsserver/savedoutput
 jsserver/savedinput
+jsserver/downloaded
 data/
 jsserver/savedData
+jsserver/data/db/
 Procfile

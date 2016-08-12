@@ -390,32 +390,40 @@ tpyFunc <- function(g) {
   edge.attrs <- list.edge.attributes(g);
   for (i in 1:length(V(g))) {
     iter = iter + 1; # changing i's to iter's
-    s = append(s, paste('{ data: { id: "',iter,'", ', sep=''))
+    s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ', sep=''))
     for (k in 1:length(vert.attrs)) {
       if (vert.attrs[k] != "name") {
-          s = append(s, paste('name : "', eval(parse(text=paste("V(g)$name",'[',iter,']',sep=''))),'", dimension : "',vert.attrs[k],'", value : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',iter,']',sep=''))),'", ', sep='') )
+          s = append(s, paste('\"name\" : "', eval(parse(text=paste("V(g)$name",'[',iter,']',sep=''))),'", \"dimension\" : "',vert.attrs[k],'", \"value\" : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',iter,']',sep=''))),'", ', sep='') )
       }
     }
    s = append(s, paste(' } },', sep=''))
   }
 
   for (e in 1:dim(unique(get.edgelist(g)))[1]) {
-    cat( e,
-         unique(get.edgelist(g))[e,1],
-         unique(get.edgelist(g))[e,2],
-         length(which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])),
-         mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]),
-         '\n')
+#     cat( e,
+#          unique(get.edgelist(g))[e,1],
+#          unique(get.edgelist(g))[e,2],
+#          length(which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])),
+#          mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]),
+#          '\n')
     for (k in 1:length(edge.attrs)) {
       iter = iter + 1;
       if (  typeof(eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep='')))) == "character"  ) {
         cat('more to do','\n')
+        edgeattrmean = as.numeric(eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))))
+        s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ',
+                            '\"source\": "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", \"target\": "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
+                            '\"dimension\": "', edge.attrs[k],'", \"value\":"',format(edgeattrmean, scientific=F),'"',
+                            '} },', sep='') )
       }
       else {
-        edgeattrmean = mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
-        s = append(s, paste('{ data: { id: "',iter,'", ',
-                            'source: "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", target: "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
-                            'dimension: "', edge.attrs[k],'", value:"',edgeattrmean,'"',
+        numerator = sum(as.numeric(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]))
+        denominator = length(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
+        edgeattrmean = numerator / denominator
+        #edgeattrmean = mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
+        s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ',
+                            '\"source\": "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", \"target\": "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
+                            '\"dimension\": "', edge.attrs[k],'", \"value\":"',format(edgeattrmean, scientific=F),'"',
                             '} },', sep='')
         )
       }
@@ -1098,6 +1106,36 @@ combn(c('edge width (quant)',
 
 # This makes 35 observations in total for users.
 
+combn(c('node color (seq)', 
+        'node color (div)',
+        'node color (cat)',
+        'node shape (cat)',
+        'node border (quant)',
+        'node border (bin)',
+        'node size (quant)',
+        'node size (bin)',
+        'edge width (quant)',
+        'edge width (bin)',
+        'edge color (seq)',
+        'edge color (div)',
+        'edge color (cat)',
+        'edge pattern (cat)',
+        'edge arrow (cat)'), m=4)
+
+combn(c('node color (seq)', 
+        'node shape (cat)',
+        'node border (quant)',
+        'node size (quant)',
+        'edge width (quant)',
+        'edge color (seq)',
+        'edge pattern (cat)'), m=4)
+
+
+
+
+
+
+
 samplingMarkov <- function(options, weights) {
   return( sample(options, size = 1, prob = weights) )
 }
@@ -1172,4 +1210,183 @@ for (i in 1:(24*100)) {
 }
 table(sampled)
 barplot(table(sampled))
+
+
+# Picking a network of the correct size
+
+plot(induced.subgraph(genemania.network.graph, sample(V(genemania.network.graph)$name, 3)))
+genemania.network.graph.randwalk <- induced.subgraph(genemania.network.graph,  random_walk(graph = genemania.network.graph, start = c(1), steps = c(4), mode = "all", stuck = "return")$name)
+plot(genemania.network.graph.randwalk)
+random_walk(graph = genemania.network.graph, start = c(1), steps = c(4), mode = "all", stuck = "return")
+
+# Using the weight value below of 0.06 seems promising
+plot(genemania.network.graph.randwalk, edge.color = ifelse(E(genemania.network.graph.randwalk)$weight >= 0.06, "red", NA))
+
+genemania.network.graph.randwalk <- induced.subgraph(genemania.network.graph,  random_walk(graph = genemania.network.graph, start = c(1), steps = c(4), mode = "all", stuck = "return")$name)
+tpyFunc(genemania.network.graph.randwalk)
+genemania.network.graph.randwalk2 <- induced.subgraph(genemania.network.graph,  random_walk(graph = genemania.network.graph, start = c(1), steps = c(7), mode = "all", stuck = "return")$name)
+plot(genemania.network.graph.randwalk2)
+tpyFunc(genemania.network.graph.randwalk2)
+genemania.network.graph.randwalk3 <- induced.subgraph(genemania.network.graph,  random_walk(graph = genemania.network.graph, start = c(1), steps = c(3), mode = "all", stuck = "return")$name)
+tpyFunc(genemania.network.graph.randwalk3)
+
+# Distribution of % of edges by weight value
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.01)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.7142857
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.02)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.5
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.03)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.3214286
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.04)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.2142857
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.05)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.1785714
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.06)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.1428571
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.07)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.07142857
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.08)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.07142857
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.09)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.03571429
+# > sum(E(genemania.network.graph.randwalk)$weight >= 0.10)/sum(E(genemania.network.graph.randwalk)$weight >= 0)
+# [1] 0.03571429
+plot(c(1:10/100), c(.71,.5,.32,.21,.17,.14,.07,.07,.03,.03), type = "l", 
+     main="Percent of edges by weight threshold for randomly walked subgraph",
+     xlab="Weight Threshold", ylab="Percent of Edges in Subgraph")
+
+generateSubgraphSample <- function(g,snode,wt) {
+  tg <- induced.subgraph(g,  random_walk(graph = g, start = c(snode), steps = c(4), mode = "all", stuck = "return")$name)
+  #plot(tg, edge.color = ifelse(E(tg)$weight >= wt, "red", "black"))
+  #hist(E(tg)$weight)
+  return(  E(tg)$weight  )
+}
+
+generateSubgraphSample2 <- function(g,snode,wt) {
+  tg <- induced.subgraph(g,  random_walk(graph = g, start = c(snode), steps = c(4), mode = "all", stuck = "return")$name)
+  plot(tg, edge.color = ifelse(E(tg)$weight >= wt, "red", NA))
+  return(  E(tg)$weight  )
+}
+
+generateSubgraphSample(genemania.network.graph, 1, 0.06)
+
+rgweightsbrca1 <- c()
+rgweightstp53 <- c()
+for (i in 1:500) {
+  rgweightsbrca1 <- append(rgweightsbrca1, generateSubgraphSample(genemania.network.graph, 1, 0))
+  rgweightstp53 <- append(rgweightstp53, generateSubgraphSample(genemania.network.graph, 3, 0))
+}
+
+hist(rgweightsbrca1)
+hist(rgweightstp53)
+ecdf(rgweightsbrca1)
+plot(ecdf(rgweightsbrca1))
+abline(v = 0.10, h = 0.85, col=c("red"))
+plot(ecdf(rgweightstp53))
+abline(v = 0.10, h = 0.85, col=c("red"))
+
+generateSubgraphSample2(genemania.network.graph, 1, 0.10)
+generateSubgraphSample2(genemania.network.graph, 3, 0.10)
+
+# Random Biological Graph Generator
+# 1. Select N random genes from the gene list
+sample(genenames, 10, replace=T)
+# 2. Generate a network using GeneMANIA - This can be done because researchers are moving towards functional networks [aim 1].
+# 3. Randomly sample a vertex from the network, and set a sample size - Edge weights are averaged, so only one edge will exist per dyad.
+
+
+ensemblenames <- names(as.list(org.Hs.egENSEMBL2EG))
+genemaniaAll <- read.csv('~/Code/data_for_phd_app/COMBINED.DEFAULT_NETWORKS.BP_COMBINING.csv')
+genemaniaAll <- as.matrix(genemaniaAll)
+gma <- graph.data.frame(d=genemaniaAll, directed = F)
+
+E(gma)$Weight
+E(gma)$weight <- E(gma)$Weight
+gma <- remove.edge.attribute(gma, "Weight")
+
+hist(as.numeric(E(gma)$weight), freq = F)
+
+sample(V(gma)$name, 1)
+which(V(gma)$name == "ENSG00000145476")
+generateSubgraphSample2(gma, 8713, 0)
+
+plot(induced.subgraph(gma, random_walk(graph = gma, start = which(V(gma)$name == sample(V(gma)$name, 1)), steps = c(4), mode = "all", stuck = "return")$name))
+
+# Sample 34 networks
+sampledRandomNetworkNodes <- sample(V(gma)$name, 34, replace = FALSE)
+rgndat <- list()
+for (s in 1:length(sampledRandomNetworkNodes)) {
+  #print(sampledRandomNetworkNodes[s])
+  cat(s, sampledRandomNetworkNodes[s],'\n')
+  tt <- random_walk(graph = gma, start = which(V(gma)$name == sampledRandomNetworkNodes[s]), steps = c(4), mode = "all", stuck = "return")$name
+  vgn <- unlist(as.list(org.Hs.egSYMBOL)[unlist(as.list(org.Hs.egENSEMBL2EG)[tt])])
+  # When ensemble IDs are mapped to gene name, sometimes two different ensemble IDs have the same entrez gene ID
+  isggma <- induced.subgraph(gma, tt)
+  V(isggma)$label <- V(isggma)$name
+  V(isggma)$name <- vgn
+  V(isggma)$area <- pubMedCounts(isggma)
+  V(isggma)$area[which(V(isggma)$area == 0)] <- format(0.0001, scientific=F)
+  #V(isggma)$entrez <- V(isggma)$name
+  V(isggma)$name <- V(isggma)$label
+  isggma <- remove.vertex.attribute(isggma, "label")
+  rgndat[[s]] = tpyFuncForRand(isggma)
+  write(paste("var rn",s,' = ',rgndat[[s]],';\n', sep=''), file = '~/Code/VisualEncodingEngine/jsserver/datafiles.js', append = T)
+  #print(rgndat[[s]])
+  #plot(isggma, vertex.label=V(isggma)$name, vertex.size=sqrt(V(isggma)$area)*10, edge.width=exp(as.numeric(E(isggma)$weight)))
+}
+
+
+tpyFuncForRand <- function(g) {
+  s = c();
+  s = append(s, '[')
+  iter = 0;
+  vert.attrs <- list.vertex.attributes(g);
+  edge.attrs <- list.edge.attributes(g);
+  for (i in 1:length(V(g))) {
+    iter = iter + 1; # changing i's to iter's
+    s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ', sep=''))
+    for (k in 1:length(vert.attrs)) {
+      if (vert.attrs[k] != "name") {
+        s = append(s, paste('\"name\" : "', eval(parse(text=paste("V(g)$name",'[',iter,']',sep=''))),'", \"dimension\" : "',vert.attrs[k],'", \"value\" : "', eval(parse(text=paste("V(g)$",vert.attrs[k],'[',iter,']',sep=''))),'" ', sep='') )
+      }
+    }
+    s = append(s, paste(' } },', sep=''))
+  }
+  
+  for (e in 1:dim(unique(get.edgelist(g)))[1]) {
+    #     cat( e,
+    #          unique(get.edgelist(g))[e,1],
+    #          unique(get.edgelist(g))[e,2],
+    #          length(which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])),
+    #          mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]),
+    #          '\n')
+    for (k in 1:length(edge.attrs)) {
+      iter = iter + 1;
+      if (  typeof(eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep='')))) == "character"  ) {
+        cat('more to do','\n')
+        edgeattrmean = as.numeric(eval(parse(text=paste("E(g)$",edge.attrs[k],'[',e,']',sep=''))))
+        s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ',
+                            '\"source\": "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", \"target\": "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
+                            '\"dimension\": "', edge.attrs[k],'", \"value\":"',format(edgeattrmean, scientific=F),'"',
+                            '} },', sep='') )
+      }
+      else {
+        numerator = sum(as.numeric(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])]))
+        denominator = length(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
+        edgeattrmean = numerator / denominator
+        #edgeattrmean = mean(E(g)$weight[which(get.edgelist(g)[,1] == unique(get.edgelist(g))[e,1] & get.edgelist(g)[,2] == unique(get.edgelist(g))[e,2])])
+        s = append(s, paste('{ \"data\": { \"id\": "',iter,'", ',
+                            '\"source\": "',  which(V(g)$name == unique(get.edgelist(g))[e,1])  ,'", \"target\": "',  which(V(g)$name == unique(get.edgelist(g))[e,2])  ,'", ',
+                            '\"dimension\": "', edge.attrs[k],'", \"value\":"',format(edgeattrmean, scientific=F),'"',
+                            '} },', sep='')
+        )
+      }
+    }
+  }
+  s = append(s, ']')
+  return( gsub("\"","'", gsub('},]', '}]', paste(s, collapse="")) ) )
+}
+
+write(toJSON(rgndat[[1]]), file = '~/Code/VisualEncodingEngine/jsserver/randomnetworks.json')
+
 
