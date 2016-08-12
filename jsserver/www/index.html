@@ -628,7 +628,7 @@ window.mobileAndTabletcheck = function() {
             };
 
             if (desireddata === randNetwork) { //used to be genemania_BRCA
-                options.name = 'cose';
+//                options.name = 'cose';
                 cy = cytoscape({
                     container: document.getElementById('cy'),
                     elements: window[randNetwork], //used to be genemania_BRCA
@@ -656,7 +656,8 @@ window.mobileAndTabletcheck = function() {
                     desktopTapThreshold: 4,
                     autolock: false,
                     autoungrabify: false,
-                    autounselectify: false
+                    autounselectify: false,
+                    layout: { name: 'cose' }
                 });
 
                 cy.on('select,touch', 'node,edge', function(ev) {
@@ -684,13 +685,14 @@ window.mobileAndTabletcheck = function() {
                     var brow = whichBrowser();
                     var clickX = clickcoords[0];
                     var clickY = clickcoords[1];
+                    var netToServe = sessionStorage.getItem("netToServe");
 
                     //record the highlighted encodings
                     d3.selectAll('[bgcolor="#F3F315"]').each(function (d) {
                         var hienc = d3.select(this).attr('class');
                         var row = hienc.match(/row\d+/g)[0];
                         var col = hienc.match(/col\d+/g)[0];
-                        var rowNum = row.replace('row','')
+                        var rowNum = row.replace('row','');
                         var encText = d3.selectAll('.enc'+rowNum).text();
                         // This is hacky, and should be properly done when I have time
                         if (rowNum > 8) {
@@ -714,7 +716,7 @@ window.mobileAndTabletcheck = function() {
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        selecnodeattrs.forEach(function(k){
+                        selecedgeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
                         temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
@@ -734,7 +736,8 @@ window.mobileAndTabletcheck = function() {
                         clickY:clickY,
                         windowheight : windowheight,
                         windowwidth : windowwidth,
-                        time : timetook});
+                        time : timetook,
+                        network:netToServe});
 
                     $.ajax({
                         type: 'POST',

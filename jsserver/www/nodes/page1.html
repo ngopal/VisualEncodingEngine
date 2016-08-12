@@ -28,6 +28,9 @@
             display: none;
             float: right;
         }
+        :selected {
+            active-bg-color: none;
+        }
     </style>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -656,7 +659,7 @@ window.mobileAndTabletcheck = function() {
                     autounselectify: false
                 });
 
-                cy.on('select,touch', 'node,edge', function(ev) {
+                cy.on('tap', 'node,edge', function(ev) {
                     console.log(ev);
                     var fillin;
                     if ( JSON.parse('['+sessionStorage.getItem('popquestions')+']').indexOf(pageval) !== -1  ) {
@@ -711,7 +714,7 @@ window.mobileAndTabletcheck = function() {
                         selecnodeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        selecnodeattrs.forEach(function(k){
+                        selecedgeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
                         temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
