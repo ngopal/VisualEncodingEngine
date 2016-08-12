@@ -14,35 +14,59 @@ function insertOneItem(database, user, page, time, dataObject) {
     var collection = database.collection('evaldata');
     var user = user;
     var page = page;
+    dataObject.map(function(d){
+        collection.insertOne({
+            user : user,
+            page : page,
+            time : time,
+            eleid : d.id,
+            name : d.name,
+            nodeEncoding1 : d.Nencoding1,
+            nodeEncoding2 : d.Nencoding2,
+            edgeEncoding1 : d.Eencoding1,
+            edgeEncoding2 : d.Eencoding2,
+            nodebackground : d.results['background-color'],
+            nodeshape : d.results['shape'],
+            nodeborderwidth : d.results['border-width'],
+            nodeheight : d.results['height'],
+            nodewidth : d.results['width'],
+            linecolor : d.results['line-color'],
+            linestyle : d.results['line-style'],
+            xposition: (function(){ if(typeof(d.position) === "object"){ return d.position.x } else { return 'NA'} })(),
+            yposition: (function(){ if(typeof(d.position) === "object"){ return d.position.y } else { return 'NA'} })(),
+            selected : d.selected,
+            participantResponse : d.participantResponse,
+            browser : d.browser,
+            clickX : d.clickX,
+            clickY : d.clickY,
+            windowheight : d.windowheight,
+            windowwidth : d.windowwidth,
+            reactionTime : d.time,
+            network : d.network
+        }, function(insertErr, insertResult) {
+            assert.equal(insertErr, null);
+            assert(1, insertResult.result.n);
+            assert(1, insertResult.ops.length);
+        });
+    });
+}
+
+function insertOneSurveyItem(database, user, page, time, dataObject) {
+    var collection = database.collection('evaldata');
+    var user = user;
+    var page = page;
+    var dataObject = JSON.parse(dataObject);
     collection.insertOne({
         user : user,
         page : page,
         time : time,
-        eleid : dataObject.id,
-        name : dataObject.name,
-        nodeEncoding1 : dataObject.Nencoding1,
-        nodeEncoding2 : dataObject.Nencoding2,
-        edgeEncoding1 : dataObject.Eencoding1,
-        edgeEncoding2 : dataObject.Eencoding2,
-        nodebackground : dataObject.results[0],
-        nodeshape : dataObject.results[1],
-        nodeborderwidth : dataObject.results[2],
-        nodeheight : dataObject.results[3],
-        nodewidth : dataObject.results[4],
-        linecolor : dataObject.results[5],
-        linestyle : dataObject.results[6],
-        xposition : dataObject.position[0],
-        yposition : dataObject.position[1],
-        selected : dataObject.selected,
-        participantResponse : dataObject.participantResponse,
-        browser : dataObject.browser,
-        clickX : dataObject.clickX,
-        clickY : dataObject.clickY,
-        windowheight : dataObject.windowheight,
-        windowwidth : dataObject.windowwidth,
-        time : dataObject.time,
-        network : dataObject.network
-}, function(insertErr, insertResult) {
+        question1 : dataObject.question1,
+        question2 : dataObject.question2,
+        question3 : dataObject.question3,
+        question4 : dataObject.question4,
+        question5 : dataObject.question5,
+        question6 : dataObject.question6
+    }, function(insertErr, insertResult) {
         assert.equal(insertErr, null);
         assert(1, insertResult.result.n);
         assert(1, insertResult.ops.length);
@@ -175,7 +199,7 @@ app.post('/submitsurveydata', function(req, res) {
         assert.equal(null, dberr);
         console.log("Connected succesfully to server");
 
-        insertOneItem(db, req.body.user, 'survey', dtime, dataObject);
+        insertOneSurveyItem(db, req.body.user, 'survey', dtime, dataObject);
         db.close()
     });
 
