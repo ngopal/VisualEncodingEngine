@@ -727,17 +727,24 @@ window.mobileAndTabletcheck = function() {
                             temp.selected = 0;
                         }
                         temp.participantResponse = fillin;
+                        browser:brow;
+                        clickX:clickX;
+                        clickY:clickY;
+                        windowheight : windowheight;
+                        windowwidth : windowwidth;
+                        time : timetook;
+                        network:netToServe;
                         console.log(temp);
                         tempdat.push(temp);
                     });
 
-                    tempdat.push({type:'meta', browser:brow,
-                        clickX:clickX,
-                        clickY:clickY,
-                        windowheight : windowheight,
-                        windowwidth : windowwidth,
-                        time : timetook,
-                        network:netToServe});
+//                    tempdat.push({type:'meta', browser:brow,
+//                        clickX:clickX,
+//                        clickY:clickY,
+//                        windowheight : windowheight,
+//                        windowwidth : windowwidth,
+//                        time : timetook,
+//                        network:netToServe});
 
                     $.ajax({
                         type: 'POST',

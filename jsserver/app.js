@@ -14,7 +14,35 @@ function insertOneItem(database, user, page, time, dataObject) {
     var collection = database.collection('evaldata');
     var user = user;
     var page = page;
-    collection.insertOne({user : user, page : page, time : time, dataObj : dataObject}, function(insertErr, insertResult) {
+    collection.insertOne({
+        user : user,
+        page : page,
+        time : time,
+        eleid : dataObject.id,
+        name : dataObject.name,
+        nodeEncoding1 : dataObject.Nencoding1,
+        nodeEncoding2 : dataObject.Nencoding2,
+        edgeEncoding1 : dataObject.Eencoding1,
+        edgeEncoding2 : dataObject.Eencoding2,
+        nodebackground : dataObject.results[0],
+        nodeshape : dataObject.results[1],
+        nodeborderwidth : dataObject.results[2],
+        nodeheight : dataObject.results[3],
+        nodewidth : dataObject.results[4],
+        linecolor : dataObject.results[5],
+        linestyle : dataObject.results[6],
+        xposition : dataObject.position[0],
+        yposition : dataObject.position[1],
+        selected : dataObject.selected,
+        participantResponse : dataObject.participantResponse,
+        browser : dataObject.browser,
+        clickX : dataObject.clickX,
+        clickY : dataObject.clickY,
+        windowheight : dataObject.windowheight,
+        windowwidth : dataObject.windowwidth,
+        time : dataObject.time,
+        network : dataObject.network
+}, function(insertErr, insertResult) {
         assert.equal(insertErr, null);
         assert(1, insertResult.result.n);
         assert(1, insertResult.ops.length);
