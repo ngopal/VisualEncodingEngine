@@ -70,7 +70,7 @@
         <entry file="file://$PROJECT_DIR$/mongo.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="42" selection-start-line="4" selection-start-column="42" selection-end-line="4" selection-end-column="42" />
+              <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -79,27 +79,29 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.3">
-              <caret line="906" column="0" selection-start-line="906" selection-start-column="0" selection-end-line="956" selection-end-column="6" />
+            <state vertical-scroll-proportion="-3.9">
+              <caret line="908" column="35" selection-start-line="908" selection-start-column="35" selection-end-line="908" selection-end-column="35" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="participantview.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="participantview.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/participantview.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.96">
-              <caret line="953" column="2" selection-start-line="953" selection-start-column="2" selection-end-line="953" selection-end-column="2" />
-              <folding />
+            <state vertical-scroll-proportion="0.18597063">
+              <caret line="1189" column="19" selection-start-line="1189" selection-start-column="19" selection-end-line="1189" selection-end-column="19" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="demographic.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="demographic.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/demographic.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5546875">
+            <state vertical-scroll-proportion="-15.434783">
               <caret line="188" column="57" selection-start-line="188" selection-start-column="57" selection-end-line="188" selection-end-column="57" />
               <folding />
             </state>
@@ -155,8 +157,8 @@
         <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/www/index.html" />
-        <option value="$PROJECT_DIR$/www/participantview.html" />
         <option value="$PROJECT_DIR$/www/demographic.html" />
+        <option value="$PROJECT_DIR$/www/participantview.html" />
       </list>
     </option>
   </component>
@@ -643,14 +645,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mongo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="42" selection-start-line="4" selection-start-column="42" selection-end-line="4" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cytoscape.min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.9386792">
@@ -728,27 +722,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/www/demographic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.434783">
+          <caret line="188" column="57" selection-start-line="188" selection-start-column="57" selection-end-line="188" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mongo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.3">
-          <caret line="906" column="0" selection-start-line="906" selection-start-column="0" selection-end-line="956" selection-end-column="6" />
+        <state vertical-scroll-proportion="-3.9">
+          <caret line="908" column="35" selection-start-line="908" selection-start-column="35" selection-end-line="908" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/participantview.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.96">
-          <caret line="953" column="2" selection-start-line="953" selection-start-column="2" selection-end-line="953" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/demographic.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5546875">
-          <caret line="188" column="57" selection-start-line="188" selection-start-column="57" selection-end-line="188" selection-end-column="57" />
-          <folding />
+        <state vertical-scroll-proportion="0.18597063">
+          <caret line="1189" column="19" selection-start-line="1189" selection-start-column="19" selection-end-line="1189" selection-end-column="19" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
