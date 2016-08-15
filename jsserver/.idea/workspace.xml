@@ -34,8 +34,8 @@
       <file leaf-file-name="tutorial.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/tutorial.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-40.434784">
-              <caret line="79" column="47" selection-start-line="79" selection-start-column="47" selection-end-line="79" selection-end-column="47" />
+            <state vertical-scroll-proportion="-13.043478">
+              <caret line="149" column="27" selection-start-line="149" selection-start-column="27" selection-end-line="149" selection-end-column="27" />
               <folding>
                 <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#h3#3;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -60,7 +60,7 @@
         <entry file="file://$PROJECT_DIR$/README">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="29" column="19" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -79,8 +79,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9">
-              <caret line="908" column="35" selection-start-line="908" selection-start-column="35" selection-end-line="908" selection-end-column="35" />
+            <state vertical-scroll-proportion="-10.08">
+              <caret line="657" column="39" selection-start-line="657" selection-start-column="39" selection-end-line="657" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -89,8 +89,8 @@
       <file leaf-file-name="participantview.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/participantview.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.18597063">
-              <caret line="1189" column="19" selection-start-line="1189" selection-start-column="19" selection-end-line="1189" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.87112564">
+              <caret line="654" column="39" selection-start-line="654" selection-start-column="39" selection-end-line="654" selection-end-column="39" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
               </folding>
@@ -151,13 +151,13 @@
         <option value="$PROJECT_DIR$/www/nodeprompt.html" />
         <option value="$PROJECT_DIR$/mongo.js" />
         <option value="$PROJECT_DIR$/www/consent.html" />
-        <option value="$PROJECT_DIR$/www/tutorial.html" />
         <option value="$PROJECT_DIR$/www/edgeprompt.html" />
         <option value="$PROJECT_DIR$/www/thankyou.html" />
-        <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/www/index.html" />
         <option value="$PROJECT_DIR$/www/demographic.html" />
+        <option value="$PROJECT_DIR$/README" />
+        <option value="$PROJECT_DIR$/www/tutorial.html" />
+        <option value="$PROJECT_DIR$/www/index.html" />
         <option value="$PROJECT_DIR$/www/participantview.html" />
       </list>
     </option>
@@ -685,27 +685,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/tutorial.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-40.434784">
-          <caret line="79" column="47" selection-start-line="79" selection-start-column="47" selection-end-line="79" selection-end-column="47" />
-          <folding>
-            <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h3#3;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="29" column="19" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-24.444445">
@@ -738,18 +717,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/README">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/tutorial.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.043478">
+          <caret line="149" column="27" selection-start-line="149" selection-start-column="27" selection-end-line="149" selection-end-column="27" />
+          <folding>
+            <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#h3#3;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9">
-          <caret line="908" column="35" selection-start-line="908" selection-start-column="35" selection-end-line="908" selection-end-column="35" />
+        <state vertical-scroll-proportion="-10.08">
+          <caret line="657" column="39" selection-start-line="657" selection-start-column="39" selection-end-line="657" selection-end-column="39" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/participantview.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18597063">
-          <caret line="1189" column="19" selection-start-line="1189" selection-start-column="19" selection-end-line="1189" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.87112564">
+          <caret line="654" column="39" selection-start-line="654" selection-start-column="39" selection-end-line="654" selection-end-column="39" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>

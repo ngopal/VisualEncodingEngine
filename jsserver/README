@@ -18,7 +18,7 @@ run the following scripts to generate static pages
 -sh makePages.sh
 
 setup MongoDB Server
--After running 'mongod --fork --logpath data/logs/mongod.log' as a nohup & process, use 'mongo' command to get terminal
+-After running 'mongod --dbpath data/db --fork --logpath data/logs/mongod.log' as a nohup & process, use 'mongo' command to get terminal
 >use pilot
 >db.createCollection('evaldata')
 
