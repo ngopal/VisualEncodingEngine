@@ -902,47 +902,47 @@ var whichEdges = encs.map(function(n,i){ if(n.match(/edge/)){return i} }).filter
 
 
 var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2].concat(whichEdges)},
-        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2].concat(whichEdges)},
-        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1].concat(whichEdges)},
-        {
-            encname: 'node shape (cat)',
-            func: nodeshape_cat,
-            style: 'shape',
-            type: 'node',
-            range: { 1: ["rectangle"],
-                2: ["rectangle", "roundrectangle"],
-                3: ["rectangle", "roundrectangle", "ellipse"],
-                4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
-                5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
-                6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
-                7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
-                8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
-                9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
-                10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
-                11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
-                12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
-            },
-            incompatability: whichEdges
+    {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:[1,2].concat(whichEdges)},
+    {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:[0,2].concat(whichEdges)},
+    {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:[0,1].concat(whichEdges)},
+    {
+        encname: 'node shape (cat)',
+        func: nodeshape_cat,
+        style: 'shape',
+        type: 'node',
+        range: { 1: ["rectangle"],
+            2: ["rectangle", "roundrectangle"],
+            3: ["rectangle", "roundrectangle", "ellipse"],
+            4: ["rectangle", "roundrectangle", "ellipse", "triangle"],
+            5: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon"],
+            6: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon"],
+            7: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon"],
+            8: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon"],
+            9: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star"],
+            10: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond"],
+            11: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee"],
+            12: ["rectangle", "roundrectangle", "ellipse", "triangle", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid"]
         },
-        {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5].concat(whichEdges)},
-        {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4].concat(whichEdges)},               //5
+        incompatability: whichEdges
+    },
+    {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5].concat(whichEdges)},
+    {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4].concat(whichEdges)},               //5
 //        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
-        {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7].concat(whichEdges)},                               //6
-        {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[6].concat(whichEdges)},
-        {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
-        {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
-        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Greens, incompatability:whichNodes.concat([11,12])},
-        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:whichNodes.concat([10,12])},
-        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:whichNodes.concat([10,11])},
-        {
-            encname: 'edge pattern (cat)',
-            func: edgepattern_cat,
-            style: 'line-style',
-            type: 'edge',
-            range: ["solid", "dotted", "dashed"],
-            incompatability:whichNodes
-        }
+    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7].concat(whichEdges)},                               //6
+    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[6].concat(whichEdges)},
+    {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
+    {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
+    {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([11,12])},
+    {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([10,12])},
+    {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:whichNodes.concat([10,11])},
+    {
+        encname: 'edge pattern (cat)',
+        func: edgepattern_cat,
+        style: 'line-style',
+        type: 'edge',
+        range: ["solid", "dotted", "dashed"],
+        incompatability:whichNodes
+    }
 //        {
 //            encname: 'edge arrow (cat)',
 //            func: edgearrow_cat,
@@ -951,7 +951,7 @@ var thing = [
 //            range: ["solid", "dotted", "dashed"],
 //            incompatability:[0,1,2,3,4,5,6,7,8]
 //        }
-    ];
+];
 
     var nodeconfigs = nodetableconfig(thing);
     var edgeconfigs = edgetableconfig(thing);

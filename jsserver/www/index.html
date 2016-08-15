@@ -905,9 +905,9 @@ var whichEdges = encs.map(function(n,i){ if(n.match(/edge/)){return i} }).filter
 
 
 var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2].concat(whichEdges)},
-        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2].concat(whichEdges)},
-        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1].concat(whichEdges)},
+        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:[1,2].concat(whichEdges)},
+        {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:[0,2].concat(whichEdges)},
+        {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:[0,1].concat(whichEdges)},
         {
             encname: 'node shape (cat)',
             func: nodeshape_cat,
@@ -935,9 +935,9 @@ var thing = [
         {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[6].concat(whichEdges)},
         {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
         {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
-        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: colorbrewer.Greens, incompatability:whichNodes.concat([11,12])},
-        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: colorbrewer.BuGn, incompatability:whichNodes.concat([10,12])},
-        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: colorbrewer.Set3, incompatability:whichNodes.concat([10,11])},
+        {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([11,12])},
+        {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([10,12])},
+        {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:whichNodes.concat([10,11])},
         {
             encname: 'edge pattern (cat)',
             func: edgepattern_cat,

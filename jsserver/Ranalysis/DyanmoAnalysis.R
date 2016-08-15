@@ -26,18 +26,44 @@ library(rJava)
 library(RMongo)
 library(plyr)
 pilotdb <- mongoDbConnect('pilot')
-#query <- dbGetQuery(pilotdb, 'evaldata', '{}')
-#query <- dbGetQuery(pilotdb, 'evaldata', '{"page": {"$lt":10}}')
+dbGetQuery(pilotdb, 'evaldata', '{}')['X_id']
+
+connectSurveyToClickData <- function() {
+  uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}')['user']))
+  connectedData <- c()
+  for (u in uniqueSessions) {
+    cat(u,'\n')
+    cldata <- dbGetQuery(pilotdb, 'evaldata', paste('{ user : "',u,'", "page" : { "$ne" : "survey"} }', sep=''))
+    sudata <- dbGetQuery(pilotdb, 'evaldata', paste('{ user : "',u,'", "page" : "survey" }', sep=''))
+    if (dim(sudata)[1] == 0 || dim(sudata)[2] == 0) {
+      next
+    }
+    else {
+      sudata <- sudata[c("question1", "question2", "question3", "question4", "question5", "question6")]
+    }
+    combinedData <- cbind(cldata, sudata)
+    connectedData <- rbind(connectedData, combinedData)
+  }
+  return(  data.frame(connectedData)  )
+}
+
+
 surveydata <- dbGetQuery(pilotdb, 'evaldata', '{ page: "survey" }')
 
 # Survey Data
 survey.df <- data.frame(surveydata[c("question1", "question2", "question3", "question4", "question5", "question6")])
 barplot(survey.df)
+barplot(table(survey.df[,1]))
+barplot(table(survey.df[,2]))
+barplot(table(survey.df[,3]))
+barplot(table(survey.df[,4]))
+barplot(table(survey.df[,5]))
 
 # Click Data
 collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
 #collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
-expd.dat <- data.frame(collectedData[names(head(collectedData))])
+#expd.dat <- data.frame(collectedData[names(head(collectedData))])
+expd.dat <- connectSurveyToClickData()
 expd.dat[,9] <- as.numeric(gsub('px','',expd.dat[,9]))
 expd.dat[,10] <- as.numeric(gsub('px','',expd.dat[,10]))
 expd.dat[,28] <- as.numeric(gsub('px','',expd.dat[,28]))
@@ -55,6 +81,7 @@ expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 #brightness
 expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
 colnames(expd.dat) <- c(colnames(expd.dat)[c(-29,-30)],"nodeBrightness", "lineBrightness")
+
 
 
 # Sampling Idea
@@ -80,10 +107,15 @@ expd.nodes.1 <- data.frame(expd.nodes[,c(4,9,10,13,15,28,29)])
 expd.nodes.1[,1] <- as.factor(expd.nodes.1[,1])
 expd.nodes.1[,4] <- as.factor(expd.nodes.1[,4])
 
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1, importance=TRUE, proximity=TRUE)
+# I could consider using "network" as strata below
+selectedPrevalence.nodes.1 <- sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
+unselectedPrevalence.nodes.1 <- 100-sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
+tuneRF(x = expd.nodes.1[,c(-3, -4, -7)], y = expd.nodes.1[,4], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -7)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
+abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
 rf1.nodes.1.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.1$proximity)
 
 # Node Encodings Only Model / Reaction Time
@@ -115,6 +147,7 @@ rf1.edges.2 <- randomForest(reactionTime ~ ., data=expd.edges.2, importance=TRUE
 print(rf1.edges.2)
 rf1.edges.2$importance
 varImpPlot(rf1.edges.2,type=2)
+abline
 rf1.edges.2.p <- classCenter(expd.edges.1[-2], expd.edges.1[,2], rf1.edges.2$proximity)
 
 # Node and Edge Encodings Only Model / Selection
