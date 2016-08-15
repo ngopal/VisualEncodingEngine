@@ -1,8 +1,34 @@
-to build app, I need to run:
+to build app, I need to run (in jsserver dir):
 
 edit the appropriate lines in index.html
+
+mkdir savedinput
+mkdir savedoutput
+mkdir savedData
+mkdir data
+mkdir data/db
+mkdir data/logs
+
 create a participantview.html version
+-Set the style display to none for "rankTable" and "dashboard"
+-Remove margins and set height and width to be 100%
+-Set hideExtraneous() in OnReady function
+
 run the following scripts to generate static pages
-sh makeNodePages.sh
-sh makeEdgePages.sh
-deploy
+-sh makePages.sh
+
+setup MongoDB Server
+-After running 'mongod --fork --logpath data/logs/mongod.log' as a nohup & process, use 'mongo' command to get terminal
+>use pilot
+>db.createCollection('evaldata')
+
+Make sure unnecessary ports are closed
+
+Use nginx to setup a reverse proxy
+
+Launch:
+nohup node app.js &
+
+
+Helpful pages:
+http://serverfault.com/questions/157705/how-can-i-run-mongod-in-the-background-on-unix-mac-osx

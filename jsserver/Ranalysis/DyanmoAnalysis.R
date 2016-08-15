@@ -2,6 +2,11 @@ library(randomForest)
 library(RJSONIO)
 library(ROCR)
 
+# Research Questions
+# 1. What are the ranked importances of node encodings?
+# 2. What are the ranked importances of edge encodings?
+# 3. How important is network structure to noticeability?
+# 3a. Where do participants tend to click?
 
 
 #Converting HEX color to INT
@@ -15,225 +20,139 @@ calcPerceivedBrightness <- function(red,green,blue) {
   return( (0.299*red + 0.587*green + 0.114*blue) )
 }
 
-cdat <- c()
-cdatcombos <- c()
-brightness <- c()
-for (r in c(1,255)) {
-  for (g in c(1,255)) {
-    for (b in c(1,255)) {
-      cdatcombos = append(cdatcombos, c(r,g,b))
-      brightness = append(brightness, calcPerceivedBrightness(r,g,b))
-      cdat = append(cdat, rgbToInt(r,g,b))
-    }
-  }
-}
-cbind(matrix(cdatcombos, 8, 3), cdat, brightness)
-
-whichMeta <- function(jd) {
-  for (t in 1:length(jd)) { 
-    if(jd[[t]]$type=="meta") {
-      return(t)
-    } 
-  }
-}
-
-# Dealing with Survey data
-convertSurvey <- function(file) {
-  tt <- tryCatch(  read.delim(file, header = F), error=c("PARSE ERROR"))
-  tt <- as.character(unlist(tt))
-  tt <- gsub("\\\\", "", tt)
-  tt <- gsub(",", "\",\"", tt)
-  tt <- gsub(":", "\":\"", tt)
-  tt <- gsub("[{]", "{\"", tt)
-  tt <- gsub("[}]", "\"}", tt)
-  return(tt)
-}
-
-# substr(files[300], 1, 36)
-# substr(surveyfiles[3], 1, 35)
-# grep(substr(files[100], 1, 36), surveyfiles)
-
-loadResultsDoubleEnc <- function(path) {
-  files = list.files(path)[grep('survey',list.files(path), invert = T)]
-  surveyfiles = list.files(path)[grep('survey',list.files(path), invert = F)]
-  jnode <- c()
-  for (f in files) {
-    cat(paste(path,f,sep=''), '\n')
-    jdat <- fromJSON(paste(path,f,sep=''))
-    met <- whichMeta(jdat)
-    surveyfile <- fromJSON(convertSurvey(paste(path,surveyfiles[grep(substr(f, 1, 36), surveyfiles)],sep='')))
-    for (l in 1:length(jdat)) {
-      if (jdat[[l]]$type == "node" || jdat[[l]]$type == "edge") {
-        jnode = append(jnode, c(f, jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$Nencoding1, jdat[[l]]$Nencoding2, jdat[[l]]$Eencoding1, jdat[[l]]$Eencoding2, jdat[[l]]$results[1], jdat[[l]]$results[2], jdat[[l]]$results[3], jdat[[l]]$results[4], jdat[[l]]$position[1], jdat[[l]]$position[2], jdat[[met]]$browser, jdat[[met]]$clickX, jdat[[met]]$clickY, jdat[[met]]$windowwidth, jdat[[met]]$windowheight, jdat[[met]]$time, jdat[[l]]$selected, jdat[[l]]$participantResponse, surveyfile[1], surveyfile[2], surveyfile[3], surveyfile[4], surveyfile[5], surveyfile[6]   ))
-      }
-      else if (jdat[[l]]$type == "meta") {
-        cat('found meta\n')
-      }
-      else {
-        cat('ERROR\n')
-      }
-    }
-  }
-  return(jnode)
-}
-
-expd <- loadResultsDoubleEnc('~/Code/VisualEncodingEngine/jsserver/downloaded/')
-
-expd.dat <- c()
-for (i in 1:ceiling(length(expd)/21)) { #6740
-  expd.dat <- rbind(expd.dat, matrix(expd[(1+(21*i)):(21+(21*i))], 1, 21))
-}
-
-expd <- data.frame(t(matrix(expd, 21, length(expd)/21))) 
-# colnames(expd) <- c("file","id", "name", "encoding1", "encoding2", "nodecolor", "nodeshape", "nodeborder", "nodesize", "xpos", "ypos", "selected")
-colnames(expd) <- c("file","id", "name", "nodecolor", "nodeshape", "nodeborder", "nodesize", "selected")
-expd[,6] <- as.numeric(gsub('px','',expd[,6]))
-expd[,7] <- as.numeric(gsub('px','',expd[,7]))
-expd[,8] <- as.numeric(as.character(expd[,8]))
-
-expd$nodecolor <- revalue(expd$nodecolor, c("#999"="#999999"))
-
-
-
-
-### Let's try and connect through MONGO ####
+### Connecting through MONGO ####
 ## http://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite
 library(rJava)
 library(RMongo)
 library(plyr)
 pilotdb <- mongoDbConnect('pilot')
-query <- dbGetQuery(pilotdb, 'evaldata', '{}')
-query <- dbGetQuery(pilotdb, 'evaldata', '{"page": {"$lt":10}}')
+#query <- dbGetQuery(pilotdb, 'evaldata', '{}')
+#query <- dbGetQuery(pilotdb, 'evaldata', '{"page": {"$lt":10}}')
 surveydata <- dbGetQuery(pilotdb, 'evaldata', '{ page: "survey" }')
-collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
-collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
-dataObjs <- collectedData[c("dataObj")]
-expd.dat <- c()
-for (i in 1:dim(dataObjs)[1]) {
-  jdat <- fromJSON(dataObjs[i,])
-  met <- whichMeta(jdat)
-  for (l in 1:length(jdat)) {
-    if (jdat[[l]]$type != "meta") {
-      expd.dat <- rbind(expd.dat, c(jdat[[l]]$id, jdat[[l]]$name, jdat[[l]]$Nencoding1, jdat[[l]]$Nencoding2, jdat[[l]]$Eencoding1, jdat[[l]]$Eencoding2, jdat[[l]]$results[1], jdat[[l]]$results[2], jdat[[l]]$results[3], jdat[[l]]$results[4], jdat[[l]]$results[5], jdat[[l]]$results[6], jdat[[l]]$results[7], jdat[[l]]$position[1], jdat[[l]]$position[2], jdat[[met]]$browser, jdat[[met]]$clickX, jdat[[met]]$clickY, jdat[[met]]$windowwidth, jdat[[met]]$windowheight, jdat[[met]]$time, jdat[[l]]$selected, jdat[[l]]$participantResponse))
-    }
-  }
-}
 
-colnames(expd.dat) <- c("id", "name", "Nencoding1", "Nencoding2", "Eencoding1", "Eencoding2", "background-color", "shape", "border-width", "height", "width", "line-color", "line-style", "xposition", "yposition", "browser", "clickx", "clicky", "windowwidth", "windowheight", "time", "selected", "participantResponse")
+# Survey Data
+survey.df <- data.frame(surveydata[c("question1", "question2", "question3", "question4", "question5", "question6")])
+barplot(survey.df)
+
+# Click Data
+collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
+#collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
+expd.dat <- data.frame(collectedData[names(head(collectedData))])
 expd.dat[,9] <- as.numeric(gsub('px','',expd.dat[,9]))
 expd.dat[,10] <- as.numeric(gsub('px','',expd.dat[,10]))
-expd.dat[,11] <- as.numeric(gsub('px','',expd.dat[,11]))
-expd.dat <- data.frame(expd.dat)
+expd.dat[,28] <- as.numeric(gsub('px','',expd.dat[,28]))
+
 #replace "cy.js selection blue" with "normal gray"
-expd.dat[,7] <- revalue(expd.dat[,7], c("#0169D9"="#999999"))
-expd.dat[,7] <- revalue(expd.dat[,7], c("#999"="#999999"))
-expd.dat[,12] <- revalue(expd.dat[,12], c("#0169D9"="#999999"))
-expd.dat[,12] <- revalue(expd.dat[,12], c("#999"="#999999"))
+expd.dat[,5] <- revalue(expd.dat[,5], c("#0169D9"="#999999"))
+expd.dat[,5] <- revalue(expd.dat[,5], c("#999"="#999999"))
+expd.dat[,15] <- revalue(expd.dat[,15], c("#0169D9"="#999999"))
+expd.dat[,15] <- revalue(expd.dat[,15], c("#999"="#999999"))
 #rgbtpint
-tt <- makeRGBMat(expd.dat, 7)
-expd.dat[,7] <- as.numeric(rgbToInt(tt[,1], tt[,2], tt[,3]))
-tt2 <- makeRGBMat(expd.dat, 12)
-expd.dat[,12] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
+tt <- makeRGBMat(expd.dat, 5)
+expd.dat[,5] <- as.numeric(rgbToInt(tt[,1], tt[,2], tt[,3]))
+tt2 <- makeRGBMat(expd.dat, 15)
+expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 #brightness
 expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
-colnames(expd.dat) <- c(colnames(expd.dat)[c(-24,-25)],"nodeBrightness", "lineBrightness")
-
-expd.nodes <- data.frame(expd.dat[which(expd.dat[,2] != "NA"),])
-expd.nodes <- expd.nodes[which(as.numeric(as.character(expd.nodes[,22])) <= 1),]
-
-expd.nodes[,7] <- as.numeric(as.character(expd.nodes[,7]))
-expd.nodes[,9] <- as.numeric(as.character(expd.nodes[,9]))
-expd.nodes[,10] <- as.numeric(as.character(expd.nodes[,10]))
-expd.nodes[,11] <- as.numeric(as.character(expd.nodes[,11]))
-expd.nodes[,12] <- as.numeric(as.character(expd.nodes[,12]))
-expd.nodes[,14] <- as.numeric(as.character(expd.nodes[,14]))
-expd.nodes[,15] <- as.numeric(as.character(expd.nodes[,15]))
-expd.nodes[,17] <- as.numeric(as.character(expd.nodes[,17]))
-expd.nodes[,18] <- as.numeric(as.character(expd.nodes[,18]))
-expd.nodes[,19] <- as.numeric(as.character(expd.nodes[,19]))
-expd.nodes[,20] <- as.numeric(as.character(expd.nodes[,20]))
-expd.nodes[,21] <- as.numeric(as.character(expd.nodes[,21]))
-expd.nodes[,22] <- as.numeric(as.character(expd.nodes[,22]))
-expd.nodes[,24] <- as.numeric(as.character(expd.nodes[,24]))
-expd.nodes[,25] <- as.numeric(as.character(expd.nodes[,25]))
-
-tuneRF(x = expd.nodes[,c(-1, -2, -3, -4, -5, -6, -23)], y = expd.nodes[,c(22)], plot = T, doBest = T)
-rf1 <- randomForest(selected ~ ., data=expd.nodes[,c(-1, -2, -3, -4, -5, -6, -23)], importance=TRUE, proximity=TRUE)
-print(rf1)
-rf1$importance
-varImpPlot(rf1,type=2)
-rf1.p <- classCenter(expd.nodes[,c(-1, -2, -3, -4, -5, -6, -23)], expd.nodes[,22], rf1$proximity)
-
-tuneRF(x = expd.nodes[,c(-1, -2, -3, -4, -5, -6, -12, -13, -23, -25)], y = expd.nodes[,c(22)], plot = T, doBest = T)
-rf1.nodeOnly <- randomForest(selected ~ ., data=expd.nodes[,c(-1, -2, -3, -4, -5, -6, -12, -13, -23, -25)], importance=TRUE, proximity=TRUE)
-print(rf1.nodeOnly)
-rf1.nodeOnly$importance
-varImpPlot(rf1.nodeOnly,type=2)
-
-rf1.nodeOnly.timedep <- randomForest(time ~ ., data=expd.nodes[,c(-1, -2, -3, -4, -5, -6, -12, -13, -23, -25)], importance=TRUE, proximity=TRUE)
-print(rf1.nodeOnly.timedep)
-rf1.nodeOnly.timedep$importance
-varImpPlot(rf1.nodeOnly.timedep,type=2)
-
-rf1.nodeOnly.timedep.selOnly <- randomForest(time ~ ., data=expd.nodes[which(expd.nodes[,22] == 1),c(-1, -2, -3, -4, -5, -6, -12, -13, -23, -25)], importance=TRUE, proximity=TRUE)
-print(rf1.nodeOnly.timedep.selOnly)
-rf1.nodeOnly.timedep.selOnly$importance
-varImpPlot(rf1.nodeOnly.timedep.selOnly,type=2)
-
-expd.edges <- data.frame(expd.dat[which(expd.dat[,2] == "NA"),])
-expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges[,22])) <= 1),]
-
-expd.edges[,7] <- as.numeric(as.character(expd.edges[,7]))
-expd.edges[,9] <- as.numeric(as.character(expd.edges[,9]))
-expd.edges[,10] <- as.numeric(as.character(expd.edges[,10]))
-expd.edges[,11] <- as.numeric(as.character(expd.edges[,11]))
-expd.edges[,12] <- as.numeric(as.character(expd.edges[,12]))
-expd.edges[,17] <- as.numeric(as.character(expd.edges[,17]))
-expd.edges[,18] <- as.numeric(as.character(expd.edges[,18]))
-expd.edges[,19] <- as.numeric(as.character(expd.edges[,19]))
-expd.edges[,20] <- as.numeric(as.character(expd.edges[,20]))
-expd.edges[,21] <- as.numeric(as.character(expd.edges[,21]))
-expd.edges[,22] <- as.numeric(as.character(expd.edges[,22]))
-expd.edges[,24] <- as.numeric(as.character(expd.edges[,24]))
-expd.edges[,25] <- as.numeric(as.character(expd.edges[,25]))
-
-tuneRF(x = expd.edges[,c(-1, -2, -3, -4, -5, -6, -14, -15, -23)], y = expd.edges[,c(22)], plot = T, doBest = T)
-rf2 <- randomForest(selected ~ ., data=expd.edges[,c(-1, -2, -3, -4, -5, -6, -14, -15, -23)], importance=TRUE, proximity=TRUE)
-print(rf2)
-rf2$importance
-varImpPlot(rf2,type=2)
+colnames(expd.dat) <- c(colnames(expd.dat)[c(-29,-30)],"nodeBrightness", "lineBrightness")
 
 
+# Sampling Idea
+# I suppose I can have up to 6 nodes without having to use SMOTE
+# I will put this on hold because I don't think I need to balance classes yet
+#dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "selected":0, "network":"rn2", "name" : {"$ne" : "NA"}  }')
 
-# Let's use an RF
-makeRGBMat <- function(dat,col) {
-  voodoo <- c()
-  for (i in 1:dim(dat)[1]) {
-    if (dat[i,col] == "#999") {
-      voodoo <- append(voodoo, t(col2rgb("#999999")))
-    }
-    else {
-      voodoo <- append(voodoo, t(col2rgb(dat[i,col])))
-    }
-  }
-  mycolors <- t(matrix(voodoo, 3, length(voodoo)/3))
-  return(mycolors)
-}
+# Click Map
+Xcoord <- expd.dat[,6]/expd.dat$windowwidth
+Ycoord <- expd.dat[,7]/expd.dat$windowheight
+clickX <- expd.dat[,1]/expd.dat$windowwidth
+clickY <- expd.dat[,2]/expd.dat$windowheight
+plot(Xcoord, Ycoord)
+points(clickX, clickY, col="red")
 
-library(randomForest)
-expd <- data.frame(cbind(expd[,1:3],mycolors,expd[5:8]))
-colnames(expd) <- colnames(expd) <- c("file","id", "name", "R","G","B", "nodeshape", "nodeborder", "nodesize", "selected")
-expd.noname <- expd[,c(4:10)]
-tuneRF(x = expd.noname[,-7], y = expd.noname[,7], plot = T, doBest = T)
-rf1 <- randomForest(selected ~ ., data=expd.noname, importance=TRUE, proximity=TRUE, mtry = 1)
-print(rf1)
-rf1$importance
-varImpPlot(rf1,type=2)
+expd.nodes <- data.frame(expd.dat[which(!is.na(expd.dat[,6])),])
+expd.nodes <- expd.nodes[which(as.numeric(as.character(expd.nodes[,13])) <= 1),]
+expd.edges <- data.frame(expd.dat[which(is.na(expd.dat[,6])),])
+expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges[,13])) <= 1),]
+
+# Node Encodings Only Model / Selection
+expd.nodes.1 <- data.frame(expd.nodes[,c(4,9,10,13,15,28,29)])
+expd.nodes.1[,1] <- as.factor(expd.nodes.1[,1])
+expd.nodes.1[,4] <- as.factor(expd.nodes.1[,4])
+
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1, importance=TRUE, proximity=TRUE)
+print(rf1.nodes.1)
+rf1.nodes.1$importance
+varImpPlot(rf1.nodes.1,type=2)
+rf1.nodes.1.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.1$proximity)
+
+# Node Encodings Only Model / Reaction Time
+expd.nodes.2 <- data.frame(expd.nodes[,c(4,9,10,14,15,28,29)])
+expd.nodes.2[,1] <- as.factor(expd.nodes.1[,1])
+expd.nodes.2[,4] <- as.factor(expd.nodes.1[,4])
+
+rf1.nodes.2 <- randomForest(reactionTime ~ ., data=expd.nodes.2, importance=TRUE, proximity=TRUE)
+print(rf1.nodes.2)
+rf1.nodes.2$importance
+varImpPlot(rf1.nodes.2,type=2)
+rf1.nodes.2.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.2$proximity)
+
+# Edge Encodings Only Model / Selection
+expd.edges.1 <- data.frame(expd.edges[,c(5, 13, 20, 30)])
+expd.edges.1[,3] <- as.factor(expd.edges.1[,3])
+
+rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1, importance=TRUE, proximity=TRUE)
+print(rf1.edges.1)
+rf1.edges.1$importance
+varImpPlot(rf1.edges.1,type=2)
+rf1.edges.1.p <- classCenter(expd.edges.1[-2], expd.edges.1[,2], rf1.edges.1$proximity)
+
+# Edge Encodings Only Model / Reaction Time
+expd.edges.2 <- data.frame(expd.edges[,c(5, 14, 20, 30)])
+expd.edges.2[,3] <- as.factor(expd.edges.2[,3])
+
+rf1.edges.2 <- randomForest(reactionTime ~ ., data=expd.edges.2, importance=TRUE, proximity=TRUE)
+print(rf1.edges.2)
+rf1.edges.2$importance
+varImpPlot(rf1.edges.2,type=2)
+rf1.edges.2.p <- classCenter(expd.edges.1[-2], expd.edges.1[,2], rf1.edges.2$proximity)
+
+# Node and Edge Encodings Only Model / Selection
+expd.both <- data.frame(expd.dat[which(!is.na(expd.dat[,6])),])
+expd.both <- expd.nodes[which(as.numeric(as.character(expd.nodes[,13])) <= 1),]
+expd.both <- expd.both[,-c(3, 16, 17, 18, 19, 21, 22, 24, 26, 27)]
+
+expd.both[,3] <- as.factor(expd.both[,3])
+expd.both[,7] <- as.factor(expd.both[,7])
+expd.both[,10] <- as.factor(expd.both[,10])
+expd.both[,15] <- as.factor(expd.both[,15])
+
+tuneRF(expd.both[-12], expd.both[,12], plot = T)
+rf.both.1 <- randomForest(selected ~ ., data=expd.both, importance=TRUE, proximity=TRUE)
+print(rf.both.1)
+rf.both.1$importance
+varImpPlot(rf.both.1,type=2)
+rf.both.1.p <- classCenter(expd.both[-12], expd.both[,12], rf.both.1$proximity)
+
+# negative value means the mean error is larger than the variance of the response
+# y. This could be because the predictor performs really poorly but also
+# because of some calibration issue.
+
+# Node and Edge Encodings Only Model / Reaction Time
+rf.both.2 <- randomForest(reactionTime ~ ., data=expd.both, importance=TRUE, proximity=TRUE)
+print(rf.both.2)
+rf.both.2$importance
+varImpPlot(rf.both.2,type=2)
+rf1.edges.2.p <- classCenter(rf.both.1[-13], expd.edges.1[,13], rf.both.1$proximity)
+
+# Try to attach demographic information to the DF and see how that affects selection
+# cbind(expd.both, surveydata)
+
 
 # NOTE THAT THE TREE IS UNBALANCED RIGHT NOW, AND MUST BE SAMPLED
 # BALANCED BEFORE RESULTS ARE RELIABLE
 
-rf1.perf = performance(  prediction(labels = expd.noname$selected, predictions = rf1$predicted)  ,"tpr","fpr")
+rf1.perf = performance(  prediction(labels = expd.both$selected, predictions = rf.both.1$predicted)  ,"tpr","fpr")
 
 #plot the curve
 plot(rf1.perf,main="ROC Curve for Random Forest",col=2,lwd=2)
@@ -242,7 +161,7 @@ abline(a=0,b=1,lwd=2,lty=2,col="gray")
 
 #compute area under curve
 
-auc.rf1 <- performance(    prediction(labels = expd.noname$selected, predictions = rf1$predicted)   ,"auc")
+auc.rf1 <- performance(    prediction(labels = expd.both$selected, predictions = rf.both.1$predicted)   ,"auc")
 auc.rf1 <- unlist(slot(auc.rf1, "y.values"))
 
 minauc<-min(round(auc.rf1, digits = 2))
@@ -252,12 +171,24 @@ maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
 minauct
 maxauct
 
-# EVEN THOUGH THE TREE IS UNBALANCED, THERE IS 0.89 AUC
 
-# Prototypes below
-rf1.p <- classCenter(expd.noname[,-7], expd.noname[,7], rf1$proximity)
+# RF UTILITIES
+library(rfUtilities)
+
+multi.collinear(expd.nodes.1[,2:7])
+# This shows that I can remove nodeheight from the model since it mirrors nodewidth
+
+multi.collinear(expd.edges.1[,-3])
+# No multicollinearity
+
+multi.collinear(expd.both[,c(-3, -7, -10, -15)])
+# In addition to nodeheight, windowheight, windowwidth, and nodeBrightness
+# may be removed due to collinearity
 
 
+# RF UTILITIES CLASS BALANCE
+# https://cran.r-project.org/web/packages/rfUtilities/rfUtilities.pdf
+rf.nodes.1.balanced <- rf.classBalance(ydata = expd.nodes.1[,4], xdata = expd.nodes.1[,c(2,3,5,6)])
 
 
 

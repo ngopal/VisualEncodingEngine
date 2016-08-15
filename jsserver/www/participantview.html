@@ -902,7 +902,7 @@ var whichEdges = encs.map(function(n,i){ if(n.match(/edge/)){return i} }).filter
 
 
 var thing = [
-        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys][getRandomIntInclusive(0,3)], incompatability:[1,2].concat(whichEdges)},
+        {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:[1,2].concat(whichEdges)},
         {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: colorbrewer.Spectral, incompatability:[0,2].concat(whichEdges)},
         {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: colorbrewer.Set2, incompatability:[0,1].concat(whichEdges)},
         {

@@ -97,6 +97,10 @@ app.use('/randomnetworks.json', express.static(__dirname + '/randomnetworks.json
 
 
 app.get('/', function (req, res) {
+    res.sendfile("/www/consent.html", {root: __dirname});
+});
+
+app.get('/dash', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
 });
 
