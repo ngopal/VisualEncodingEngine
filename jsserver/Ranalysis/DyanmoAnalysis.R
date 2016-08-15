@@ -52,7 +52,6 @@ surveydata <- dbGetQuery(pilotdb, 'evaldata', '{ page: "survey" }')
 
 # Survey Data
 survey.df <- data.frame(surveydata[c("question1", "question2", "question3", "question4", "question5", "question6")])
-barplot(survey.df)
 barplot(table(survey.df[,1]))
 barplot(table(survey.df[,2]))
 barplot(table(survey.df[,3]))
@@ -60,7 +59,7 @@ barplot(table(survey.df[,4]))
 barplot(table(survey.df[,5]))
 
 # Click Data
-collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
+#collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
 #collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
 #expd.dat <- data.frame(collectedData[names(head(collectedData))])
 expd.dat <- connectSurveyToClickData()
@@ -80,7 +79,7 @@ tt2 <- makeRGBMat(expd.dat, 15)
 expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 #brightness
 expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
-colnames(expd.dat) <- c(colnames(expd.dat)[c(-29,-30)],"nodeBrightness", "lineBrightness")
+colnames(expd.dat) <- c(colnames(expd.dat)[c(-35,-36)],"nodeBrightness", "lineBrightness")
 
 
 
@@ -103,20 +102,29 @@ expd.edges <- data.frame(expd.dat[which(is.na(expd.dat[,6])),])
 expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges[,13])) <= 1),]
 
 # Node Encodings Only Model / Selection
-expd.nodes.1 <- data.frame(expd.nodes[,c(4,9,10,13,15,28,29)])
+expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,13,15,28,29:35)])
 expd.nodes.1[,1] <- as.factor(expd.nodes.1[,1])
-expd.nodes.1[,4] <- as.factor(expd.nodes.1[,4])
+expd.nodes.1[,2] <- as.factor(expd.nodes.1[,2])
+expd.nodes.1[,5] <- as.factor(expd.nodes.1[,5])
+expd.nodes.1[,8] <- as.factor(expd.nodes.1[,8])
+expd.nodes.1[,9] <- as.factor(expd.nodes.1[,9])
+expd.nodes.1[,10] <- as.factor(expd.nodes.1[,10])
+expd.nodes.1[,11] <- as.factor(expd.nodes.1[,11])
+expd.nodes.1[,12] <- as.factor(expd.nodes.1[,12])
+expd.nodes.1[,13] <- as.factor(expd.nodes.1[,13])
+
 
 # I could consider using "network" as strata below
 selectedPrevalence.nodes.1 <- sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
 unselectedPrevalence.nodes.1 <- 100-sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
-tuneRF(x = expd.nodes.1[,c(-3, -4, -7)], y = expd.nodes.1[,4], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -7)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+tuneRF(x = expd.nodes.1[,c(-3, -5, -14)], y = expd.nodes.1[,5], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
 abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
-rf1.nodes.1.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.1$proximity)
+rf1.nodes.1.p <- classCenter(expd.nodes.1[-5], expd.nodes.1[,5], rf1.nodes.1$proximity)
 
 # Node Encodings Only Model / Reaction Time
 expd.nodes.2 <- data.frame(expd.nodes[,c(4,9,10,14,15,28,29)])

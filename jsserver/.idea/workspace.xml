@@ -99,8 +99,8 @@
       <file leaf-file-name="demographic.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/demographic.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2859375">
-              <caret line="84" column="43" selection-start-line="84" selection-start-column="40" selection-end-line="84" selection-end-column="43" />
+            <state vertical-scroll-proportion="0.5546875">
+              <caret line="188" column="57" selection-start-line="188" selection-start-column="57" selection-end-line="188" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -147,7 +147,6 @@
         <option value="$PROJECT_DIR$/datafiles.js" />
         <option value="$PROJECT_DIR$/fcns.js" />
         <option value="$PROJECT_DIR$/www/nodeprompt.html" />
-        <option value="$PROJECT_DIR$/www/demographic.html" />
         <option value="$PROJECT_DIR$/mongo.js" />
         <option value="$PROJECT_DIR$/www/consent.html" />
         <option value="$PROJECT_DIR$/www/tutorial.html" />
@@ -157,6 +156,7 @@
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/www/index.html" />
         <option value="$PROJECT_DIR$/www/participantview.html" />
+        <option value="$PROJECT_DIR$/www/demographic.html" />
       </list>
     </option>
   </component>
@@ -746,8 +746,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/demographic.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2859375">
-          <caret line="84" column="43" selection-start-line="84" selection-start-column="40" selection-end-line="84" selection-end-column="43" />
+        <state vertical-scroll-proportion="0.5546875">
+          <caret line="188" column="57" selection-start-line="188" selection-start-column="57" selection-end-line="188" selection-end-column="57" />
           <folding />
         </state>
       </provider>
