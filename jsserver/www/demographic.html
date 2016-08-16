@@ -194,8 +194,23 @@
                         title: "Do you know what degree centrality is (without having to look it up)?"
                     },
                     {
-                        type: "text",
+                        type: "radiogroup",
+                        choices: [
+                            {
+                                value: "colorBlind",
+                                text: "Yes"
+                            },
+                            {
+                                value: "notColorBlind",
+                                text: "No"
+                            }
+                        ],
                         name: "question6",
+                        title: "Have you been medically diagnosed with any form of colorblindness?"
+                    },
+                    {
+                        type: "text",
+                        name: "question7",
                         title: "What is your occupation or field?"
                     }
                 ]

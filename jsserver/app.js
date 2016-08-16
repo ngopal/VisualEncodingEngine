@@ -65,7 +65,8 @@ function insertOneSurveyItem(database, user, page, time, dataObject) {
         question3 : dataObject.question3,
         question4 : dataObject.question4,
         question5 : dataObject.question5,
-        question6 : dataObject.question6
+        question6 : dataObject.question6,
+        question7 : dataObject.question7,
     }, function(insertErr, insertResult) {
         assert.equal(insertErr, null);
         assert(1, insertResult.result.n);

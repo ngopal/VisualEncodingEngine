@@ -81,7 +81,31 @@ expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
 colnames(expd.dat) <- c(colnames(expd.dat)[c(-35,-36)],"nodeBrightness", "lineBrightness")
 
+sampleBalancedData <- function(ds,type) {
+  pos <- 0;
+  if (type == "nodes") {
+    pos = "NA"
+  }
+  else {
+    pos = "edge"
+  }
+  users <- unique(ds$user)
+  networks <- unique(ds$network)
+  newds <- c()
+  for (u in users) {
+    for (n in networks) {
+      selected <- ds[which( (ds$user == u) & (ds$network == n) & (ds$xposition != pos) & (ds$selected == 1)  ),]
+      numNotSelected <- length(which( (ds$user == u) & (ds$network == n) & (ds$xposition != pos) & (ds$selected != 1)  ))
+      notSelected <- ds[which( (ds$user == u) & (ds$network == n) & (ds$xposition != pos) & (ds$selected != 1)  ),][sample(1:numNotSelected, 1, replace = F),]
+      newds <- rbind(newds, selected, notSelected)
+      cat(selected$selected, '\n')
+      cat(notSelected$selected, '\n')
+    }
+  }
+  return( newds )
+}
 
+sampleBalancedData(expd.dat, "nodes")
 
 # Sampling Idea
 # I suppose I can have up to 6 nodes without having to use SMOTE
