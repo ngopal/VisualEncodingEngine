@@ -26,8 +26,8 @@
 <body>
 <div class="page-header" style="padding-left: 30px;padding-right: 30px;">
     <h1>Almost done!</h1>
-    <h3>Please complete the 4 question survey embedded below</h3>
-    <h4>Once you hit the 'Submit responses' button in the embedded survey, click the 'Finish Session' button below the survey</h4>
+    <h3>Please complete the 5-question survey embedded below</h3>
+    <h4>Once you have completed the survey, please click the 'Complete' button at the bottom of the page</h4>
 </div>
 
 <div id="surveyContainer" style="padding-left: 30px;padding-right: 30px;"></div>
@@ -112,10 +112,10 @@
                     {
                         type: "dropdown",
                         choices: [
-                            {
-                                value: "under18",
-                                text: "Under 18 years old"
-                            },
+//                            {
+//                                value: "under18",
+//                                text: "Under 18 years old"
+//                            },
                             {
                                 value: "18to24",
                                 text: "18-24 years old"
@@ -148,36 +148,37 @@
                         name: "question2",
                         title: "What age range are you in?"
                     },
-                    {
-                        type: "radiogroup",
-                        choices: [
-                            {
-                                value: "engFirstLang",
-                                text: "Yes"
-                            },
-                            {
-                                value: "engNotFirstLang",
-                                text: "No"
-                            }
-                        ],
-                        name: "question3",
-                        title: "Is English your first language?"
-                    },
-                    {
-                        type: "radiogroup",
-                        choices: [
-                            {
-                                value: "seenNetwork",
-                                text: "Yes"
-                            },
-                            {
-                                value: "notSeenNetwork",
-                                text: "No"
-                            }
-                        ],
-                        name: "question4",
-                        title: "Have you seen or analyzed a network before this experiment?"
-                    },
+//                    {
+//                        type: "radiogroup",
+//                        choices: [
+//                            {
+//                                value: "engFirstLang",
+//                                text: "Yes"
+//                            },
+//                            {
+//                                value: "engNotFirstLang",
+//                                text: "No"
+//                            }
+//                        ],
+//                        name: "question3",
+//                        title: "Is English your first language?"
+//                    },
+//                    {
+//                        type: "radiogroup",
+//                        choices: [
+//                            {
+//                                value: "seenNetwork",
+//                                text: "Yes"
+//                            },
+//                            {
+//                                value: "notSeenNetwork",
+//                                text: "No"
+//                            }
+//                        ],
+////                        name: "question4",
+//                        name: "question3",
+//                        title: "Have you seen or analyzed a network before this experiment?"
+//                    },
                     {
                         type: "radiogroup",
                         choices: [
@@ -190,8 +191,9 @@
                                 text: "No"
                             }
                         ],
-                        name: "question5",
-                        title: "Do you know what degree centrality is (without having to look it up)?"
+//                        name: "question5",
+                        name: "question3",
+                        title: "Do you know what \"degree centrality\" is (without having to look it up)?"
                     },
                     {
                         type: "radiogroup",
@@ -205,12 +207,14 @@
                                 text: "No"
                             }
                         ],
-                        name: "question6",
-                        title: "Have you been medically diagnosed with any form of colorblindness?"
+//                        name: "question6",
+                        name: "question4",
+                        title: "Have you been diagnosed with any form of colorblindness?"
                     },
                     {
                         type: "text",
-                        name: "question7",
+//                        name: "question7",
+                        name: "question5",
                         title: "What is your occupation or field?"
                     }
                 ]
