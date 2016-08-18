@@ -20,6 +20,7 @@ function insertOneItem(database, user, page, time, dataObject) {
             page : page,
             time : time,
             eleid : d.id,
+            eletype : d.eletype,
             name : d.name,
             nodeEncoding1 : d.Nencoding1,
             nodeEncoding2 : d.Nencoding2,

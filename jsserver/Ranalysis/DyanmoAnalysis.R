@@ -432,3 +432,33 @@ maxauct
 gthresh <- function(numNodes) { return(  ceiling(dim(combn(1:numNodes, 2))[2]*(log(numNodes)/numNodes))  ) }
 plot(10:300, unlist(lapply(10:300, FUN=gthresh)), type="l")
 
+
+
+# More ideas for color analysis
+t(rgb2hsv((col2rgb(expd.dat[,15]))))
+library(scatterplot3d)
+tcolor <- rgb2hsv((col2rgb(expd.dat[,15])))
+scatterplot3d(tcolor[1,], tcolor[2,], tcolor[3,], color = expd.dat[,15])
+panel.hist <- function(x, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks; nB <- length(breaks)
+  y <- h$counts; y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = c("black"), ...)
+}
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y))
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste0(prefix, txt)
+  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+pairs(t(rgb2hsv((col2rgb(expd.dat[,15])))), col = expd.dat[,15], upper.panel=panel.cor,diag.panel=panel.hist)
+hist(tcolor[1,], main = "Distribution of Hues")
+hist(tcolor[2,], main = "Distribution of Saturation")
+hist(tcolor[3,], main = "Distribution of Values")

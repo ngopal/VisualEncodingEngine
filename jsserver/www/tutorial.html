@@ -155,7 +155,8 @@
 
     });
 
-    cy.on('select,touch', 'node', function() {
+    cy.on('select,touch', 'node', function(ev) {
+        ev.cyTarget.unselect();
         if (  $('#nodeseek').css('display') !== "block"  ) {
 //            $('#errNode').dialog();
             alert("Uh-oh, that's a node you just clicked on! Remember, the lines are edges. It is sometimes easy to miss clicking on an edge. Try to get a feel for it.");
@@ -169,7 +170,8 @@
 
 
 
-    cy.on('select,touch', 'edge', function() {
+    cy.on('select,touch', 'edge', function(ev) {
+        ev.cyTarget.unselect();
         if (  $('#edgeseek').css('display') !== "block"  ) {
 //            $('#errEdge').dialog();
             alert("Uh-oh, that's an edge you just clicked on! Remember, the circles are nodes!");

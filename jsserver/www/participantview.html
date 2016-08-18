@@ -658,6 +658,37 @@ window.mobileAndTabletcheck = function() {
                 });
 
                 cy.on('select,touch', 'node,edge', function(ev) {
+                    ////
+                    var invalidNodePages = [1, 2, 8, 23, 28];
+                    var invalidEdgePages = [29, 38, 39, 41];
+                    var acceptableNodePages = d3.range(1,29).filter(function(n) {
+                        return invalidNodePages.indexOf(n) === -1
+                    });
+                    var acceptableEdgePages = d3.range(29,44).filter(function(n) {
+                        return invalidEdgePages.indexOf(n) === -1
+                    });
+                    var selectedElement = ev.cyTarget;
+                    selectedElement.unselect();
+                    var selectedElementData = selectedElement.data();
+                    console.log(["CLICKERED", selectedElementData]);
+                    if (acceptableNodePages.indexOf(pageval) > -1) {
+                        if (selectedElementData.hasOwnProperty('source')) {
+                            //an edge
+                            alert('We registered an edge selection. Please select the most noticeable node.');
+                            return;
+                        }
+                    }
+                    else if (acceptableEdgePages.indexOf(pageval) > -1) {
+                        if (!selectedElementData.hasOwnProperty('source')) {
+                            //an edge
+                            alert('We registered a node selection. Please select the most noticeable edge.');
+                            return;
+                        }
+                    }
+                    else {
+                        console.log('Erroneous page served.')
+                    }
+                    ////
                     console.log(ev);
                     var fillin;
                     if ( JSON.parse('['+sessionStorage.getItem('popquestions')+']').indexOf(pageval) !== -1  ) {
@@ -666,8 +697,6 @@ window.mobileAndTabletcheck = function() {
                     else {
                         fillin = 'NA';
                     }
-                    var selectedElement = ev.cyTarget;
-                    console.log(["CLICKERED", selectedElement.data()]);
 
                     var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
                     var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
@@ -704,7 +733,7 @@ window.mobileAndTabletcheck = function() {
                         var temp = {};
                         temp.name = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.data().name}})();
                         temp.id = n.data().id;
-                        temp.type = (function() { if (n.data().hasOwnProperty('target') ) { return 'edge' } else {return 'node'}})();
+                        temp.eletype = (function() { if (n.data().hasOwnProperty('target') ) { return 'edge' } else {return 'node'}})();
                         temp.Nencoding1 = nodeencoding[0];
                         temp.Nencoding2 = nodeencoding[1];
                         temp.Eencoding1 = edgeencoding[0];
@@ -734,14 +763,6 @@ window.mobileAndTabletcheck = function() {
                         console.log(temp);
                         tempdat.push(temp);
                     });
-
-//                    tempdat.push({type:'meta', browser:brow,
-//                        clickX:clickX,
-//                        clickY:clickY,
-//                        windowheight : windowheight,
-//                        windowwidth : windowwidth,
-//                        time : timetook,
-//                        network:netToServe});
 
                     $.ajax({
                         type: 'POST',
