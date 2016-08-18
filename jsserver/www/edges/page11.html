@@ -674,14 +674,14 @@ window.mobileAndTabletcheck = function() {
                     if (acceptableNodePages.indexOf(pageval) > -1) {
                         if (selectedElementData.hasOwnProperty('source')) {
                             //an edge
-                            alert('it looks like you selected an edge instead of a node');
+                            alert('We registered an edge selection. Please select the most noticeable node.');
                             return;
                         }
                     }
                     else if (acceptableEdgePages.indexOf(pageval) > -1) {
                         if (!selectedElementData.hasOwnProperty('source')) {
                             //an edge
-                            alert('it looks like you selected a node instead of an edge');
+                            alert('We registered a node selection. Please select the most noticeable edge.');
                             return;
                         }
                     }
@@ -763,14 +763,6 @@ window.mobileAndTabletcheck = function() {
                         console.log(temp);
                         tempdat.push(temp);
                     });
-
-//                    tempdat.push({type:'meta', browser:brow,
-//                        clickX:clickX,
-//                        clickY:clickY,
-//                        windowheight : windowheight,
-//                        windowwidth : windowwidth,
-//                        time : timetook,
-//                        network:netToServe});
 
                     $.ajax({
                         type: 'POST',
