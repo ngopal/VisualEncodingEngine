@@ -700,6 +700,7 @@ window.mobileAndTabletcheck = function() {
 
                     var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
                     var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+                    var numNodeAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
                     var tempdat = [];
                     var nodeencoding = [];
                     var edgeencoding = [];
@@ -721,7 +722,7 @@ window.mobileAndTabletcheck = function() {
                         var rowNum = row.replace('row','');
                         var encText = d3.selectAll('.enc'+rowNum).text();
                         // This is hacky, and should be properly done when I have time
-                        if (rowNum > 8) {
+                        if (rowNum > numNodeAttrs) {
                             edgeencoding.push(encText);
                         }
                         else {
@@ -745,7 +746,7 @@ window.mobileAndTabletcheck = function() {
                         selecedgeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
+                        temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.renderedPosition()}})();
                         if (selectedElement.data().id === n.data().id) {
                             temp.selected = 1;
                         }
@@ -1564,6 +1565,50 @@ function edgetableconfig(thing) {
     // to record information from selected elements
     //var selectedNodeStyleAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.nodes(':selected').style()[n]; });
     //var selectedEdgeStyleAttrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.edges(':selected').style()[n]; });
+
+    function testAll(r) {
+        var r = 0;
+        var report = {};
+        var numNodeAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
+        var numEdgeAttrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
+        report.network = sessionStorage.getItem('netToServe');
+
+        // Nodes
+        report.nodeInputVals = cy.nodes().map(function(k){
+            return +k.data().value || k.data().value;
+        });
+        report.nodeInputRange = d3.extent(report.nodeInputVals);
+        report.nodeOutputVals =  d3.range(0,numNodeAttrs).map(function(q){
+            return cy.nodes().map(function(k){
+                //iterate over various things
+                return thing[q].func(d3.extent(cy.nodes().map(function(n){
+                    //iterate over various color ranges
+                    return +n.data().value || n.data().value;
+                })), (Array.isArray(thing[r].range)) ? thing[r].range : thing[r].range[3]  )(+k.data().value || k.data().value);
+            });
+        });
+        report.nodeOutputRange = report.nodeOutputVals.map(function(o){ return d3.extent(o);});
+        report.nodeFuncs = d3.range(0,numNodeAttrs).map(function(q){return thing[q].func;});
+
+        // Edges
+        report.edgeInputVals = cy.edges().map(function(k){
+            return +k.data().value || k.data().value;
+        });
+        report.edgeInputRange = d3.extent(report.edgeInputVals);
+        report.edgeOutputVals =  d3.range(0,numEdgeAttrs).map(function(q){
+            return cy.edges().map(function(k){
+                //iterate over various things
+                return thing[q].func(d3.extent(cy.nodes().map(function(n){
+                    //iterate over various color ranges
+                    return +n.data().value || n.data().value;
+                })), (Array.isArray(thing[r].range)) ? thing[r].range : thing[r].range[3]  )(+k.data().value || k.data().value);
+            });
+        });
+        report.edgeOutputRange = report.edgeOutputVals.map(function(o){ return d3.extent(o);});
+        report.edgeFuncs = d3.range(0,numEdgeAttrs).map(function(q){return thing[q].func;});
+
+        return report;
+    }
 
 
 </script>

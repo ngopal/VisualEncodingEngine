@@ -700,6 +700,7 @@ window.mobileAndTabletcheck = function() {
 
                     var selecnodeattrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
                     var selecedgeattrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique();
+                    var numNodeAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
                     var tempdat = [];
                     var nodeencoding = [];
                     var edgeencoding = [];
@@ -721,7 +722,7 @@ window.mobileAndTabletcheck = function() {
                         var rowNum = row.replace('row','');
                         var encText = d3.selectAll('.enc'+rowNum).text();
                         // This is hacky, and should be properly done when I have time
-                        if (rowNum > 8) {
+                        if (rowNum > numNodeAttrs) {
                             edgeencoding.push(encText);
                         }
                         else {
@@ -745,7 +746,7 @@ window.mobileAndTabletcheck = function() {
                         selecedgeattrs.forEach(function(k){
                             temp.results[k] = n.style()[k];
                         });
-                        temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.position()}})();
+                        temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.renderedPosition()}})();
                         if (selectedElement.data().id === n.data().id) {
                             temp.selected = 1;
                         }

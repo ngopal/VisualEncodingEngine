@@ -34,8 +34,8 @@
       <file leaf-file-name="cache.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cache.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.6666666">
-              <caret line="3" column="8" selection-start-line="3" selection-start-column="8" selection-end-line="10" selection-end-column="11" />
+            <state vertical-scroll-proportion="-5.5555553">
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -64,8 +64,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33931485">
-              <caret line="693" column="24" selection-start-line="693" selection-start-column="24" selection-end-line="693" selection-end-column="24" />
+            <state vertical-scroll-proportion="1.2109375">
+              <caret line="1623" column="1" selection-start-line="1623" selection-start-column="1" selection-end-line="1623" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -74,11 +74,21 @@
       <file leaf-file-name="participantview.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/participantview.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.8">
-              <caret line="660" column="20" selection-start-line="660" selection-start-column="20" selection-end-line="690" selection-end-column="24" />
+            <state vertical-scroll-proportion="-0.3">
+              <caret line="1568" column="0" selection-start-line="1568" selection-start-column="0" selection-end-line="1610" selection-end-column="5" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="thankyou.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/thankyou.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.869565">
+              <caret line="52" column="28" selection-start-line="52" selection-start-column="28" selection-end-line="52" selection-end-column="28" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -118,18 +128,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fcns.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fcns.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="75" column="59" selection-start-line="75" selection-start-column="59" selection-end-line="75" selection-end-column="59" />
-              <folding>
-                <element signature="e#0#45#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -161,12 +159,12 @@
         <option value="$PROJECT_DIR$/www/nodeprompt.html" />
         <option value="$PROJECT_DIR$/mongo.js" />
         <option value="$PROJECT_DIR$/www/edgeprompt.html" />
-        <option value="$PROJECT_DIR$/www/thankyou.html" />
         <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/www/demographic.html" />
         <option value="$PROJECT_DIR$/www/consent.html" />
         <option value="$PROJECT_DIR$/www/tutorial.html" />
         <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/www/thankyou.html" />
         <option value="$PROJECT_DIR$/www/participantview.html" />
         <option value="$PROJECT_DIR$/www/index.html" />
       </list>
@@ -679,14 +677,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/thankyou.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6375">
-          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mongo.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -719,14 +709,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cache.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.6666666">
-          <caret line="3" column="8" selection-start-line="3" selection-start-column="8" selection-end-line="10" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/tutorial.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.0">
@@ -748,10 +730,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cache.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.5555553">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/thankyou.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.869565">
+          <caret line="52" column="28" selection-start-line="52" selection-start-column="28" selection-end-line="52" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/participantview.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.8">
-          <caret line="660" column="20" selection-start-line="660" selection-start-column="20" selection-end-line="690" selection-end-column="24" />
+        <state vertical-scroll-proportion="-0.3">
+          <caret line="1568" column="0" selection-start-line="1568" selection-start-column="0" selection-end-line="1610" selection-end-column="5" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>
@@ -760,8 +758,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33931485">
-          <caret line="693" column="24" selection-start-line="693" selection-start-column="24" selection-end-line="693" selection-end-column="24" />
+        <state vertical-scroll-proportion="1.2109375">
+          <caret line="1623" column="1" selection-start-line="1623" selection-start-column="1" selection-end-line="1623" selection-end-column="1" />
           <folding />
         </state>
       </provider>

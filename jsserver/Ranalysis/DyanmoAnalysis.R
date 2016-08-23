@@ -63,15 +63,15 @@ barplot(table(survey.df[,5]))
 #collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
 #expd.dat <- data.frame(collectedData[names(head(collectedData))])
 expd.dat <- connectSurveyToClickData()
-expd.dat[,9] <- as.numeric(gsub('px','',expd.dat[,9]))
-expd.dat[,10] <- as.numeric(gsub('px','',expd.dat[,10]))
-expd.dat[,28] <- as.numeric(gsub('px','',expd.dat[,28]))
+expd.dat$nodewidth <- as.numeric(gsub('px','',expd.dat$nodewidth))
+expd.dat$nodeheight <- as.numeric(gsub('px','',expd.dat$nodeheight))
+expd.dat$nodeborderwidth <- as.numeric(gsub('px','',expd.dat$nodeborderwidth))
 
 #replace "cy.js selection blue" with "normal gray"
-expd.dat[,5] <- revalue(expd.dat[,5], c("#0169D9"="#999999"))
-expd.dat[,5] <- revalue(expd.dat[,5], c("#999"="#999999"))
-expd.dat[,15] <- revalue(expd.dat[,15], c("#0169D9"="#999999"))
-expd.dat[,15] <- revalue(expd.dat[,15], c("#999"="#999999"))
+expd.dat$nodebackground <- revalue(expd.dat$nodebackground, c("#0169D9"="#999999"))
+expd.dat$nodebackground <- revalue(expd.dat$nodebackground, c("#999"="#999999"))
+expd.dat$linecolor <- revalue(expd.dat$linecolor, c("#0169D9"="#999999"))
+expd.dat$linecolor <- revalue(expd.dat$linecolor, c("#999"="#999999"))
 #rgbtpint
 tt <- makeRGBMat(expd.dat, 5)
 expd.dat[,5] <- as.numeric(rgbToInt(tt[,1], tt[,2], tt[,3]))
@@ -80,6 +80,15 @@ expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 #brightness
 expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
 colnames(expd.dat) <- c(colnames(expd.dat)[c(-35,-36)],"nodeBrightness", "lineBrightness")
+
+nodett <- t(rgb2hsv((col2rgb(expd.dat$nodebackground))))
+edgett <- t(rgb2hsv((col2rgb(expd.dat$linecolor))))
+expd.dat <- cbind(expd.dat, 
+                  as.numeric(nodett[,1]), as.numeric(nodett[,2]), as.numeric(nodett[,3]), 
+                  as.numeric(edgett[,1]), as.numeric(edgett[,2]), as.numeric(edgett[,3]))
+colnames(expd.dat) <- c(colnames(expd.dat)[1:(length(colnames(expd.dat))-6)], "nodeHue", "nodeSaturation", "nodeValue", "edgeHue", "edgeSaturation", "edgeValue")
+
+
 
 sampleBalancedData <- function(ds,type) {
   pos <- 0;
@@ -113,40 +122,47 @@ sampleBalancedData(expd.dat, "nodes")
 #dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "selected":0, "network":"rn2", "name" : {"$ne" : "NA"}  }')
 
 # Click Map
-Xcoord <- expd.dat[,6]/expd.dat$windowwidth
-Ycoord <- expd.dat[,7]/expd.dat$windowheight
-clickX <- expd.dat[,1]/expd.dat$windowwidth
-clickY <- expd.dat[,2]/expd.dat$windowheight
-plot(Xcoord, Ycoord)
-points(clickX, clickY, col="red")
+plot(expd.dat$xposition, expd.dat$yposition, xlim=c(0,max(expd.dat$xposition, na.rm=T)), ylim=c(0,max(expd.dat$yposition, na.rm=T)), col="gray" )
+points(expd.dat$clickX, expd.dat$clickY, col="red")
 
-expd.nodes <- data.frame(expd.dat[which(!is.na(expd.dat[,6])),])
-expd.nodes <- expd.nodes[which(as.numeric(as.character(expd.nodes[,13])) <= 1),]
-expd.edges <- data.frame(expd.dat[which(is.na(expd.dat[,6])),])
-expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges[,13])) <= 1),]
+expd.nodes <- data.frame(expd.dat[which(!is.na(expd.dat$xposition)),])
+expd.nodes <- expd.nodes[which(as.numeric(as.character(expd.nodes$selected)) <= 1),]
+expd.edges <- data.frame(expd.dat[which(is.na(expd.dat$xposition)),])
+expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges$selected)) <= 1),]
 
 # Node Encodings Only Model / Selection
-expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,13,15,28,29:35)])
-expd.nodes.1[,1] <- as.factor(expd.nodes.1[,1])
-expd.nodes.1[,2] <- as.factor(expd.nodes.1[,2])
-expd.nodes.1[,5] <- as.factor(expd.nodes.1[,5])
-expd.nodes.1[,8] <- as.factor(expd.nodes.1[,8])
-expd.nodes.1[,9] <- as.factor(expd.nodes.1[,9])
-expd.nodes.1[,10] <- as.factor(expd.nodes.1[,10])
-expd.nodes.1[,11] <- as.factor(expd.nodes.1[,11])
-expd.nodes.1[,12] <- as.factor(expd.nodes.1[,12])
-expd.nodes.1[,13] <- as.factor(expd.nodes.1[,13])
+expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,13,15,28,29:41)])
+expd.nodes.1$nodeshape <- as.factor(expd.nodes.1$nodeshape)
+expd.nodes.1$network <- as.factor(expd.nodes.1$network)
+expd.nodes.1$nodebackground <- as.factor(expd.nodes.1$nodebackground)
+expd.nodes.1$eletype <- as.factor(expd.nodes.1$eletype)
+expd.nodes.1$question1 <- as.factor(expd.nodes.1$question1)
+expd.nodes.1$question2 <- as.factor(expd.nodes.1$question2)
+expd.nodes.1$question3 <- as.factor(expd.nodes.1$question3)
+expd.nodes.1$question4 <- as.factor(expd.nodes.1$question4)
+expd.nodes.1$question5 <- as.factor(expd.nodes.1$question5)
+
+# Check for multicollinearily
+multi.collinear(expd.nodes.1[,c(3:4,5,8,15:20)])
+expd.nodes.1 <- expd.nodes.1[,c(-4,-18,-19)]
 
 
 # I could consider using "network" as strata below
 selectedPrevalence.nodes.1 <- sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
 unselectedPrevalence.nodes.1 <- 100-sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
-tuneRF(x = expd.nodes.1[,c(-3, -5, -14)], y = expd.nodes.1[,5], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+tuneRF(x = expd.nodes.1[,c(-5, -13)], y = expd.nodes.1$selected, importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(1,3,4,7,14,15,16)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+print(rf1.nodes.1)
+rf1.nodes.1$importance
+varImpPlot(rf1.nodes.1,type=2)
+
+
 abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
 rf1.nodes.1.p <- classCenter(expd.nodes.1[-5], expd.nodes.1[,5], rf1.nodes.1$proximity)
 
@@ -162,8 +178,8 @@ varImpPlot(rf1.nodes.2,type=2)
 rf1.nodes.2.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.2$proximity)
 
 # Edge Encodings Only Model / Selection
-expd.edges.1 <- data.frame(expd.edges[,c(5, 13, 20, 30)])
-expd.edges.1[,3] <- as.factor(expd.edges.1[,3])
+expd.edges.1 <- data.frame(expd.edges[,c(13, 20, 39:41)])
+expd.edges.1$linestyle <- as.factor(expd.edges.1$linestyle)
 
 rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1, importance=TRUE, proximity=TRUE)
 print(rf1.edges.1)
@@ -435,10 +451,10 @@ plot(10:300, unlist(lapply(10:300, FUN=gthresh)), type="l")
 
 
 # More ideas for color analysis
-t(rgb2hsv((col2rgb(expd.dat[,15]))))
+t(rgb2hsv((col2rgb(expd.dat$nodebackground))))
 library(scatterplot3d)
-tcolor <- rgb2hsv((col2rgb(expd.dat[,15])))
-scatterplot3d(tcolor[1,], tcolor[2,], tcolor[3,], color = expd.dat[,15])
+tcolor <- rgb2hsv((col2rgb(expd.dat$nodebackground)))
+scatterplot3d(tcolor[1,], tcolor[2,], tcolor[3,], color = expd.dat$nodebackground)
 panel.hist <- function(x, ...)
 {
   usr <- par("usr"); on.exit(par(usr))
@@ -446,7 +462,7 @@ panel.hist <- function(x, ...)
   h <- hist(x, plot = FALSE)
   breaks <- h$breaks; nB <- length(breaks)
   y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col = c("black"), ...)
+  rect(breaks[-nB], 0, breaks[-1], y, ...)
 }
 panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
 {
@@ -458,7 +474,8 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
   if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
   text(0.5, 0.5, txt, cex = cex.cor * r)
 }
-pairs(t(rgb2hsv((col2rgb(expd.dat[,15])))), col = expd.dat[,15], upper.panel=panel.cor,diag.panel=panel.hist)
+pairs(t(rgb2hsv((col2rgb(expd.dat$nodebackground)))), col = expd.dat$nodebackground, upper.panel=panel.cor,diag.panel=panel.hist)
+pairs(t(rgb2hsv((col2rgb(expd.dat$nodebackground)))), col = expd.dat$nodebackground, upper.panel = NULL,diag.panel=panel.hist)
 hist(tcolor[1,], main = "Distribution of Hues")
 hist(tcolor[2,], main = "Distribution of Saturation")
 hist(tcolor[3,], main = "Distribution of Values")
