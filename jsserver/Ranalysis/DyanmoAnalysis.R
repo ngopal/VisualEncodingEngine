@@ -68,18 +68,18 @@ expd.dat$nodeheight <- as.numeric(gsub('px','',expd.dat$nodeheight))
 expd.dat$nodeborderwidth <- as.numeric(gsub('px','',expd.dat$nodeborderwidth))
 
 #replace "cy.js selection blue" with "normal gray"
-expd.dat$nodebackground <- revalue(expd.dat$nodebackground, c("#0169D9"="#999999"))
+#expd.dat$nodebackground <- revalue(expd.dat$nodebackground, c("#0169D9"="#999999"))
 expd.dat$nodebackground <- revalue(expd.dat$nodebackground, c("#999"="#999999"))
-expd.dat$linecolor <- revalue(expd.dat$linecolor, c("#0169D9"="#999999"))
+#expd.dat$linecolor <- revalue(expd.dat$linecolor, c("#0169D9"="#999999"))
 expd.dat$linecolor <- revalue(expd.dat$linecolor, c("#999"="#999999"))
 #rgbtpint
-tt <- makeRGBMat(expd.dat, 5)
-expd.dat[,5] <- as.numeric(rgbToInt(tt[,1], tt[,2], tt[,3]))
-tt2 <- makeRGBMat(expd.dat, 15)
-expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
+# tt <- makeRGBMat(expd.dat, 5)
+# expd.dat[,5] <- as.numeric(rgbToInt(tt[,1], tt[,2], tt[,3]))
+# tt2 <- makeRGBMat(expd.dat, 15)
+# expd.dat[,15] <- as.numeric(rgbToInt(tt2[,1], tt2[,2], tt2[,3]))
 #brightness
-expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
-colnames(expd.dat) <- c(colnames(expd.dat)[c(-35,-36)],"nodeBrightness", "lineBrightness")
+# expd.dat <- cbind(expd.dat, as.numeric(calcPerceivedBrightness(tt[,1], tt[,2], tt[,3])), as.numeric(calcPerceivedBrightness(tt2[,1], tt2[,2], tt2[,3])))
+# colnames(expd.dat) <- c(colnames(expd.dat)[c(-35,-36)],"nodeBrightness", "lineBrightness")
 
 nodett <- t(rgb2hsv((col2rgb(expd.dat$nodebackground))))
 edgett <- t(rgb2hsv((col2rgb(expd.dat$linecolor))))
@@ -131,7 +131,7 @@ expd.edges <- data.frame(expd.dat[which(is.na(expd.dat$xposition)),])
 expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges$selected)) <= 1),]
 
 # Node Encodings Only Model / Selection
-expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,13,15,28,29:41)])
+expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,14,16,32,39:41)])
 expd.nodes.1$nodeshape <- as.factor(expd.nodes.1$nodeshape)
 expd.nodes.1$network <- as.factor(expd.nodes.1$network)
 expd.nodes.1$nodebackground <- as.factor(expd.nodes.1$nodebackground)
@@ -143,17 +143,19 @@ expd.nodes.1$question4 <- as.factor(expd.nodes.1$question4)
 expd.nodes.1$question5 <- as.factor(expd.nodes.1$question5)
 
 # Check for multicollinearily
-multi.collinear(expd.nodes.1[,c(3:4,5,8,15:20)])
-expd.nodes.1 <- expd.nodes.1[,c(-4,-18,-19)]
+library(rfUtilities)
+multi.collinear(expd.nodes.1[,c(3:4,5,7:10)])
+expd.nodes.1 <- expd.nodes.1[,c(-4,-6)]
 
 
 # I could consider using "network" as strata below
 selectedPrevalence.nodes.1 <- sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
 unselectedPrevalence.nodes.1 <- 100-sum(as.numeric(expd.nodes.1$selected))/length(as.numeric(expd.nodes.1$selected))
-tuneRF(x = expd.nodes.1[,c(-5, -13)], y = expd.nodes.1$selected, importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+tuneRF(x = expd.nodes.1[,c(-4)], y = expd.nodes.1$selected, importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+#rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+#rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+#rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1, importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
@@ -161,7 +163,8 @@ rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(1,3,4,7,14,15,16)
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
-
+# http://stats.stackexchange.com/questions/144700/negative-r2-at-random-regression-forest
+# http://stats.stackexchange.com/questions/21152/obtaining-knowledge-from-a-random-forest
 
 abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
 rf1.nodes.1.p <- classCenter(expd.nodes.1[-5], expd.nodes.1[,5], rf1.nodes.1$proximity)

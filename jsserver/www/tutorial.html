@@ -49,7 +49,7 @@
             <ul>
                 <li>Nodes are the circular items in the visualization (labeled "a" and "b" in the visualization below).</li>
                 <li>Nodes commonly denote anything that can be a “noun".</li>
-                <li>Edges are the line items in the visualization that connect nodes.</li>
+                <li>Edges are the lines in the visualization that connect nodes.</li>
                 <li>Edges commonly denote anything that can be a “verb”.</li>
                 <li>A network may represent two people, and the relationship between them, for example.</li>
             </ul>
@@ -78,12 +78,10 @@
     <div id="nodeprompt" style="display:none">
         <h3>For the following questions:</h3>
         <h1><b>Please visually scan the network and click on the most noticeable node</b></h1>
-        <!--<h1><b>Please click on the most visually noticeable node</b></h1>-->
+        <h3>If no node seems prominent, please click on any of them.</h3>
         <h3>Please do not take more than 5 seconds on each visualization.</h3>
-        <!--We would like to see if there is an association between visual attributes and attention.-->
         <h3>You will be prompted with a similar page when it is time to begin clicking on edges.</h3>
         <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); sessionStorage.setItem('nodeprompt', 'complete'); location.href=nextRandomNodePage(); })()">Start the experiment!</button>
-        <!--<button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href='/nodeprompt'; })()" style="display:none">Start the experiment!</button>-->
     </div>
 <div id="cy"></div>
 </div>

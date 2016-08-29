@@ -692,7 +692,12 @@ window.mobileAndTabletcheck = function() {
                     console.log(ev);
                     var fillin;
                     if ( JSON.parse('['+sessionStorage.getItem('popquestions')+']').indexOf(pageval) !== -1  ) {
-                        fillin = prompt("Why did you click on this?");
+                        if (selectedElementData.hasOwnProperty('source')) {
+                            fillin = prompt("Why did you click on this edge?");
+                        }
+                        else {
+                            fillin = prompt("Why did you click on this node?");
+                        }
                     }
                     else {
                         fillin = 'NA';
@@ -744,10 +749,20 @@ window.mobileAndTabletcheck = function() {
                         temp.Eencoding2 = edgeencoding[1];
                         temp.results = {};
                         selecnodeattrs.forEach(function(k){
-                            temp.results[k] = n.style()[k];
+                            if (k === "width") {
+                                temp.results['nwidth'] = n.style()[k];
+                            }
+                            else {
+                                temp.results[k] = n.style()[k];
+                            }
                         });
                         selecedgeattrs.forEach(function(k){
-                            temp.results[k] = n.style()[k];
+                            if (k === "width") {
+                                temp.results['ewidth'] = n.style()[k];
+                            }
+                            else {
+                                temp.results[k] = n.style()[k];
+                            }
                         });
                         temp.position = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.renderedPosition()}})();
                         if (selectedElement.data().id === n.data().id) {
