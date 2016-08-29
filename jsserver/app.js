@@ -22,6 +22,8 @@ function insertOneItem(database, user, page, time, dataObject) {
             eleid : d.id,
             eleval: d.val,
             eletype : d.eletype,
+            elesource : d.source,
+            eletarget : d.target,
             name : d.name,
             nodeEncoding1 : d.Nencoding1,
             nodeEncoding2 : d.Nencoding2,
