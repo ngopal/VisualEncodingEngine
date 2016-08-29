@@ -734,6 +734,7 @@ window.mobileAndTabletcheck = function() {
                         var temp = {};
                         temp.name = (function() { if (n.data().hasOwnProperty('target') ) { return 'NA' } else {return n.data().name}})();
                         temp.id = n.data().id;
+                        temp.val = n.data().value;
                         temp.eletype = (function() { if (n.data().hasOwnProperty('target') ) { return 'edge' } else {return 'node'}})();
                         temp.Nencoding1 = nodeencoding[0];
                         temp.Nencoding2 = nodeencoding[1];
