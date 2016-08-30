@@ -71,14 +71,14 @@
             <li>There will be 34 networks to click through in total.</li>
             <li>The first 23 will be networks where you click on the most prominent node.</li>
             <li>The remaining 11 will be networks where you click on the most prominent edge.</li>
-            <li>The visualizations presented will vary in size, shape, color, etc.</li>
+            <li>The visualizations presented will vary in size, shape, color, faintness, etc.</li>
         </ul></h4>
     </div>
     <!--<button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); location.href='/nodeprompt'; })()" style="display:none">Start the experiment!</button>-->
     <div id="nodeprompt" style="display:none">
         <h3>For the following questions:</h3>
         <h1><b>Please visually scan the network and click on the most noticeable node</b></h1>
-        <h3>If no node seems prominent, please click on any of them.</h3>
+        <h3>If no one node seems prominent, please click on any of them.</h3>
         <h3>Please do not take more than 5 seconds on each visualization.</h3>
         <h3>You will be prompted with a similar page when it is time to begin clicking on edges.</h3>
         <button id="readybtn" type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('tutorial', 'complete'); sessionStorage.setItem('nodeprompt', 'complete'); location.href=nextRandomNodePage(); })()">Start the experiment!</button>

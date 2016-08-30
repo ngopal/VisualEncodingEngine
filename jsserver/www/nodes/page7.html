@@ -769,6 +769,9 @@ window.mobileAndTabletcheck = function() {
                         temp.windowwidth = windowwidth;
                         temp.time = timetook;
                         temp.network = netToServe;
+                        temp.numConnected = n.degree();
+                        temp.numNodes = cy.nodes().length;
+                        temp.numEdges = cy.edges().length;
                         console.log(temp);
                         tempdat.push(temp);
                     });
@@ -932,9 +935,9 @@ var whichEdges = encs.map(function(n,i){ if(n.match(/edge/)){return i} }).filter
 
 
 var thing = [
-    {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:[1,2].concat(whichEdges)},
-    {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:[0,2].concat(whichEdges)},
-    {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:[0,1].concat(whichEdges)},
+    {encname: 'node color (seq)', func: nodecolor_seq, style: 'background-color', type: 'node', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,4)], incompatability:[1,2].concat(whichEdges)},
+    {encname: 'node color (div)', func: nodecolor_div, style: 'background-color', type: 'node', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu, colorbrewer.RdYlGn, colorbrewer.Spectral][getRandomIntInclusive(0,7)], incompatability:[0,2].concat(whichEdges)},
+    {encname: 'node color (cat)', func: nodecolor_cat, style: 'background-color', type: 'node', range: [colorbrewer.Set2, colorbrewer.Dark2, colorbrewer.Accent, colorbrewer.Paired, colorbrewer.Pastel1, colorbrewer.Pastel2, colorbrewer.Set1, colorbrewer.Set3][getRandomIntInclusive(0,7)], incompatability:[0,1].concat(whichEdges)},
     {
         encname: 'node shape (cat)',
         func: nodeshape_cat,

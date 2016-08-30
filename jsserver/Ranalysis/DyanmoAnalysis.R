@@ -63,7 +63,7 @@ barplot(table(survey.df[,5]))
 #collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}, "user":"488238d8-99be-e65d-ebb8-ce7c04c92b25"  }')
 #expd.dat <- data.frame(collectedData[names(head(collectedData))])
 expd.dat <- connectSurveyToClickData()
-expd.dat$nodewidth <- as.numeric(gsub('px','',expd.dat$nodewidth))
+expd.dat$linewidth <- as.numeric(gsub('px','',expd.dat$linewidth))
 expd.dat$nodeheight <- as.numeric(gsub('px','',expd.dat$nodeheight))
 expd.dat$nodeborderwidth <- as.numeric(gsub('px','',expd.dat$nodeborderwidth))
 
@@ -131,10 +131,12 @@ expd.edges <- data.frame(expd.dat[which(is.na(expd.dat$xposition)),])
 expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges$selected)) <= 1),]
 
 # Node Encodings Only Model / Selection
-expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,10,14,16,32,39:41)])
+expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,13,15,32,39:41)])
 expd.nodes.1$nodeshape <- as.factor(expd.nodes.1$nodeshape)
 expd.nodes.1$network <- as.factor(expd.nodes.1$network)
 expd.nodes.1$nodebackground <- as.factor(expd.nodes.1$nodebackground)
+expd.nodes.1$selected <- as.factor(expd.nodes.1$selected) # This will make it classification
+expd.nodes.1$selected <- as.numeric(as.character(expd.nodes.1$selected)) # This will make it classification
 expd.nodes.1$eletype <- as.factor(expd.nodes.1$eletype)
 expd.nodes.1$question1 <- as.factor(expd.nodes.1$question1)
 expd.nodes.1$question2 <- as.factor(expd.nodes.1$question2)
@@ -144,8 +146,8 @@ expd.nodes.1$question5 <- as.factor(expd.nodes.1$question5)
 
 # Check for multicollinearily
 library(rfUtilities)
-multi.collinear(expd.nodes.1[,c(3:4,5,7:10)])
-expd.nodes.1 <- expd.nodes.1[,c(-4,-6)]
+multi.collinear(expd.nodes.1[,c(3:4,6,7:9)])
+#expd.nodes.1 <- expd.nodes.1[,c(-4,-6)]
 
 
 # I could consider using "network" as strata below
@@ -155,7 +157,7 @@ tuneRF(x = expd.nodes.1[,c(-4)], y = expd.nodes.1$selected, importance=TRUE, pro
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1, importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,-5], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE)
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
@@ -167,7 +169,7 @@ varImpPlot(rf1.nodes.1,type=2)
 # http://stats.stackexchange.com/questions/21152/obtaining-knowledge-from-a-random-forest
 
 abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
-rf1.nodes.1.p <- classCenter(expd.nodes.1[-5], expd.nodes.1[,5], rf1.nodes.1$proximity)
+rf1.nodes.1.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.1$proximity)
 
 # Node Encodings Only Model / Reaction Time
 expd.nodes.2 <- data.frame(expd.nodes[,c(4,9,10,14,15,28,29)])
@@ -181,10 +183,12 @@ varImpPlot(rf1.nodes.2,type=2)
 rf1.nodes.2.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.2$proximity)
 
 # Edge Encodings Only Model / Selection
-expd.edges.1 <- data.frame(expd.edges[,c(13, 20, 39:41)])
+expd.edges.1 <- data.frame(expd.edges[,c(5, 13, 19, 21, 42:44)])
 expd.edges.1$linestyle <- as.factor(expd.edges.1$linestyle)
 
-rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1, importance=TRUE, proximity=TRUE)
+multi.collinear(expd.edges.1[,c(2:3,5:7)])
+
+rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1[,-1], importance=TRUE, proximity=TRUE, keep.inbag = TRUE)
 print(rf1.edges.1)
 rf1.edges.1$importance
 varImpPlot(rf1.edges.1,type=2)
@@ -254,6 +258,114 @@ minauct <- paste(c("min(AUC) = "),minauc,sep="")
 maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
 minauct
 maxauct
+
+
+# Forest Floor
+library(forestFloor)
+ff = forestFloor(
+  rf.fit = rf1.nodes.1,       # mandatory
+  X = expd.nodes.1,              # mandatory
+  calc_np = FALSE,    # TRUE or FALSE both works, makes no difference
+  binary_reg = FALSE  # takes no effect here when rfo$type="regression"
+)
+
+ffe = forestFloor(
+  rf.fit = rf1.edges.1,       # mandatory
+  X = expd.edges.1,              # mandatory
+  calc_np = FALSE,    # TRUE or FALSE both works, makes no difference
+  binary_reg = FALSE  # takes no effect here when rfo$type="regression"
+)
+
+#plot partial functions of most important variables first
+plot(ff,                       # forestFloor object
+     plot_seq = 1:9,           # optional sequence of features to plot
+     orderByImportance=TRUE,    # if TRUE index sequence by importance, else by X column  
+     col=ifelse(ff$Y, "red", "gray")
+)
+
+plot(ffe,                       # forestFloor object
+     plot_seq = 1:9,           # optional sequence of features to plot
+     orderByImportance=TRUE,    # if TRUE index sequence by importance, else by X column  
+     col=ifelse(ffe$Y, "red", "gray")
+)
+
+par(mfrow=c(3,3))
+for(i in 1:9) partialPlot(rf1.nodes.1,expd.nodes.1,x.var=eval(names(expd.nodes.1)[i]))
+
+
+partialPlot(rf1.nodes.1, expd.nodes.1, nodeshape)
+partialPlot(rf1.nodes.1, expd.nodes.1, nodeheight)
+partialPlot(rf1.nodes.1, expd.nodes.1, nodeHue)
+
+
+library(rfPermute)
+library(ggRandomForests)
+
+
+
+
+
+
+col2rgb(htmlcolors)
+
+black	#000000	0,0,0
+silver	#C0C0C0	192,192,192
+gray	#808080	128,128,128
+white	#FFFFFF	255,255,255
+maroon	#800000	128,0,0
+red	#FF0000	255,0,0
+purple	#800080	128,0,128
+fuchsia	#FF00FF	255,0,255
+green	#008000	0,128,0
+lime	#00FF00	0,255,0
+olive	#808000	128,128,0
+yellow	#FFFF00	255,255,0
+navy	#000080	0,0,128
+blue	#0000FF	0,0,255
+teal	#008080	0,128,128
+aqua	#00FFFF	0,255,255
+
+# https://www.w3.org/TR/css3-color/
+eucColor <- function(inhex) {
+  htmlcolornames <- c("black", "silver", "gray", "white", "maroon", "red", "purple",
+                      "fuchsia", "green", "lime", "olive", "yellow", "navy", "blue", "teal",
+                      "aqua")
+  htmlcolors <- c("#000000",
+                  "#C0C0C0",
+                  "#808080",
+                  "#FFFFFF",
+                  "#800000",
+                  "#FF0000",
+                  "#800080",
+                  "#FF00FF",
+                  "#008000",
+                  "#00FF00",
+                  "#808000",
+                  "#FFFF00",
+                  "#000080",
+                  "#0000FF",
+                  "#008080",
+                  "#00FFFF")
+  qrgb <- col2rgb(inhex)
+  htem <- matrix(c((col2rgb(htmlcolors)[1,] - qrgb[1,])^2,
+           (col2rgb(htmlcolors)[2,] - qrgb[2,])^2,
+           (col2rgb(htmlcolors)[3,] - qrgb[3,])^2), 16, 3)
+  vals <- sqrt(apply(htem, FUN=sum, MAR=1))
+  return(  htmlcolornames[which(vals == min(vals))]  )
+}
+
+"#cadef1" "#dde8f8" "#eff3ff" "#c6dbef"
+eucColor("#cadef1")
+eucColor("#dde8f8")
+eucColor("#eff3ff")
+eucColor("#c6dbef")
+eucColor("#999999")
+sapply(expd.dat$nodebackground, FUN=eucColor)
+sapply(expd.dat$linecolor, FUN=eucColor)
+
+
+
+
 
 
 # RF UTILITIES
@@ -482,3 +594,11 @@ pairs(t(rgb2hsv((col2rgb(expd.dat$nodebackground)))), col = expd.dat$nodebackgro
 hist(tcolor[1,], main = "Distribution of Hues")
 hist(tcolor[2,], main = "Distribution of Saturation")
 hist(tcolor[3,], main = "Distribution of Values")
+
+
+
+library(jsonlite)
+fromJSON(gsub("\'", "\"", "[{ 'data': { 'id': '1', 'name' : 'ENSG00000068793', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '2', 'name' : 'ENSG00000162627', 'dimension' : 'area', 'value' : '5.38202560777306'  } },{ 'data': { 'id': '3', 'name' : 'ENSG00000170266', 'dimension' : 'area', 'value' : '1.26156626101008'  } },{ 'data': { 'id': '4', 'name' : 'ENSG00000175315', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '5', 'source': '1', 'target': '2', 'dimension': 'weight', 'value':'0.000085'} },{ 'data': { 'id': '6', 'source': '1', 'target': '3', 'dimension': 'weight', 'value':'0.000037'} },{ 'data': { 'id': '7', 'source': '2', 'target': '3', 'dimension': 'weight', 'value':'0.000086'} },{ 'data': { 'id': '8', 'source': '3', 'target': '4', 'dimension': 'weight', 'value':'0.000099'} }]"), simplifyDataFrame = TRUE)
+
+
+

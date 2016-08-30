@@ -46,7 +46,10 @@ function insertOneItem(database, user, page, time, dataObject) {
             windowheight : d.windowheight,
             windowwidth : d.windowwidth,
             reactionTime : d.time,
-            network : d.network
+            network : d.network,
+            numNodes : d.numNodes,
+            numEdges : d.numEdges,
+            numConnected : d.numConnected
         }, function(insertErr, insertResult) {
             assert.equal(insertErr, null);
             assert(1, insertResult.result.n);
