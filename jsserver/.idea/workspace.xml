@@ -61,11 +61,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="participantview.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="participantview.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/participantview.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="329.44">
-              <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.31484503">
+              <caret line="961" column="113" selection-start-line="961" selection-start-column="113" selection-end-line="961" selection-end-column="113" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
               </folding>
@@ -85,10 +85,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tests.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tests.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.81900454">
+            <state vertical-scroll-proportion="0.0">
               <caret line="93" column="6" selection-start-line="93" selection-start-column="6" selection-end-line="93" selection-end-column="6" />
               <folding>
                 <element signature="n#!!doc;n#testAll#0" expanded="false" />
@@ -145,8 +145,8 @@
         <option value="$PROJECT_DIR$/www/thankyou.html" />
         <option value="$PROJECT_DIR$/cache.js" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/www/participantview.html" />
         <option value="$PROJECT_DIR$/tests.js" />
+        <option value="$PROJECT_DIR$/www/participantview.html" />
       </list>
     </option>
   </component>
@@ -750,22 +750,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/participantview.html">
+    <entry file="file://$PROJECT_DIR$/tests.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="329.44">
-          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="93" column="6" selection-start-line="93" selection-start-column="6" selection-end-line="93" selection-end-column="6" />
           <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#!!doc;n#testAll#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests.js">
+    <entry file="file://$PROJECT_DIR$/www/participantview.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.81900454">
-          <caret line="93" column="6" selection-start-line="93" selection-start-column="6" selection-end-line="93" selection-end-column="6" />
+        <state vertical-scroll-proportion="0.31484503">
+          <caret line="961" column="113" selection-start-line="961" selection-start-column="113" selection-end-line="961" selection-end-column="113" />
           <folding>
-            <element signature="n#!!doc;n#testAll#0" expanded="false" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
