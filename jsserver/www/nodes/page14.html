@@ -12,6 +12,7 @@
     <script src="fcns.js"></script>
     <script src="cytoscape-cola.js"></script>
     <script src="datafiles.js"></script>
+    <script src="tests.js"></script>
     <style>
         /*#cy {*/
             /*width: 100%;*/
@@ -961,11 +962,11 @@ var thing = [
     {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[5].concat(whichEdges)},
     {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4].concat(whichEdges)},               //5
 //        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
-    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[7].concat(whichEdges)},                               //6
-    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 50, 75], incompatability:[6].concat(whichEdges)},
+    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 35, 50], incompatability:[7].concat(whichEdges)},                               //6
+    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 35, 50], incompatability:[6].concat(whichEdges)},
     {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
     {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
-    {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Greys, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([11,12])},
+    {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,4)], incompatability:whichNodes.concat([11,12])},
     {encname: 'edge color (div)', func: edgecolor_div, style: 'line-color', type: 'edge', range: [colorbrewer.BrBG, colorbrewer.PiYG, colorbrewer.PRGn, colorbrewer.PuOr, colorbrewer.RdBu, colorbrewer.RdYlBu][getRandomIntInclusive(0,5)], incompatability:whichNodes.concat([10,12])},
     {encname: 'edge color (cat)', func: edgecolor_cat, style: 'line-color', type: 'edge', range: [colorbrewer.Set2, colorbrewer.Dark2][getRandomIntInclusive(0,1)], incompatability:whichNodes.concat([10,11])},
     {
@@ -1577,49 +1578,7 @@ function edgetableconfig(thing) {
     //var selectedNodeStyleAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.nodes(':selected').style()[n]; });
     //var selectedEdgeStyleAttrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).getUnique().map(function(n){ return cy.edges(':selected').style()[n]; });
 
-    function testAll(r) {
-        var r = 0;
-        var report = {};
-        var numNodeAttrs = thing.map(function(n){ if(n.type==="node"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
-        var numEdgeAttrs = thing.map(function(n){ if(n.type==="edge"){ return n.style; } }).filter(function(n){ return n != undefined }).length;
-        report.network = sessionStorage.getItem('netToServe');
 
-        // Nodes
-        report.nodeInputVals = cy.nodes().map(function(k){
-            return +k.data().value || k.data().value;
-        });
-        report.nodeInputRange = d3.extent(report.nodeInputVals);
-        report.nodeOutputVals =  d3.range(0,numNodeAttrs).map(function(q){
-            return cy.nodes().map(function(k){
-                //iterate over various things
-                return thing[q].func(d3.extent(cy.nodes().map(function(n){
-                    //iterate over various color ranges
-                    return +n.data().value || n.data().value;
-                })), (Array.isArray(thing[r].range)) ? thing[r].range : thing[r].range[3]  )(+k.data().value || k.data().value);
-            });
-        });
-        report.nodeOutputRange = report.nodeOutputVals.map(function(o){ return d3.extent(o);});
-        report.nodeFuncs = d3.range(0,numNodeAttrs).map(function(q){return thing[q].func;});
-
-        // Edges
-        report.edgeInputVals = cy.edges().map(function(k){
-            return +k.data().value || k.data().value;
-        });
-        report.edgeInputRange = d3.extent(report.edgeInputVals);
-        report.edgeOutputVals =  d3.range(0,numEdgeAttrs).map(function(q){
-            return cy.edges().map(function(k){
-                //iterate over various things
-                return thing[q].func(d3.extent(cy.nodes().map(function(n){
-                    //iterate over various color ranges
-                    return +n.data().value || n.data().value;
-                })), (Array.isArray(thing[r].range)) ? thing[r].range : thing[r].range[3]  )(+k.data().value || k.data().value);
-            });
-        });
-        report.edgeOutputRange = report.edgeOutputVals.map(function(o){ return d3.extent(o);});
-        report.edgeFuncs = d3.range(0,numEdgeAttrs).map(function(q){return thing[q].func;});
-
-        return report;
-    }
 
 
 </script>

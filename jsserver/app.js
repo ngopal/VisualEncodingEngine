@@ -90,6 +90,7 @@ app.use('/jquery.js', express.static(__dirname + '/node_modules/jquery/dist/jque
 app.use('/colorbrewer.js', express.static(__dirname + '/node_modules/colorbrewer/colorbrewer.js'));
 app.use('/fcns.js', express.static(__dirname + '/fcns.js'));
 app.use('/cache.js', express.static(__dirname + '/cache.js'));
+app.use('/tests.js', express.static(__dirname + '/tests.js'));
 app.use('/networkgenerator.js', express.static(__dirname + '/networkgenerator.js'));
 app.use('/cytoscape-cola.js', express.static(__dirname + '/node_modules/cytoscape-cola/cytoscape-cola.js'));
 app.use('/datafiles.js', express.static(__dirname + '/datafiles.js'));

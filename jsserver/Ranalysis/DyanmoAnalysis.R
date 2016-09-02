@@ -131,12 +131,13 @@ expd.edges <- data.frame(expd.dat[which(is.na(expd.dat$xposition)),])
 expd.edges <- expd.edges[which(as.numeric(as.character(expd.edges$selected)) <= 1),]
 
 # Node Encodings Only Model / Selection
-expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,13,15,32,39:41)])
+#expd.nodes.1 <- data.frame(expd.nodes[,c(4,8,9,13,15,32,39:41)])
+expd.nodes.1 <- data.frame(expd.nodes[,c(3,5,10,14,19,24,35,42:44)])
 expd.nodes.1$nodeshape <- as.factor(expd.nodes.1$nodeshape)
-expd.nodes.1$network <- as.factor(expd.nodes.1$network)
-expd.nodes.1$nodebackground <- as.factor(expd.nodes.1$nodebackground)
+#expd.nodes.1$network <- as.factor(expd.nodes.1$network)
+#expd.nodes.1$nodebackground <- as.factor(expd.nodes.1$nodebackground)
 expd.nodes.1$selected <- as.factor(expd.nodes.1$selected) # This will make it classification
-expd.nodes.1$selected <- as.numeric(as.character(expd.nodes.1$selected)) # This will make it classification
+expd.nodes.1$selected <- as.numeric(as.character(expd.nodes.1$selected)) # This will make it regression
 expd.nodes.1$eletype <- as.factor(expd.nodes.1$eletype)
 expd.nodes.1$question1 <- as.factor(expd.nodes.1$question1)
 expd.nodes.1$question2 <- as.factor(expd.nodes.1$question2)
@@ -144,9 +145,14 @@ expd.nodes.1$question3 <- as.factor(expd.nodes.1$question3)
 expd.nodes.1$question4 <- as.factor(expd.nodes.1$question4)
 expd.nodes.1$question5 <- as.factor(expd.nodes.1$question5)
 
+expd.nodes.1c <- expd.nodes.1
+expd.nodes.1c$selected <- as.factor(as.character(expd.nodes.1c$selected))
+
+
 # Check for multicollinearily
 library(rfUtilities)
-multi.collinear(expd.nodes.1[,c(3:4,6,7:9)])
+multi.collinear(expd.nodes.1[,c(-2)])
+#multi.collinear(expd.nodes.1[,c(3:4,6,7:9)])
 #expd.nodes.1 <- expd.nodes.1[,c(-4,-6)]
 
 
@@ -157,7 +163,8 @@ tuneRF(x = expd.nodes.1[,c(-4)], y = expd.nodes.1$selected, importance=TRUE, pro
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
-rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,-5], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE)
+rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,-6], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE)
+rf1.nodes.1c <- randomForest(selected ~ ., data=expd.nodes.1c[,-6], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE, ntree=1500)
 print(rf1.nodes.1)
 rf1.nodes.1$importance
 varImpPlot(rf1.nodes.1,type=2)
@@ -171,67 +178,26 @@ varImpPlot(rf1.nodes.1,type=2)
 abline(v = abs(min(rf1.nodes.1$importance[,4])), lty="longdash", lwd=2)
 rf1.nodes.1.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.1$proximity)
 
-# Node Encodings Only Model / Reaction Time
-expd.nodes.2 <- data.frame(expd.nodes[,c(4,9,10,14,15,28,29)])
-expd.nodes.2[,1] <- as.factor(expd.nodes.1[,1])
-expd.nodes.2[,4] <- as.factor(expd.nodes.1[,4])
-
-rf1.nodes.2 <- randomForest(reactionTime ~ ., data=expd.nodes.2, importance=TRUE, proximity=TRUE)
-print(rf1.nodes.2)
-rf1.nodes.2$importance
-varImpPlot(rf1.nodes.2,type=2)
-rf1.nodes.2.p <- classCenter(expd.nodes.1[-4], expd.nodes.1[,4], rf1.nodes.2$proximity)
+# Node Encodings Only Model / Reaction Time?
 
 # Edge Encodings Only Model / Selection
-expd.edges.1 <- data.frame(expd.edges[,c(5, 13, 19, 21, 42:44)])
+expd.edges.1 <- data.frame(expd.edges[,c(3, 14, 21, 23, 45:47)])
 expd.edges.1$linestyle <- as.factor(expd.edges.1$linestyle)
 
-multi.collinear(expd.edges.1[,c(2:3,5:7)])
+multi.collinear(expd.edges.1[,c(-4)])
 
-rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1[,-1], importance=TRUE, proximity=TRUE, keep.inbag = TRUE)
+rf1.edges.1 <- randomForest(selected ~ ., data=expd.edges.1, importance=TRUE, proximity=TRUE, keep.inbag = TRUE)
 print(rf1.edges.1)
 rf1.edges.1$importance
 varImpPlot(rf1.edges.1,type=2)
 rf1.edges.1.p <- classCenter(expd.edges.1[-2], expd.edges.1[,2], rf1.edges.1$proximity)
 
-# Edge Encodings Only Model / Reaction Time
-expd.edges.2 <- data.frame(expd.edges[,c(5, 14, 20, 30)])
-expd.edges.2[,3] <- as.factor(expd.edges.2[,3])
+# Edge Encodings Only Model / Reaction Time?
 
-rf1.edges.2 <- randomForest(reactionTime ~ ., data=expd.edges.2, importance=TRUE, proximity=TRUE)
-print(rf1.edges.2)
-rf1.edges.2$importance
-varImpPlot(rf1.edges.2,type=2)
-abline
-rf1.edges.2.p <- classCenter(expd.edges.1[-2], expd.edges.1[,2], rf1.edges.2$proximity)
-
-# Node and Edge Encodings Only Model / Selection
-expd.both <- data.frame(expd.dat[which(!is.na(expd.dat[,6])),])
-expd.both <- expd.nodes[which(as.numeric(as.character(expd.nodes[,13])) <= 1),]
-expd.both <- expd.both[,-c(3, 16, 17, 18, 19, 21, 22, 24, 26, 27)]
-
-expd.both[,3] <- as.factor(expd.both[,3])
-expd.both[,7] <- as.factor(expd.both[,7])
-expd.both[,10] <- as.factor(expd.both[,10])
-expd.both[,15] <- as.factor(expd.both[,15])
-
-tuneRF(expd.both[-12], expd.both[,12], plot = T)
-rf.both.1 <- randomForest(selected ~ ., data=expd.both, importance=TRUE, proximity=TRUE)
-print(rf.both.1)
-rf.both.1$importance
-varImpPlot(rf.both.1,type=2)
-rf.both.1.p <- classCenter(expd.both[-12], expd.both[,12], rf.both.1$proximity)
 
 # negative value means the mean error is larger than the variance of the response
 # y. This could be because the predictor performs really poorly but also
 # because of some calibration issue.
-
-# Node and Edge Encodings Only Model / Reaction Time
-rf.both.2 <- randomForest(reactionTime ~ ., data=expd.both, importance=TRUE, proximity=TRUE)
-print(rf.both.2)
-rf.both.2$importance
-varImpPlot(rf.both.2,type=2)
-rf1.edges.2.p <- classCenter(rf.both.1[-13], expd.edges.1[,13], rf.both.1$proximity)
 
 # Try to attach demographic information to the DF and see how that affects selection
 # cbind(expd.both, surveydata)
@@ -240,16 +206,21 @@ rf1.edges.2.p <- classCenter(rf.both.1[-13], expd.edges.1[,13], rf.both.1$proxim
 # NOTE THAT THE TREE IS UNBALANCED RIGHT NOW, AND MUST BE SAMPLED
 # BALANCED BEFORE RESULTS ARE RELIABLE
 
-rf1.perf = performance(  prediction(labels = expd.both$selected, predictions = rf.both.1$predicted)  ,"tpr","fpr")
+rf1.perf.nodes = performance(  prediction(labels = expd.nodes.1$selected, predictions = rf1.nodes.1$predicted)  ,"tpr","fpr")
+rf1.perf.edges = performance(  prediction(labels = expd.edges.1$selected, predictions = rf1.edges.1$predicted)  ,"tpr","fpr")
 
+par(mfrow=c(1,2))
 #plot the curve
-plot(rf1.perf,main="ROC Curve for Random Forest",col=2,lwd=2)
-lines(unlist(rf1.perf@x.values),unlist(rf1.perf@y.values), col=4, lwd=2)
+plot(rf1.perf.nodes,main="ROC Curve for Random Forest (Nodes)",col=2,lwd=2)
+lines(unlist(rf1.perf.nodes@x.values),unlist(rf1.perf.nodes@y.values), col=4, lwd=2)
+abline(a=0,b=1,lwd=2,lty=2,col="gray")
+
+plot(rf1.perf.edges,main="ROC Curve for Random Forest (Edges)",col=2,lwd=2)
+lines(unlist(rf1.perf.edges@x.values),unlist(rf1.perf.edges@y.values), col=4, lwd=2)
 abline(a=0,b=1,lwd=2,lty=2,col="gray")
 
 #compute area under curve
-
-auc.rf1 <- performance(    prediction(labels = expd.both$selected, predictions = rf.both.1$predicted)   ,"auc")
+auc.rf1 <- performance(    prediction(labels = expd.nodes.1$selected, predictions = rf1.nodes.1$predicted)   ,"auc")
 auc.rf1 <- unlist(slot(auc.rf1, "y.values"))
 
 minauc<-min(round(auc.rf1, digits = 2))
@@ -303,8 +274,192 @@ library(ggRandomForests)
 
 
 
+##ggRandomForest
+library(ggplot2)
+library(RColorBrewer)
+library(plot3D)
+library(dplyr)
+library(reshape)
+library(reshape2)
+library(randomForestSRC)
+library(gridExtra)
+
+theme_set(theme_bw())
+event.marks <- c(1,4)
+event.labels <- c(FALSE, TRUE)
+strCol <- brewer.pal(3, "Set1")[c(2,1,3)]
+
+expd.nodes.1.melted <- melt(expd.nodes.1, id.vars=c("nodeshape", "selected"))
+
+ggplot(expd.nodes.1.melted, aes(x=nodeshape, y=value, color=factor(selected)))+
+  geom_point(alpha=.4)+
+  geom_rug(data=expd.nodes.1.melted %>% filter(is.na(value)))+
+  # labs(y="", x=nodeshape) +
+  scale_color_brewer(palette="Set2")+
+  facet_wrap(~variable, scales="free_y", ncol=3)
 
 
+rfsc_selected <- rfsrc(selected ~ ., data=expd.nodes.1)
+
+#plot OOB against growth of forests
+gg_e <- gg_error(rfsc_selected)
+plot(gg_e)
+
+# VIMP
+plot(gg_vimp(rfsc_selected))
+
+# Minimal Depth
+varsel_node <- var.select(rfsc_selected)
+gg_md <- gg_minimal_depth(varsel_node)
+plot(gg_md)
+
+# Compare VIMP and Minimal depth
+plot(gg_minimal_vimp(gg_md))
+
+# Variable Dependence (this can theoretically be generated by plotting the results from RF for each variable)
+gg_v <- gg_variable(rfsc_selected)
+xvar <- gg_md$topvars
+
+plot(gg_v, xvar=xvar, panel=TRUE,
+  alpha=.4)
+  # labs(y=selected, x="")
+
+# Partial Dependence (this is in the randomForest library and works there, so no need for this.)
+partial_node <- plot.variable(rfsc_selected, xvar=gg_md$topvars, partial=TRUE, sorted=FALSE, show.plots=FALSE)
+gg_p <- gg_partial(partial_node)
+plot(gg_p, xvar=xvar, panel=TRUE)
+
+
+interaction_nodes <- find.interaction(rfsc_selected)
+plot(interaction_nodes, xvar=gg_md$topvars, panel=TRUE)
+heatmap(interaction_nodes)
+
+## Trying ICEbox
+library(ICEbox)
+
+nodes.ice1 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeheight", frac_to_build = .1)
+nodes.ice2 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeHue", frac_to_build = .1)
+nodes.ice3 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeborderwidth", frac_to_build = .1)
+nodes.ice4 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "numEdges", frac_to_build = .1)
+#nodes.ice5 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeshape", frac_to_build = .1) #doesn't handle factors...I may be able to make a dummy variable?
+nodes.ice6 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "numConnected", frac_to_build = .1)
+nodes.ice7 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeValue", frac_to_build = .1)
+nodes.ice8 <- ice(object = rf1.nodes.1, X = expd.nodes.1, y = expd.nodes.1$selected, predictor = "nodeSaturation", frac_to_build = .1)
+nodes.dice1 <- dice(nodes.ice1)
+nodes.dice2 <- dice(nodes.ice2)
+nodes.dice3 <- dice(nodes.ice3)
+nodes.dice4 <- dice(nodes.ice4)
+#nodes.dice5 <- dice(nodes.ice5)
+nodes.dice6 <- dice(nodes.ice6)
+nodes.dice7 <- dice(nodes.ice7)
+nodes.dice8 <- dice(nodes.ice8)
+
+# ICE = individual conditional expectation curves
+dev.off()
+par(mfrow=c(2,4))
+plot(nodes.ice1)
+plot(nodes.ice2)
+plot(nodes.ice3)
+plot(nodes.ice4)
+plot(nodes.ice6)
+plot(nodes.ice7)
+plot(nodes.ice8)
+
+# DICE = Estimates the partial derivative function for each curve in an ice object
+dev.off()
+par(mfrow=c(2,4))
+plot(nodes.dice1)
+plot(nodes.dice2)
+plot(nodes.dice3)
+plot(nodes.dice4)
+plot(nodes.dice6)
+plot(nodes.dice7)
+plot(nodes.dice8)
+
+
+
+# Interactions
+library(plotmo)
+plotmo(rf1.nodes.1c, type="prob")
+plotmo(rf1.nodes.1)
+
+
+
+
+
+# Webers Law
+
+calcWebersForRows <- function(rowIndexStart, rowIndexEnd, c) {
+  nodeCombs <- c()
+  for (i in rowIndexStart:rowIndexEnd) {
+    for (k in i:rowIndexEnd) {
+      cat(i,k,expd.dat[i,c],expd.dat[k,c],
+          calcWeber(expd.dat[i,c],expd.dat[k,c]),'\n')
+      nodeCombs <- rbind(nodeCombs,
+                         c(i,k,expd.dat[i,c],expd.dat[k,c],calcWeber(expd.dat[i,c],expd.dat[k,c])))
+    }
+  }
+  colnames(nodeCombs) <- c("index1", "index2", "value1", "value2", "K")
+  return(nodeCombs)
+}
+
+calcWeber <- function(a,b) {
+  return( abs(a - b) / b )
+}
+
+calcWebersForRows(1, 4, 35)
+calcWebersForRows(8, 11, 42)
+
+
+for (n in unique(expd.dat[which(expd.dat$eletype == "node"),9]) ) {
+  numeros <- which(expd.dat[which(expd.dat$eletype == "node"),9] == n)
+  
+  cat(which(expd.dat[which(expd.dat$eletype == "node"),9] == n),'\n')
+}
+
+countContiguous <- function(numeros) {
+  contig <- list()
+  k = 1;
+  contig[[k]] <- vector()
+  for (i in length(numeros)) {
+    if ( numeros[i+1 || i] == numeros[i] + 1 ) {
+      contig[[k]] <- append(i, contig[[k]])
+    }
+    else {
+      k = k + 1;
+      contig[[k]] <- append(i, contig[[k]])
+    }
+  }
+  return( contig )
+}
+
+# Count length of line
+subNet <- expd.dat[1:7,c(7,8,13,33)]
+for (i in which(is.na(subNet$xposition))) {
+  # subNet[subNet[i,]$elesource,]$xposition, subNet[subNet[i,]$elesource,]$yposition
+  # subNet[subNet[i,]$eletarget,]$xposition, subNet[subNet[i,]$eletarget,]$yposition
+  dd <- sqrt((subNet[subNet[i,]$elesource,]$xposition - subNet[subNet[i,]$eletarget,]$xposition)^2 +
+  (subNet[subNet[i,]$elesource,]$yposition - subNet[subNet[i,]$eletarget,]$yposition)^2)
+  cat(subNet[i,]$elesource, subNet[i,]$eletarget, dd,'\n')
+}
+
+
+
+
+# Calculate Steven's Power Law
+selnodesonly <- expd.dat[which((expd.dat$selected == 1) & (expd.dat$xposition != 0)),] #selected nodes only
+selnodesonly <- selnodesonly[which(selnodesonly$nodeEncoding1 == "node border (bin)" | selnodesonly$nodeEncoding1 == "node border (quant)" | selnodesonly$nodeEncoding2 == "node border (bin)" | selnodesonly$nodeEncoding2 == "node border (quant)"),]
+log(selnodesonly[,35])
+# Cannot be calculated because this experiment does not capture data
+# about the perceived intensity of a data point, rather only the actual intensity
+# used to visualize the data
+
+
+
+
+
+
+P########################################
 
 col2rgb(htmlcolors)
 
@@ -597,8 +752,32 @@ hist(tcolor[3,], main = "Distribution of Values")
 
 
 
-library(jsonlite)
-fromJSON(gsub("\'", "\"", "[{ 'data': { 'id': '1', 'name' : 'ENSG00000068793', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '2', 'name' : 'ENSG00000162627', 'dimension' : 'area', 'value' : '5.38202560777306'  } },{ 'data': { 'id': '3', 'name' : 'ENSG00000170266', 'dimension' : 'area', 'value' : '1.26156626101008'  } },{ 'data': { 'id': '4', 'name' : 'ENSG00000175315', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '5', 'source': '1', 'target': '2', 'dimension': 'weight', 'value':'0.000085'} },{ 'data': { 'id': '6', 'source': '1', 'target': '3', 'dimension': 'weight', 'value':'0.000037'} },{ 'data': { 'id': '7', 'source': '2', 'target': '3', 'dimension': 'weight', 'value':'0.000086'} },{ 'data': { 'id': '8', 'source': '3', 'target': '4', 'dimension': 'weight', 'value':'0.000099'} }]"), simplifyDataFrame = TRUE)
+# library(jsonlite)
+# tn <- as.data.frame(fromJSON(gsub("\'", "\"", "[{ 'data': { 'id': '1', 'name' : 'ENSG00000068793', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '2', 'name' : 'ENSG00000162627', 'dimension' : 'area', 'value' : '5.38202560777306'  } },{ 'data': { 'id': '3', 'name' : 'ENSG00000170266', 'dimension' : 'area', 'value' : '1.26156626101008'  } },{ 'data': { 'id': '4', 'name' : 'ENSG00000175315', 'dimension' : 'area', 'value' : '4.40646151205377'  } },{ 'data': { 'id': '5', 'source': '1', 'target': '2', 'dimension': 'weight', 'value':'0.000085'} },{ 'data': { 'id': '6', 'source': '1', 'target': '3', 'dimension': 'weight', 'value':'0.000037'} },{ 'data': { 'id': '7', 'source': '2', 'target': '3', 'dimension': 'weight', 'value':'0.000086'} },{ 'data': { 'id': '8', 'source': '3', 'target': '4', 'dimension': 'weight', 'value':'0.000099'} }]")))
+# nodeRows <- which(!is.na(tn[1:dim(tn)[1],]$name))
+# edgeRows <- which(is.na(tn[1:dim(tn)[1],]$name))
+# 
+# edgeData <- cbind(tn[edgeRows,]$source,tn[edgeRows,]$target, tn[edgeRows,]$value) 
+# colnames(edgeData) <- c("from", "to", "weight")
+# 
+# nodeData <- cbind(tn[nodeRows,]$id, tn[nodeRows,]$value, tn[nodeRows,]$name) 
+# colnames(nodeData) <- c("id", "area", "name")
+# 
+# igobj <- graph.data.frame(edgeData, directed = F, vertices = nodeData)
+# for (v in 1:length(V(igobj))) {
+#   print(length(neighbors(igobj, v, mode=("in"))))
+# }
+# 
+
+
+
+
+
+
+
+
+
+
 
 
 
