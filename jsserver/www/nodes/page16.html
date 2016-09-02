@@ -959,11 +959,11 @@ var thing = [
         },
         incompatability: whichEdges
     },
-    {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1, 3, 7], incompatability:[5].concat(whichEdges)},
-    {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1, 3, 7], incompatability:[4].concat(whichEdges)},               //5
+    {encname: 'node border (quant)', func: nodeborder_quant, style: 'border-width', type: 'node', range: [1.5, 3, 4.5], incompatability:[5].concat(whichEdges)},
+    {encname: 'node border (bin)', func: nodeborder_bin, style: 'border-width', type: 'node', range: [1.5, 3, 4.5], incompatability:[4].concat(whichEdges)},               //5
 //        {encname: 'node border (cat)', func: nodeborder_cat, style: 'border-width', type: 'node', range: [1, 5, 10], incompatability:[4,5,9,10,11,12,13,14,15]},
-    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [20, 35, 50], incompatability:[7].concat(whichEdges)},                               //6
-    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [20, 35, 50], incompatability:[6].concat(whichEdges)},
+    {encname: 'node size (quant)', func: nodesize_quant, style: 'height', type: 'node', range: [15, 35, 50], incompatability:[7].concat(whichEdges)},                               //6
+    {encname: 'node size (bin)', func: nodesize_bin, style: 'height', type: 'node', range: [15, 35, 50], incompatability:[6].concat(whichEdges)},
     {encname: 'edge width (quant)', func: edgewidth_quant, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([9])},
     {encname: 'edge width (bin)', func: edgewidth_bin, style: 'width', type: 'edge', range: [1, 5, 10], incompatability:whichNodes.concat([8])},
     {encname: 'edge color (seq)', func: edgecolor_seq, style: 'line-color', type: 'edge', range: [colorbrewer.Reds, colorbrewer.Blues, colorbrewer.Greens, colorbrewer.Oranges, colorbrewer.Purples][getRandomIntInclusive(0,4)], incompatability:whichNodes.concat([11,12])},

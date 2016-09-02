@@ -456,6 +456,12 @@ log(selnodesonly[,35])
 
 
 
+# Node combinations
+unique(cbind(expd.nodes$nodeEncoding1,expd.nodes$nodeEncoding2))
+
+# Edge combinations
+unique(cbind(expd.edges$edgeEncoding1,expd.edges$edgeEncoding2))
+
 
 
 

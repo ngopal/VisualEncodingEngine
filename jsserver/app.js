@@ -104,7 +104,6 @@ app.use('/jqueryui.js', express.static(__dirname + '/node_modules/jquery-ui/ui/j
 app.use('/dialog.css', express.static(__dirname + '/node_modules/jquery-ui/themes/base/dialog.css'));
 app.use('/randomnetworks.json', express.static(__dirname + '/randomnetworks.json'));
 
-
 app.get('/', function (req, res) {
     res.sendfile("/www/consent.html", {root: __dirname});
 });
@@ -272,6 +271,8 @@ app.post('/lp', function (req, res) {
         }
     });
 });
+
+
 
 // Serving each combination page individually
 d3.range(1,29).map(function(i) {
