@@ -19,6 +19,9 @@
     <script>
         initializeCache();
         (function() { sessionStorage.setItem('thanks', 'complete'); })()
+        if ( sessionStorage.getItem('amt') === 'true' ) {
+            document.getElementById('mtcode').style.display = 'inherit';
+        }
     </script>
 </head>
 <body>
@@ -59,7 +62,7 @@
 
     <!--End mc_embed_signup-->
 </div>
-<div id="mtcode" style="padding-left: 30px;padding-right: 30px;">
+<div id="mtcode" style="padding-left: 30px;padding-right: 30px;display:none;">
     <h3><b>Mechanical Turkers! Here below is your unique code. Please copy and paste the following code into the designated box on the HIT page to obtain credit.</b></h3>
 </div>
 </body>

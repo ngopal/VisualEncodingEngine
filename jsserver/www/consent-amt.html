@@ -1,0 +1,65 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="bootstrap.css" rel="stylesheet">
+    <script src="jquery.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="d3.js"></script>
+    <script src="cache.js"></script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-55811705-2', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script>
+        initializeCache();
+        sessionStorage.setItem('amt', true);
+    </script>
+</head>
+<body>
+<div class="page-header" style="padding-left: 30px;padding-right: 30px;">
+    <h1>Hello! Thank you for participating in this data visualization study!</h1>
+    <h3>It should take less than 5 minutes to complete. Here is what you need to know:</h3>
+</div>
+<div id="purpose" class="well well-lg">
+    <b>Purpose:</b>
+    The goal of this study is to understand which visual representations are most prominent in network visualizations. When you are presented with a network, I would like you to click on the most visually noticeable segment. Once you click, another visualization will automatically be loaded. The collected data will be used to to see how visual representations affects attention. Aside from this informational page and the web study, there is a brief tutorial, and a short demographic survey.
+</div>
+<div id="participants" class="well well-lg">
+    <b>Participants:</b>
+    We are seeking participants who are legal adults and are fluent in English.
+</div>
+<div id="data" class="well well-lg">
+    <b>Collected Data:</b>
+    These sessions are anonymous and the data we collect is benign. The following information will be collected:
+
+    <ul>
+        <li>Click coordinates</li>
+        <li>Attributes of the presented visualization (e.g. size, shape, color, etc)</li>
+        <li>Anonymous demographic information (at the end)</li>
+    </ul>
+
+    Google Analytics is being used to measure web traffic, although user tracking has been turned off to keep these sessions anonymous. In the spirit of open and reproducible science, the collected data will eventually be openly shared with the public. This study also uses the browser cache to keep track of your progress during the course of the study, and will be deleted once you close out of your web browser.
+</div>
+<noscript>
+    <div id="requirements" class="well well-lg">
+    <b>Requirements:</b>
+        This study makes heavy use of Javascript, so Javascript must be enabled on your browser (and it is currently disabled). To learn how to enable Javascript for your browser, <a href="http://enable-javascript.com/">click here</a>
+    </div>
+</noscript>
+<div id="emailme"></div>
+<div id="consent" class="well well-lg">
+Again, thank you so much for helping with this study! If you have any questions, please feel free to email <u>ngopal [at ] uw [dot] edu</u> with the word “<u>study42</u>” in the title.
+<br><br>
+    <center>
+    <button type="button" class="btn btn-success btn-lg" onclick="(function() { sessionStorage.setItem('consent', 'complete'); location.href='/tutorial'; })()">Got it!</button>
+    <button type="button" class="btn btn-failure btn-lg" onclick="window.history.back();">I've changed my mind</button>
+    </center>
+</div>
+<br><br>
+</body>
+</html>

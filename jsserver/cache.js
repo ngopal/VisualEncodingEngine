@@ -20,6 +20,7 @@ function initializeCache() {
         sessionStorage.setItem('netToServe', getRandNetwork());
         sessionStorage.setItem('status', 'incomplete');
         sessionStorage.setItem('consent', 'incomplete');
+        sessionStorage.setItem('amt', false);
         sessionStorage.setItem('nodeprompt', 'incomplete');
         sessionStorage.setItem('edgeprompt', 'incomplete');
         sessionStorage.setItem('tutorial', 'incomplete');

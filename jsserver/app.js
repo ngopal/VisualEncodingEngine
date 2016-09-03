@@ -108,6 +108,10 @@ app.get('/', function (req, res) {
     res.sendfile("/www/consent.html", {root: __dirname});
 });
 
+app.get('/amt', function (req, res) {
+    res.sendfile("/www/consent-amt.html", {root: __dirname});
+});
+
 app.get('/dash', function (req, res) {
     res.sendfile("/www/index.html", {root: __dirname});
 });
