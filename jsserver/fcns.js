@@ -40,13 +40,13 @@ function radius(s,fudge) { var factor = fudge || 10; return Math.sqrt(s/Math.PI)
 function nodecolor_seq(domain,range) {
     return d3.scale.linear()
         .domain( d3.extent(domain) )
-        .range(range);
+        .range(  d3.extent(range).reverse()   );
 }
 
 function nodecolor_div(domain,range) {
-    return d3.scale.linear()
-        .domain( d3.extent(domain) )
-        .range(range);
+    return d3.scale.ordinal()
+        .domain( domain )
+        .range(  range  );
 }
 
 function nodecolor_cat(domain,range) {
@@ -121,13 +121,13 @@ function edgewidth_bin(domain,range) {
 function edgecolor_seq(domain,range) {
     return d3.scale.linear()
         .domain(  d3.extent(domain)  )
-        .range(range);
+        .range(   d3.extent(range).reverse() );
 };
 
 function edgecolor_div(domain,range) {
-    return d3.scale.linear()
-        .domain( d3.extent(domain)  )
-        .range(range);
+    return d3.scale.ordinal()
+        .domain( domain  )
+        .range(  range  );
 };
 
 function edgecolor_cat(domain,range) {

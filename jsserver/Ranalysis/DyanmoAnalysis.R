@@ -26,10 +26,10 @@ library(rJava)
 library(RMongo)
 library(plyr)
 pilotdb <- mongoDbConnect('pilot')
-dbGetQuery(pilotdb, 'evaldata', '{}')['X_id']
+dbGetQuery(pilotdb, 'evaldata', '{}', limit=1000)['X_id']
 
 connectSurveyToClickData <- function() {
-  uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}')['user']))
+  uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}', skip=0, limit=15000)['user']))
   connectedData <- c()
   for (u in uniqueSessions) {
     cat(u,'\n')
@@ -52,11 +52,12 @@ surveydata <- dbGetQuery(pilotdb, 'evaldata', '{ page: "survey" }')
 
 # Survey Data
 survey.df <- data.frame(surveydata[c("question1", "question2", "question3", "question4", "question5", "question6")])
-barplot(table(survey.df[,1]))
-barplot(table(survey.df[,2]))
-barplot(table(survey.df[,3]))
-barplot(table(survey.df[,4]))
-barplot(table(survey.df[,5]))
+par(mar=c(5.1, 13 ,4.1 ,2.1))
+barplot(table(survey.df[,1]), las=2, horiz = T)
+barplot(table(survey.df[,2]), las=2, horiz = T)
+barplot(table(survey.df[,3]), las=2, horiz = T)
+barplot(table(survey.df[,4]), las=2, horiz = T)
+barplot(table(survey.df[,5]), las=2, horiz = T)
 
 # Click Data
 #collectedData <- dbGetQuery(pilotdb, 'evaldata', '{ "page": {"$ne":"survey"}  }')
@@ -220,11 +221,18 @@ lines(unlist(rf1.perf.edges@x.values),unlist(rf1.perf.edges@y.values), col=4, lw
 abline(a=0,b=1,lwd=2,lty=2,col="gray")
 
 #compute area under curve
-auc.rf1 <- performance(    prediction(labels = expd.nodes.1$selected, predictions = rf1.nodes.1$predicted)   ,"auc")
-auc.rf1 <- unlist(slot(auc.rf1, "y.values"))
-
-minauc<-min(round(auc.rf1, digits = 2))
-maxauc<-max(round(auc.rf1, digits = 2))
+auc.rf1.nodes <- performance(    prediction(labels = expd.nodes.1$selected, predictions = rf1.nodes.1$predicted)   ,"auc")
+auc.rf1.nodes <- unlist(slot(auc.rf1.nodes, "y.values"))
+minauc<-min(round(auc.rf1.nodes, digits = 2))
+maxauc<-max(round(auc.rf1.nodes, digits = 2))
+minauct <- paste(c("min(AUC) = "),minauc,sep="")
+maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
+minauct
+maxauct
+auc.rf1.edges <- performance(    prediction(labels = expd.edges.1$selected, predictions = rf1.edges.1$predicted)   ,"auc")
+auc.rf1.edges <- unlist(slot(auc.rf1.edges, "y.values"))
+minauc<-min(round(auc.rf1.edges, digits = 2))
+maxauc<-max(round(auc.rf1.edges, digits = 2))
 minauct <- paste(c("min(AUC) = "),minauc,sep="")
 maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
 minauct
@@ -441,6 +449,26 @@ for (i in which(is.na(subNet$xposition))) {
   dd <- sqrt((subNet[subNet[i,]$elesource,]$xposition - subNet[subNet[i,]$eletarget,]$xposition)^2 +
   (subNet[subNet[i,]$elesource,]$yposition - subNet[subNet[i,]$eletarget,]$yposition)^2)
   cat(subNet[i,]$elesource, subNet[i,]$eletarget, dd,'\n')
+}
+
+# Attach an "edgeLength" column to expd.dat
+edgeLength <- matrix(0, dim(expd.dat)[1])
+subNets <- unique(paste(expd.dat$user,'---',expd.dat$network,sep=''))
+for (s in subNets) {
+  li <- strsplit(s, '---')
+  u <- li[[1]][1]
+  n <- li[[1]][2]
+  inds <- which(expd.dat$network == n & expd.dat$user == u)
+  subNet <- expd.dat[inds,c(7,8,13,33)]
+  tsn <- c()
+  for (i in which(is.na(subNet$xposition))) {
+    dd <- sqrt((subNet[subNet[i,]$elesource,]$xposition - subNet[subNet[i,]$eletarget,]$xposition)^2 +
+                 (subNet[subNet[i,]$elesource,]$yposition - subNet[subNet[i,]$eletarget,]$yposition)^2)
+    cat(subNet[i,]$elesource, subNet[i,]$eletarget, dd,'\n')
+    tsn <- append(tsn, dd)
+  }
+  edgeLength[inds[is.na(expd.dat[inds,]$xposition)]] <- tsn
+  
 }
 
 
