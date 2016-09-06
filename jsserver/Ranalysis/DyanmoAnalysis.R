@@ -26,7 +26,7 @@ library(rJava)
 library(RMongo)
 library(plyr)
 pilotdb <- mongoDbConnect('pilot')
-dbGetQuery(pilotdb, 'evaldata', '{}', limit=1000)['X_id']
+dbGetQuery(pilotdb, 'evaldata', '{}')['X_id']
 
 connectSurveyToClickData <- function() {
   uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}', skip=0, limit=15000)['user']))
