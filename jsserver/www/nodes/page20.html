@@ -710,7 +710,21 @@ window.mobileAndTabletcheck = function() {
                     var tempdat = [];
                     var nodeencoding = [];
                     var edgeencoding = [];
-                    var clickcoords = [window.event.clientX, window.event.clientY];
+                    var clickcoords = [(function(){
+                        try {
+                            return window.event.clientX;
+                        }
+                        catch (erro) {
+                            return null;
+                        }
+                    })(),(function(){
+                        try {
+                            return window.event.clientY;
+                        }
+                        catch (erro) {
+                            return null;
+                        }
+                    })()];
                     var windowheight = window.innerHeight;
                     var windowwidth = window.innerWidth;
                     var time2 = new Date();

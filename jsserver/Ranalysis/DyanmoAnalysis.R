@@ -29,7 +29,7 @@ pilotdb <- mongoDbConnect('pilot')
 dbGetQuery(pilotdb, 'evaldata', '{}')['X_id']
 
 connectSurveyToClickData <- function() {
-  uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}', skip=0, limit=15000)['user']))
+  uniqueSessions <- unlist(unique(dbGetQuery(pilotdb, 'evaldata', '{}', skip=0, limit=100000)['user']))
   connectedData <- c()
   for (u in uniqueSessions) {
     cat(u,'\n')
@@ -165,6 +165,7 @@ tuneRF(x = expd.nodes.1[,c(-4)], y = expd.nodes.1$selected, importance=TRUE, pro
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-3, -8:-14)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 #rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,c(-5, -6, -13)], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1))
 rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,-6], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE)
+#rf1.nodes.1 <- randomForest(selected ~ ., data=expd.nodes.1[,-6], importance=TRUE, proximity=TRUE, keep.inbag = TRUE)
 rf1.nodes.1c <- randomForest(selected ~ ., data=expd.nodes.1c[,-6], importance=TRUE, proximity=TRUE, classwt = c(selectedPrevalence.nodes.1, unselectedPrevalence.nodes.1), keep.inbag = TRUE, ntree=1500)
 print(rf1.nodes.1)
 rf1.nodes.1$importance
@@ -390,7 +391,7 @@ plot(nodes.dice8)
 library(plotmo)
 plotmo(rf1.nodes.1c, type="prob")
 plotmo(rf1.nodes.1)
-
+plotmo(rf1.edges.1)
 
 
 
